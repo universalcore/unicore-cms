@@ -48,7 +48,7 @@ class Category(FilterMixin, SlugifyMixin, models.GitModel):
         return self.slug == other.slug
 
     def __ne__(self, other):
-        return self.slug == other.slug
+        return self.slug != other.slug
 
 
 class Page(FilterMixin, SlugifyMixin, models.GitModel):
