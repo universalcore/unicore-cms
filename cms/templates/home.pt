@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="${request.locale_name}">
+<html lang="${request.locale_name}" xmlns:py="http://genshi.edgewall.org/">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -34,7 +34,13 @@
           <div class="col-md-10">
             <div class="content">
               <h1><span class="font-semi-bold">Pyramid</span> <span class="smaller">Starter scaffold</span></h1>
-              <p class="lead">Welcome to <span class="font-normal">${project}</span>, an&nbsp;application generated&nbsp;by<br>the <span class="font-normal">Pyramid Web Framework 1.5.1</span>.</p>
+              <p class="lead">Welcome to <span class="font-normal">Unicore CMS</span>, an&nbsp;application generated&nbsp;by<br>the <span class="font-normal">Pyramid Web Framework 1.5.1</span>.</p>
+              <ul>
+                <li tal:repeat="cat categories">
+                  ${cat.title}
+                </li>
+              </ul>
+
             </div>
           </div>
         </div>
