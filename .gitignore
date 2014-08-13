@@ -1,3 +1,7 @@
+# Custom ignore list
+ve/
+*.db
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
