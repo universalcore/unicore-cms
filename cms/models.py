@@ -33,7 +33,7 @@ class SlugifyMixin(object):
     def generate_slug(self):
         if hasattr(self, 'title') and self.title:
             if hasattr(self, 'slug') and not self.slug:
-                self.slug = self.slugify(unicode(self.title))
+                self.slug = self.slugify(unicode(self.title))[:40]
 
     def save(self, *args, **kwargs):
         self.generate_slug()
