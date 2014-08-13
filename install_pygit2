@@ -1,0 +1,9 @@
+wget https://github.com/libgit2/libgit2/archive/v0.21.1.tar.gz
+tar xzf v0.21.1.tar.gz
+cd libgit2-0.21.1/
+cmake .
+make
+sudo make install
+sudo ldconfig
+pip install cffi
+pip install pygit2

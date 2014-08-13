@@ -2,4 +2,6 @@ pyramid
 pyramid_chameleon
 pyramid_debugtoolbar
 waitress
--e cms
+-e .
+cffi
+-e git+git://github.com/bendavis78/python-gitmodel.git@master#egg=python-gitmodel
