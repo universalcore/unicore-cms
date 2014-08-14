@@ -8,5 +8,9 @@ pip:
  - pyramid_chameleon
  - pyramid_debugtoolbar
  - waitress
+ - cffi
+ - pygit2
+ - praekelt-python-gitmodel
 dependencies:
  - python-yaml
+ - libgit2-dev

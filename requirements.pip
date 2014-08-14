@@ -4,4 +4,4 @@ pyramid_debugtoolbar
 waitress
 -e .
 cffi
--e git+git://github.com/bendavis78/python-gitmodel.git@master#egg=python-gitmodel
+praekelt-python-gitmodel
