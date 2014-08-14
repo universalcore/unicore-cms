@@ -5,5 +5,3 @@ cmake .
 make
 sudo make install
 sudo ldconfig
-pip install cffi
-pip install pygit2

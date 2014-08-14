@@ -1,3 +1,4 @@
-pip="${VENV}/bin/pip"
+cd /var/praekelt/unicore-cms
+./install_pygit2
 
-$pip install praekelt-python-gitmodel
+$PIP install praekelt-python-gitmodel
