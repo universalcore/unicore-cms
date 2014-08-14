@@ -14,3 +14,4 @@ pip:
 dependencies:
  - python-yaml
  - libgit2-dev
+ - libffi-dev
