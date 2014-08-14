@@ -15,3 +15,4 @@ dependencies:
  - python-yaml
  - libgit2-dev
  - libffi-dev
+ - cmake
