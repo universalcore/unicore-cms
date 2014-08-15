@@ -7,6 +7,8 @@ pip:
  - pyramid
  - pyramid_chameleon
  - pyramid_debugtoolbar
+ - pyramid_beaker
+ - python-memcached
  - waitress
  - cffi
  - pygit2
