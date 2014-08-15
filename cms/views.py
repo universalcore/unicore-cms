@@ -8,7 +8,7 @@ from pyramid.view import view_config
 from pyramid.renderers import get_renderer
 from pyramid.decorator import reify
 
-CACHE_TIME = 'long_term'
+CACHE_TIME = 'second'
 
 
 class CmsViews(object):
