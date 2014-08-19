@@ -14,10 +14,12 @@ CACHE_TIME = 'long_term'
 class CmsViews(object):
     def __init__(self, request):
         self.request = request
-        repo_path = os.path.join(
+        self.repo_path = os.path.join(
             self.request.registry.settings['git.path'], '.git')
-        ws = Workspace(repo_path)
-        self.models = ws.import_models(cms_models)
+
+    def get_repo_models(self):
+        ws = Workspace(self.repo_path)
+        return ws.import_models(cms_models)
 
     @reify
     def global_template(self):
@@ -26,23 +28,27 @@ class CmsViews(object):
 
     @cache_region(CACHE_TIME)
     def get_categories(self):
-        return [c.to_dict() for c in self.models.Category().all()]
+        models = self.get_repo_models()
+        return [c.to_dict() for c in models.Category().all()]
 
     @cache_region(CACHE_TIME)
     def get_category(self, slug):
-        return self.models.Category().get(slug).to_dict()
+        models = self.get_repo_models()
+        return models.Category().get(slug).to_dict()
 
     @cache_region(CACHE_TIME)
     def get_pages_for_category(self, category_slug):
-        category = self.models.Category().get(category_slug)
+        models = self.get_repo_models()
+        category = models.Category().get(category_slug)
         return [
             p.to_dict()
-            for p in self.models.Page().filter(primary_category=category)
+            for p in models.Page().filter(primary_category=category)
         ]
 
     @cache_region(CACHE_TIME)
     def get_page(self, slug):
-        return self.models.Page().get(slug).to_dict()
+        models = self.get_repo_models()
+        return models.Page().get(slug).to_dict()
 
     @view_config(route_name='home', renderer='templates/home.pt')
     def home(self):
