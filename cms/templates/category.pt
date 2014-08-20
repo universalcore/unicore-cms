@@ -11,7 +11,7 @@
             <div class="box">
                 <div class="item" tal:repeat="page pages">
                     <div class="text">
-                        <a href="/content/detail/${page.slug}/">${page.title}</a>
+                        <a href="/content/detail/${page.id}/">${page.title}</a>
                     </div>
                 </div>
             </div>

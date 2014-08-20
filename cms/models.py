@@ -57,7 +57,7 @@ class Category(FilterMixin, SlugifyMixin, models.GitModel):
 
 
 class Page(FilterMixin, SlugifyMixin, models.GitModel):
-    slug = fields.SlugField(required=True, id=True)
+    slug = fields.SlugField(required=True)
     title = fields.CharField(required=True)
     content = fields.CharField(required=False)
     published = fields.BooleanField(default=True)
@@ -65,6 +65,7 @@ class Page(FilterMixin, SlugifyMixin, models.GitModel):
 
     def to_dict(self):
         return {
+            'id': self.id,
             'slug': self.slug,
             'title': self.title,
             'content': self.content,

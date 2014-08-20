@@ -46,9 +46,9 @@ class CmsViews(object):
         ]
 
     @cache_region(CACHE_TIME)
-    def get_page(self, slug):
+    def get_page(self, id):
         models = self.get_repo_models()
-        return models.Page().get(slug).to_dict()
+        return models.Page().get(id).to_dict()
 
     @view_config(route_name='home', renderer='templates/home.pt')
     def home(self):
@@ -63,4 +63,4 @@ class CmsViews(object):
 
     @view_config(route_name='content', renderer='templates/content.pt')
     def content(self):
-        return {'page': self.get_page(self.request.matchdict['slug'])}
+        return {'page': self.get_page(self.request.matchdict['id'])}

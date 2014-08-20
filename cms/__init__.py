@@ -17,7 +17,7 @@ def main(global_config, **settings):
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('home', '/')
     config.add_route('category', '/content/list/{category}/')
-    config.add_route('content', '/content/detail/{slug}/')
+    config.add_route('content', '/content/detail/{id}/')
     config.scan()
 
     repo_path = settings['git.path'].strip()
