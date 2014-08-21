@@ -1,24 +1,29 @@
 import os
+import pygit2
+import shutil
 
 from beaker.cache import cache_region
-from cms import models as cms_models
+from cms import models as cms_models, utils
 from gitmodel.workspace import Workspace
 
 from pyramid.view import view_config
 from pyramid.renderers import get_renderer
 from pyramid.decorator import reify
+from pyramid.httpexceptions import HTTPFound
 
 CACHE_TIME = 'long_term'
 
 
 class CmsViews(object):
+
     def __init__(self, request):
         self.request = request
         self.repo_path = os.path.join(
             self.request.registry.settings['git.path'], '.git')
 
     def get_repo_models(self):
-        ws = Workspace(self.repo_path)
+        repo = pygit2.Repository(self.repo_path)
+        ws = Workspace(repo.path, repo.head.name)
         return ws.import_models(cms_models)
 
     @reify
@@ -68,3 +73,47 @@ class CmsViews(object):
     @view_config(route_name='content', renderer='cms:templates/content.pt')
     def content(self):
         return {'page': self.get_page(self.request.matchdict['id'])}
+
+
+class AdminViews(object):
+
+    def __init__(self, request):
+        self.request = request
+
+    def get_ws(self):
+        repo_path = self.request.registry.settings['git.path']
+        repo = pygit2.Repository(repo_path)
+        return Workspace(repo.path, repo.head.name)
+
+    @view_config(route_name='configure', renderer='cms:templates/admin/configure.pt')
+    def configure(self):
+        ws = self.get_ws()
+        branches = utils.getall_branches(ws.repo)
+
+        errors = []
+
+        if self.request.method == 'POST':
+            url = self.request.POST.get('url')
+            if url:
+                if ws.repo.is_empty:
+                    shutil.rmtree(repo_path)
+                    pygit2.clone_repository(url, repo_path)
+                    self.get_ws().sync_repo_index()
+            else:
+                errors.append('Url is required')
+        return {
+            'repo': ws.repo,
+            'errors': errors,
+            'branches': [b.shorthand for b in branches],
+            'current': ws.repo.head.shorthand
+        }
+
+    @view_config(route_name='configure_switch')
+    def configure_switch(self):
+        if self.request.method == 'POST':
+            branch = self.request.POST.get('branch')
+            if branch:
+                self.get_ws().sync_repo_index()
+                utils.checkout_branch(self.get_ws().repo, branch)
+                self.get_ws().sync_repo_index()
+        return HTTPFound(location=self.request.route_url('configure'))
