@@ -28,10 +28,19 @@ def init_repository(config):
             'e.g [app:main] git.path = %(here)s/repo/')
 
     repo_path = settings['git.path'].strip()
-    repo = pygit2.Repository(repo_path)
+
+    try:
+        repo = pygit2.Repository(repo_path)
+    except:
+        repo = pygit2.init_repository(repo_path, False)
+
     utils.checkout_all_upstream(repo)
 
-    ws = Workspace(os.path.join(repo_path, '.git'), repo.head.name)
+    try:
+        ws = Workspace(os.path.join(repo_path, '.git'), repo.head.name)
+    except:
+        ws = Workspace(os.path.join(repo_path, '.git'))
+
     ws.register_model(Page)
     ws.register_model(Category)
 
