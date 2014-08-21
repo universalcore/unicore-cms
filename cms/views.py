@@ -54,13 +54,17 @@ class CmsViews(object):
     def home(self):
         return {'categories': self.get_categories()}
 
-    @view_config(route_name='category', renderer='templates/category.pt')
+    @view_config(route_name='categories', renderer='templates/categories.pt')
+    def categories(self):
+        return {'categories': self.get_categories()}
+
+    @view_config(route_name='category', renderer='cms:templates/category.pt')
     def category(self):
         category_slug = self.request.matchdict['category']
         category = self.get_category(category_slug)
         pages = self.get_pages_for_category(category_slug)
         return {'category': category, 'pages': pages}
 
-    @view_config(route_name='content', renderer='templates/content.pt')
+    @view_config(route_name='content', renderer='cms:templates/content.pt')
     def content(self):
         return {'page': self.get_page(self.request.matchdict['id'])}
