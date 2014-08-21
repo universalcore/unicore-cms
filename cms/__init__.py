@@ -22,7 +22,7 @@ def includeme(config):
     settings = config.registry.settings
 
     config.include('pyramid_beaker')
-    config.add_static_view('static', 'static', cache_max_age=3600)
+    config.add_static_view('static', 'cms:static', cache_max_age=3600)
     config.add_route('home', '/')
     config.add_route('categories', '/content/list/')
     config.add_route('category', '/content/list/{category}/')
