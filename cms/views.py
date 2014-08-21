@@ -2,7 +2,7 @@ import os
 import pygit2
 import shutil
 
-from beaker.cache import cache_region
+from beaker.cache import cache_region, cache_managers
 from cms import models as cms_models, utils
 from gitmodel.workspace import Workspace
 
@@ -10,6 +10,7 @@ from pyramid.view import view_config
 from pyramid.renderers import get_renderer
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPFound
+
 
 CACHE_TIME = 'long_term'
 
@@ -119,4 +120,8 @@ class AdminViews(object):
                 self.get_ws().sync_repo_index()
                 utils.checkout_branch(self.get_ws().repo, branch)
                 self.get_ws().sync_repo_index()
+
+                # clear caches
+                for _cache in cache_managers.values():
+                    _cache.clear()
         return HTTPFound(location=self.request.route_url('configure'))
