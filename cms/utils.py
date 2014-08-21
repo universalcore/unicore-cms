@@ -49,6 +49,10 @@ def checkout_all_upstream(repo):
     #fastforward(repo)
     for branch in repo.listall_branches(pygit2.GIT_BRANCH_REMOTE):
         name = branch.split('/')[1]
+
+        if name == 'HEAD':
+            continue
+
         if not repo.lookup_branch(name):
             print '%s not found. creating from remote' % name
             checkout_upstream(repo, branch)
