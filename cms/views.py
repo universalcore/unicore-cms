@@ -83,10 +83,13 @@ class AdminViews(object):
     def get_ws(self):
         repo_path = self.request.registry.settings['git.path']
         repo = pygit2.Repository(repo_path)
+        if repo.is_empty:
+            return Workspace(repo.path)
         return Workspace(repo.path, repo.head.name)
 
     @view_config(route_name='configure', renderer='cms:templates/admin/configure.pt')
     def configure(self):
+        repo_path = self.request.registry.settings['git.path']
         ws = self.get_ws()
         branches = utils.getall_branches(ws.repo)
 
@@ -105,7 +108,7 @@ class AdminViews(object):
             'repo': ws.repo,
             'errors': errors,
             'branches': [b.shorthand for b in branches],
-            'current': ws.repo.head.shorthand
+            'current': ws.repo.head.shorthand if not ws.repo.is_empty else None
         }
 
     @view_config(route_name='configure_switch')
