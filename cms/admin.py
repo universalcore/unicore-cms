@@ -1,3 +1,4 @@
+import json
 import pygit2
 import shutil
 
@@ -22,6 +23,17 @@ class AdminViews(object):
         if repo.is_empty:
             return Workspace(repo.path)
         return Workspace(repo.path, repo.head.name)
+
+    @view_config(route_name='commit_log', renderer='json')
+    def get_commit_log(self):
+        b = self.request.GET.get('branch')
+        r = self.get_ws().repo
+        branch = r.lookup_branch(b)
+        last = r[branch.target]
+        commits = []
+        for commit in r.walk(last.id, pygit2.GIT_SORT_TIME):
+            commits.append(commit)
+        return [{'message': c.message, 'author': c.author.name} for c in commits][:10]
 
     @view_config(route_name='configure', renderer='cms:templates/admin/configure.pt')
     def configure(self):

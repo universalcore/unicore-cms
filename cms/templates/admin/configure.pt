@@ -25,6 +25,10 @@
           padding-top: 70px;
           padding-bottom: 30px;
         }
+
+        #commit-log{
+          color: #777;
+        }
     </style>
   </head>
 
@@ -77,11 +81,12 @@
               </div>
 
               <div tal:condition="not repo.is_empty">
+                <div class="col-lg-4">
                   <form method='POST' role='form' action="${request.route_url('configure_switch')}">
                     <div class="form-group">
                       <div>You're currently on branch <span class="label label-success">${current}</span></div>
 
-                      <div class="radio" tal:repeat="branch branches">
+                      <div class="radio branches" tal:repeat="branch branches">
                         <label for="${branch}">
                         <input tal:condition="branch == current" checked="checked" type="radio" name="branch" id="${branch}" value="${branch}"/>
                         <input tal:condition="branch != current" type="radio" name="branch" id="${branch}" value="${branch}"/>
@@ -91,6 +96,11 @@
                     </div>
                     <input class='btn btn-primary' type='submit' value='switch'/>
                   </form>
+                </div>
+                <div class="col-lg-4">
+                  <strong>Commit log</strong>
+                  <div id="commit-log"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -112,5 +122,23 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="//oss.maxcdn.com/libs/jquery/1.10.2/jquery.min.js"></script>
     <script src="//oss.maxcdn.com/libs/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+    function load_commit_log(branch){
+      $.get('/admin/configure/log.json?branch=' + branch, function(data){
+          $('#commit-log').html('');
+          for (i in data){
+            $('#commit-log').append('<div>'+data[i].message+' ('+ data[i].author +')</div>')
+          }
+      });
+    }
+    $(function(){
+      $('.branches input:radio').change(function(){
+        var branch = $(this).val();
+        load_commit_log(branch);
+      });
+
+      load_commit_log('${current}');
+    });
+    </script>
   </body>
 </html>

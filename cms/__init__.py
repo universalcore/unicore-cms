@@ -54,6 +54,7 @@ def includeme(config):
     config.add_route('content', '/content/detail/{id}/')
     config.add_route('configure', '/admin/configure/')
     config.add_route('configure_switch', '/admin/configure/switch/')
+    config.add_route('commit_log', '/admin/configure/log.json')
     config.scan()
 
     init_repository(config)
