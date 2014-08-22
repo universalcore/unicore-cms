@@ -2,7 +2,7 @@
     <div metal:fill-slot="content">
       <div id="banner"><img src="${request.static_url('cms:static/img/kids.jpg')}"></div>
       <div class="h1" tal:repeat="cat categories">
-            <a href="/content/list/${cat.slug}/"><img src="${request.static_url('cms:static/img/icon-diarrhoea.jpg')}">
+            <a href="/content/list/${cat.id}/"><img src="${request.static_url('cms:static/img/icon-diarrhoea.jpg')}">
               ${cat.title}
             </a>
             <div class="clear"></div>
