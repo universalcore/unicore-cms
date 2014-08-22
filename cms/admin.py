@@ -27,6 +27,7 @@ class AdminViews(object):
     def configure(self):
         repo_path = self.request.registry.settings['git.path']
         ws = self.get_ws()
+        utils.checkout_all_upstream(ws.repo)
         branches = utils.getall_branches(ws.repo)
 
         errors = []
