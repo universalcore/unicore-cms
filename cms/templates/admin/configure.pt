@@ -29,6 +29,10 @@
         #commit-log{
           color: #777;
         }
+
+        h1 .label{
+          font-size: 11px;
+        }
     </style>
   </head>
 
@@ -63,7 +67,7 @@
         <div class="row">
           <div class="col-md-10">
             <div class="content">
-              <h1>Configure</h1>
+              <h1>Configure <span class="label label-success">${current}</span></h1>
 
               <div tal:condition="repo.is_empty">
                   <p>This repository is currently <strong>empty</strong>.<br/><br/>
@@ -84,8 +88,6 @@
                 <div class="col-lg-4">
                   <form method='POST' role='form' action="${request.route_url('configure_switch')}">
                     <div class="form-group">
-                      <div>You're currently on branch <span class="label label-success">${current}</span></div>
-
                       <div class="radio branches" tal:repeat="branch branches">
                         <label for="${branch}">
                         <input tal:condition="branch == current" checked="checked" type="radio" name="branch" id="${branch}" value="${branch}"/>
@@ -107,7 +109,6 @@
                 <div class="col-lg-4">
                     <div class="form-group">
                         <div>
-                          <span class="label label-success">${current}</span>
                           <span tal:condition="num_commits > 0">You're currently ${num_commits} change(s) behind</span>
                         </div>
                         <br/>
