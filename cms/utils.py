@@ -16,12 +16,21 @@ def fetch(repo):
 
 
 def get_remote_updates_log(repo):
-    num_commits, pref = repo.merge_analysis(repo.head.target)
     remote_name = get_remote_branch(repo)
     if remote_name is None:
         return []
 
     branch = repo.lookup_branch(remote_name, pygit2.GIT_BRANCH_REMOTE)
+
+    analysis, pref = repo.merge_analysis(branch.target)
+    if analysis & pygit2.GIT_MERGE_ANALYSIS_UP_TO_DATE:
+        return []
+
+    if not analysis & pygit2.GIT_MERGE_ANALYSIS_FASTFORWARD:
+        raise Exception('Unable to fastforward')
+
+    num_commits = len(repo.diff(repo.head.name, branch.name))
+
     commits = []
     for commit in repo.walk(branch.target, pygit2.GIT_SORT_TIME):
         commits.append(commit)
@@ -32,8 +41,7 @@ def get_remote_updates_log(repo):
     return commits
 
 
-def fastforward(repo):
-    ws = Workspace(repo.path)
+def fast_forward(repo):
     for remote in repo.remotes:
         remote.fetch()
         remote_name = get_remote_branch(repo)
@@ -42,13 +50,13 @@ def fastforward(repo):
 
         branch = repo.lookup_branch(remote_name, pygit2.GIT_BRANCH_REMOTE)
         if branch.target.hex != repo.head.target.hex:
-            if not ws.has_changes():
+            if not Workspace(repo.path).has_changes():
                 # merge changes
                 repo.merge(branch.target)
             # fast-forward
             repo.reset(branch.target, pygit2.GIT_RESET_HARD)
     # update repo working directory
-    ws.sync_repo_index()
+    Workspace(repo.path).sync_repo_index()
 
 
 def checkout_upstream(repo, branch):
@@ -76,7 +84,6 @@ def checkout_all_upstream(repo):
             continue
 
         if not repo.lookup_branch(name):
-            print '%s not found. creating from remote' % name
             checkout_upstream(repo, branch)
 
 

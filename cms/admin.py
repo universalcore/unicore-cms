@@ -51,7 +51,12 @@ class AdminViews(object):
 
     @view_config(route_name='check_updates')
     def check_updates(self):
-        utils.fetch(r)
+        utils.fetch(self.get_ws().repo)
+        return HTTPFound(location=self.request.route_url('configure'))
+
+    @view_config(route_name='configure_fast_forward')
+    def fast_forward(self):
+        utils.fast_forward(self.get_ws().repo)
         return HTTPFound(location=self.request.route_url('configure'))
 
     @view_config(route_name='configure', renderer='cms:templates/admin/configure.pt')

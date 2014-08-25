@@ -115,10 +115,10 @@
                     </div>
                 </div>
                 <div class="col-lg-6">
+                  <div id="updates-log" tal:condition="num_commits > 0">
                   <strong>New changes</strong>
-                  <div id="updates-log">
                     <div tal:repeat="commit new_commits">${commit.message} (${commit.author})</div>
-                    <div><a class="btn btn-sm btn-warning" href="#">Update Now!</a></div>
+                    <div><a class="btn btn-sm btn-warning" href="${request.route_url('configure_fast_forward')}">Update Now!</a></div>
                   </div>
                   <br/>
                   <strong>Commit log</strong>
