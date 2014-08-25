@@ -10,6 +10,29 @@ def get_remote_branch(repo):
     return None
 
 
+def fetch(repo):
+    ws = Workspace(repo.path)
+    for remote in repo.remotes:
+        remote.fetch()
+
+
+def get_remote_updates_log(repo):
+    num_commits, pref = repo.merge_analysis(repo.head.target)
+    remote_name = get_remote_branch(repo)
+    if remote_name is None:
+        return []
+
+    branch = repo.lookup_branch(remote_name, pygit2.GIT_BRANCH_REMOTE)
+    commits = []
+    for commit in repo.walk(branch.target, pygit2.GIT_SORT_TIME):
+        commits.append(commit)
+
+        if len(commits) == num_commits:
+            break
+
+    return commits
+
+
 def fastforward(repo):
     ws = Workspace(repo.path)
     for remote in repo.remotes:

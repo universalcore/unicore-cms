@@ -38,6 +38,22 @@ class AdminViews(object):
             commits.append(commit)
         return [{'message': c.message, 'author': c.author.name} for c in commits][:10]
 
+    def get_updates(self):
+        commits = utils.get_remote_updates_log(self.get_ws().repo)
+
+        return {
+            'num_commits': len(commits),
+            'new_commits': [
+                {'message': c.message, 'author': c.author.name}
+                for c in commits
+            ]
+        }
+
+    @view_config(route_name='check_updates')
+    def check_updates(self):
+        utils.fetch(r)
+        return HTTPFound(location=self.request.route_url('configure'))
+
     @view_config(route_name='configure', renderer='cms:templates/admin/configure.pt')
     def configure(self):
         repo_path = self.request.registry.settings['git.path']
@@ -56,12 +72,15 @@ class AdminViews(object):
                     self.get_ws().sync_repo_index()
             else:
                 errors.append('Url is required')
-        return {
+        context = {
+            'single': len(branches) == 1,
             'repo': ws.repo,
             'errors': errors,
             'branches': [b.shorthand for b in branches],
             'current': ws.repo.head.shorthand if not ws.repo.is_empty else None
         }
+        context.update(self.get_updates())
+        return context
 
     @view_config(route_name='configure_switch')
     def configure_switch(self):

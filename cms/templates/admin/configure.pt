@@ -80,7 +80,7 @@
                   </form>
               </div>
 
-              <div tal:condition="not repo.is_empty">
+              <div tal:condition="not repo.is_empty and not single">
                 <div class="col-lg-4">
                   <form method='POST' role='form' action="${request.route_url('configure_switch')}">
                     <div class="form-group">
@@ -102,6 +102,30 @@
                   <div id="commit-log"></div>
                 </div>
               </div>
+
+              <div tal:condition="not repo.is_empty and single">
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        <div>
+                          <span class="label label-success">${current}</span>
+                          <span tal:condition="num_commits > 0">You're currently ${num_commits} change(s) behind</span>
+                        </div>
+                        <br/>
+                        <a class="btn btn-primary btn-xs" href="${request.route_url('check_updates')}">check for updates</a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                  <strong>New changes</strong>
+                  <div id="updates-log">
+                    <div tal:repeat="commit new_commits">${commit.message} (${commit.author})</div>
+                    <div><a class="btn btn-sm btn-warning" href="#">Update Now!</a></div>
+                  </div>
+                  <br/>
+                  <strong>Commit log</strong>
+                  <div id="commit-log"></div>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
