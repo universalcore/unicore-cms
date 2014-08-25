@@ -11,7 +11,6 @@ def get_remote_branch(repo):
 
 
 def fetch(repo):
-    ws = Workspace(repo.path)
     for remote in repo.remotes:
         remote.fetch()
 
