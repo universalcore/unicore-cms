@@ -40,11 +40,12 @@ def get_remote_updates_log(repo, branch_name=None):
     num_commits = len(repo.diff(local_branch.name, branch.name))
 
     commits = []
-    for commit in repo.walk(branch.target, pygit2.GIT_SORT_TIME):
-        commits.append(commit)
+    if num_commits > 0:
+        for commit in repo.walk(branch.target, pygit2.GIT_SORT_TIME):
+            commits.append(commit)
 
-        if len(commits) == num_commits:
-            break
+            if len(commits) == num_commits:
+                break
 
     return commits
 
