@@ -38,8 +38,8 @@ class AdminViews(object):
             commits.append(commit)
         return [{'message': c.message, 'author': c.author.name} for c in commits][:10]
 
-    def get_updates(self):
-        commits = utils.get_remote_updates_log(self.get_ws().repo)
+    def get_updates(self, branch=None):
+        commits = utils.get_remote_updates_log(self.get_ws().repo, branch)
 
         return {
             'num_commits': len(commits),
@@ -53,6 +53,13 @@ class AdminViews(object):
     def check_updates(self):
         utils.fetch(self.get_ws().repo)
         return HTTPFound(location=self.request.route_url('configure'))
+
+    @view_config(route_name='get_updates', renderer='json')
+    def get_updates_json(self):
+        b = self.request.GET.get('branch')
+        if not b:
+            return {}
+        return self.get_updates(b)
 
     @view_config(route_name='configure_fast_forward')
     def fast_forward(self):

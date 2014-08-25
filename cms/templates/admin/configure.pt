@@ -68,7 +68,10 @@
           <div class="col-md-10">
             <div class="content">
               <h1>Configure <span class="label label-success">${current}</span></h1>
-
+              <div tal:condition="num_commits > 0">
+                <span>You're currently ${num_commits} change(s) behind</span>
+                <a class="btn btn-xs btn-warning" href="${request.route_url('configure_fast_forward')}">Update Now!</a>
+              </div>
               <div tal:condition="repo.is_empty">
                   <p>This repository is currently <strong>empty</strong>.<br/><br/>
                   You can now <a href="#">add content</a> or clone an existing repository.<br/>
@@ -100,30 +103,24 @@
                   </form>
                 </div>
                 <div class="col-lg-4">
+                  <div id="new-commit-log"></div>
                   <strong>Commit log</strong>
                   <div id="commit-log"></div>
+                  <a class="btn btn-primary btn-xs" href="${request.route_url('check_updates')}">check for updates</a>
                 </div>
               </div>
 
               <div tal:condition="not repo.is_empty and single">
-                <div class="col-lg-4">
-                    <div class="form-group">
-                        <div>
-                          <span tal:condition="num_commits > 0">You're currently ${num_commits} change(s) behind</span>
-                        </div>
-                        <br/>
-                        <a class="btn btn-primary btn-xs" href="${request.route_url('check_updates')}">check for updates</a>
-                    </div>
-                </div>
+                <div class="col-lg-4">&nbsp;</div>
                 <div class="col-lg-6">
                   <div id="updates-log" tal:condition="num_commits > 0">
                   <strong>New changes</strong>
                     <div tal:repeat="commit new_commits">${commit.message} (${commit.author})</div>
-                    <div><a class="btn btn-sm btn-warning" href="${request.route_url('configure_fast_forward')}">Update Now!</a></div>
                   </div>
                   <br/>
                   <strong>Commit log</strong>
                   <div id="commit-log"></div>
+                  <a class="btn btn-primary btn-xs" href="${request.route_url('check_updates')}">check for updates</a>
                 </div>
               </div>
 
@@ -156,13 +153,27 @@
           }
       });
     }
+    function load_new_commit_log(branch){
+      $.get('/admin/configure/updates.json?branch=' + branch, function(data){
+          $('#new-commit-log').html('');
+          if(data.num_commits > 0){
+            $('#new-commit-log').append('<strong>New changes</strong>');
+            for (i in data.new_commits){
+              $('#new-commit-log').append('<div>'+data.new_commits[i].message+' ('+ data.new_commits[i].author +')</div>')
+            }
+            $('#new-commit-log').append('<br/>');
+          }
+      });
+    }
     $(function(){
       $('.branches input:radio').change(function(){
         var branch = $(this).val();
         load_commit_log(branch);
+        load_new_commit_log(branch);
       });
 
       load_commit_log('${current}');
+      load_new_commit_log('${current}');
     });
     </script>
   </body>

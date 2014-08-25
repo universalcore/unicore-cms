@@ -2,10 +2,13 @@ import pygit2
 from gitmodel.workspace import Workspace
 
 
-def get_remote_branch(repo):
+def get_remote_branch(repo, branch_name=None):
+    if not branch_name:
+        branch_name = repo.head.shorthand
+
     branches = repo.listall_branches(pygit2.GIT_BRANCH_REMOTE)
     for b in branches:
-        if b.endswith(repo.head.shorthand):
+        if b.endswith(branch_name):
             return b
     return None
 
@@ -15,10 +18,15 @@ def fetch(repo):
         remote.fetch()
 
 
-def get_remote_updates_log(repo):
-    remote_name = get_remote_branch(repo)
+def get_remote_updates_log(repo, branch_name=None):
+    remote_name = get_remote_branch(repo, branch_name)
     if remote_name is None:
         return []
+
+    if not branch_name is None:
+        local_branch = repo.lookup_branch(branch_name)
+    else:
+        local_branch = repo.head
 
     branch = repo.lookup_branch(remote_name, pygit2.GIT_BRANCH_REMOTE)
 
@@ -29,7 +37,7 @@ def get_remote_updates_log(repo):
     if not analysis & pygit2.GIT_MERGE_ANALYSIS_FASTFORWARD:
         raise Exception('Unable to fastforward')
 
-    num_commits = len(repo.diff(repo.head.name, branch.name))
+    num_commits = len(repo.diff(local_branch.name, branch.name))
 
     commits = []
     for commit in repo.walk(branch.target, pygit2.GIT_SORT_TIME):
