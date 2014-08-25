@@ -27,6 +27,9 @@ class AdminViews(object):
     @view_config(route_name='commit_log', renderer='json')
     def get_commit_log(self):
         b = self.request.GET.get('branch')
+        if not b:
+            return {}
+
         r = self.get_ws().repo
         branch = r.lookup_branch(b)
         last = r[branch.target]
