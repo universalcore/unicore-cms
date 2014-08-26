@@ -78,3 +78,15 @@ def put_category(request):
     except DoesNotExist:
         request.errors.add('api', 'DoesNotExist', 'Category not found.')
         return
+
+
+@category_service.delete(validators=validators.validate_delete_category)
+def delete_category(request):
+    uuid = request.GET.get('uuid')
+    models = get_repo_models(request)
+    try:
+        category = models.Category().get(uuid)
+        models.Category.delete(uuid, True, message='Category delete: %s' % category.title)
+        return {'success': True}
+    except DoesNotExist:
+        request.errors.add('api', 'DoesNotExist', 'Category not found.')

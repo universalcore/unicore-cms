@@ -22,3 +22,8 @@ def validate_post_category(request):
 def validate_put_category(request):
     data = json.loads(request.body)
     validate_required_field(request, data, 'title')
+
+
+def validate_delete_category(request):
+    data = {'uuid': request.GET.get('uuid', None)}
+    validate_required_field(request, data, 'uuid')
