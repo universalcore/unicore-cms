@@ -64,3 +64,33 @@ class ViewTests(unittest.TestCase):
         self.assertEquals(
             resp.json['errors'][0]['description'],
             'Category not found.')
+
+    def test_post_category(self):
+        resp = self.app.get('/api/categories.json', status=200)
+        self.assertEquals(len(resp.json), 2)
+
+        uuid = resp.json[0]['id']
+        data = {'uuid': uuid, 'title': 'New Title'}
+        resp = self.app.post_json('/api/categories.json', data, status=200)
+        self.assertTrue(resp.json['success'])
+
+        resp = self.app.get('/api/categories.json', data, status=200)
+        self.assertEquals(resp.json['title'], 'New Title')
+
+        data = {'uuid': 'some-invalid-id', 'title': 'New Title'}
+        resp = self.app.post_json('/api/categories.json', data, status=400)
+        self.assertEquals(
+            resp.json['errors'][0]['description'],
+            'Category not found.')
+
+        data = {'uuid': uuid}
+        resp = self.app.post_json('/api/categories.json', data, status=400)
+        self.assertEquals(
+            resp.json['errors'][0]['description'],
+            'title is a required field.')
+
+        data = {'title': 'New Title'}
+        resp = self.app.post_json('/api/categories.json', data, status=400)
+        self.assertEquals(
+            resp.json['errors'][0]['description'],
+            'uuid is a required field.')
