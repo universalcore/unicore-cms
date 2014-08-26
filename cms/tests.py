@@ -54,3 +54,13 @@ class ViewTests(unittest.TestCase):
     def test_get_categories(self):
         resp = self.app.get('/api/categories.json', status=200)
         self.assertEquals(len(resp.json), 2)
+
+        data = {'uuid': resp.json[0]['id']}
+        resp = self.app.get('/api/categories.json', data, status=200)
+        self.assertEquals(resp.json['id'], data['uuid'])
+
+        data = {'uuid': 'some-invalid-id'}
+        resp = self.app.get('/api/categories.json', data, status=400)
+        self.assertEquals(
+            resp.json['errors'][0]['description'],
+            'Category not found.')

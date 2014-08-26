@@ -4,6 +4,7 @@ import pygit2
 from cornice import Service
 from cms import models as cms_models
 from gitmodel.workspace import Workspace
+from gitmodel.exceptions import DoesNotExist
 
 category_service = Service(
     name='category_service',
@@ -28,4 +29,13 @@ def get_repo_models(request):
 @category_service.get()
 def get_categories(request):
     models = get_repo_models(request)
+
+    uuid = request.GET.get('uuid', None)
+    if uuid:
+        try:
+            category = models.Category().get(uuid)
+            return category.to_dict()
+        except DoesNotExist:
+            request.errors.add('api', 'DoesNotExist', 'Category not found.')
+            return
     return [c.to_dict() for c in models.Category().all()]
