@@ -16,6 +16,7 @@ requires = [
     'pyramid_beaker',
     'python-memcached',
     'webtest',
+    'cornice',
 ]
 
 setup(name='cms',
