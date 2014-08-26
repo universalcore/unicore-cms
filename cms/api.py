@@ -12,6 +12,7 @@ category_service = Service(
     description="Manage categories"
 )
 
+
 def get_registered_ws(request):
     repo_path = os.path.join(request.registry.settings['git.path'], '.git')
     repo = pygit2.Repository(repo_path)
@@ -86,7 +87,8 @@ def delete_category(request):
     models = get_repo_models(request)
     try:
         category = models.Category().get(uuid)
-        models.Category.delete(uuid, True, message='Category delete: %s' % category.title)
+        models.Category.delete(
+            uuid, True, message='Category delete: %s' % category.title)
         return {'success': True}
     except DoesNotExist:
         request.errors.add('api', 'DoesNotExist', 'Category not found.')

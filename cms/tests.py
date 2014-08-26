@@ -10,6 +10,7 @@ from gitmodel.workspace import Workspace
 
 
 class ViewTests(unittest.TestCase):
+
     def delete_test_repo(self):
         try:
             shutil.rmtree(self.repo_path)
@@ -119,19 +120,21 @@ class ViewTests(unittest.TestCase):
 
         # TODO - Test for duplicates
 
-    def test_put_category(self):
+    def test_delete_category(self):
         resp = self.app.get('/api/categories.json', status=200)
         self.assertEquals(len(resp.json), 2)
 
         data = {'uuid': resp.json[0]['uuid']}
-        resp = self.app.delete('/api/categories.json?uuid=%(uuid)s' % data, status=200)
+        resp = self.app.delete(
+            '/api/categories.json?uuid=%(uuid)s' % data, status=200)
         self.assertTrue(resp.json['success'])
 
         resp = self.app.get('/api/categories.json', status=200)
         self.assertEquals(len(resp.json), 1)
 
         data = {'uuid': 'some-invalid-id'}
-        resp = self.app.delete('/api/categories.json?uuid=%(uuid)s' % data, status=400)
+        resp = self.app.delete(
+            '/api/categories.json?uuid=%(uuid)s' % data, status=400)
         self.assertEquals(
             resp.json['errors'][0]['description'],
             'Category not found.')
