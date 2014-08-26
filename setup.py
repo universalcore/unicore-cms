@@ -15,6 +15,7 @@ requires = [
     'waitress',
     'pyramid_beaker',
     'python-memcached',
+    'webtest',
 ]
 
 setup(name='cms',
