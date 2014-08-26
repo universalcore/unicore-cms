@@ -53,7 +53,12 @@ class Category(FilterMixin, SlugifyMixin, models.GitModel):
         return self.slug != other.slug
 
     def to_dict(self):
-        return {'id': self.id, 'slug': self.slug, 'title': self.title}
+        return {
+            'id': self.id,
+            'uuid': self.id,
+            'slug': self.slug,
+            'title': self.title
+        }
 
 
 class Page(FilterMixin, SlugifyMixin, models.GitModel):
@@ -66,6 +71,7 @@ class Page(FilterMixin, SlugifyMixin, models.GitModel):
     def to_dict(self):
         return {
             'id': self.id,
+            'uuid': self.id,
             'slug': self.slug,
             'title': self.title,
             'content': self.content,

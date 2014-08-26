@@ -17,3 +17,8 @@ def validate_post_category(request):
     data = json.loads(request.body)
     validate_required_field(request, data, 'uuid')
     validate_required_field(request, data, 'title')
+
+
+def validate_put_category(request):
+    data = json.loads(request.body)
+    validate_required_field(request, data, 'title')

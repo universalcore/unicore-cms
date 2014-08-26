@@ -61,3 +61,20 @@ def post_category(request):
         except DoesNotExist:
             request.errors.add('api', 'DoesNotExist', 'Category not found.')
             return
+
+
+@category_service.put(validators=validators.validate_put_category)
+def put_category(request):
+    # TODO - raise exception when duplicate category is posted
+
+    title = request.validated['title']
+
+    models = get_repo_models(request)
+    try:
+        category = models.Category(title=title)
+        category.save(True, message='Category added: %s' % title)
+        get_registered_ws(request).sync_repo_index()
+        return category.to_dict()
+    except DoesNotExist:
+        request.errors.add('api', 'DoesNotExist', 'Category not found.')
+        return

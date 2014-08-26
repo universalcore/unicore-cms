@@ -94,3 +94,27 @@ class ViewTests(unittest.TestCase):
         self.assertEquals(
             resp.json['errors'][0]['description'],
             'uuid is a required field.')
+
+    def test_put_category(self):
+        resp = self.app.get('/api/categories.json', status=200)
+        self.assertEquals(len(resp.json), 2)
+
+        data = {'title': 'New Category'}
+        resp = self.app.put_json('/api/categories.json', data, status=200)
+        self.assertEquals(resp.json['title'], 'New Category')
+        new_uuid = resp.json['uuid']
+
+        resp = self.app.get('/api/categories.json', status=200)
+        self.assertEquals(len(resp.json), 3)
+
+        data = {'uuid': new_uuid}
+        resp = self.app.get('/api/categories.json', data, status=200)
+        self.assertEquals(resp.json['title'], 'New Category')
+        self.assertEquals(resp.json['uuid'], new_uuid)
+
+        resp = self.app.put_json('/api/categories.json', {}, status=400)
+        self.assertEquals(
+            resp.json['errors'][0]['description'],
+            'title is a required field.')
+
+        # TODO - Test for duplicates
