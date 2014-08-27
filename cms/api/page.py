@@ -39,3 +39,15 @@ class PageApi(utils.ApiBase):
         except DoesNotExist:
             self.request.errors.add('api', 'DoesNotExist', 'Page not found.')
             return
+
+    @view()
+    def delete(self):
+        uuid = self.request.matchdict['uuid']
+        models = self.get_repo_models()
+        try:
+            page = models.Page().get(uuid)
+            models.Page.delete(
+                uuid, True, message='Page delete: %s' % page.title)
+        except DoesNotExist:
+            self.request.errors.add(
+                'api', 'DoesNotExist', 'Page not found.')

@@ -54,3 +54,24 @@ class PageTestCase(BaseTestCase):
         data = {'primary_category': hygiene_category.id}
         resp = self.app.get('/api/pages.json', data, status=200)
         self.assertEquals(len(resp.json), 1)
+
+    def test_delete_page(self):
+        resp = self.app.get('/api/pages.json', status=200)
+        self.assertEquals(len(resp.json), 2)
+
+        data = {'uuid': resp.json[0]['uuid']}
+        resp = self.app.delete(
+            '/api/pages/%(uuid)s.json' % data, status=200)
+
+        resp = self.app.get('/api/pages.json', status=200)
+        self.assertEquals(len(resp.json), 1)
+
+        data = {'uuid': 'some-invalid-id'}
+        resp = self.app.delete(
+            '/api/pages/%(uuid)s.json' % data, status=400)
+        self.assertEquals(
+            resp.json['errors'][0]['description'],
+            'Page not found.')
+
+        resp = self.app.get('/api/pages.json', status=200)
+        self.assertEquals(len(resp.json), 1)
