@@ -32,3 +32,25 @@ class PageTestCase(BaseTestCase):
         self.assertEquals(
             resp.json['errors'][0]['description'],
             'Page not found.')
+
+    def test_get_pages_for_category(self):
+        models = self.get_repo_models()
+        hygiene_category = models.Category.filter(slug='hygiene')[0]
+        p = models.Page(
+            title='Test Category Page',
+            content='this is sample content for a hygiene page',
+            primary_category=hygiene_category
+        )
+        p.save(True, message='added hygiene page')
+
+        resp = self.app.get('/api/pages.json', status=200)
+        self.assertEquals(len(resp.json), 3)
+
+        data = {'uuid': p.id}
+        resp = self.app.get('/api/pages.json', data, status=200)
+        self.assertEquals(resp.json['title'], 'Test Category Page')
+        self.assertEquals(resp.json['primary_category']['slug'], 'hygiene')
+
+        data = {'primary_category': hygiene_category.id}
+        resp = self.app.get('/api/pages.json', data, status=200)
+        self.assertEquals(len(resp.json), 1)

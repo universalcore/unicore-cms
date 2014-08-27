@@ -16,12 +16,12 @@ def get_categories(request):
     uuid = request.GET.get('uuid', None)
     if uuid:
         try:
-            category = models.Category().get(uuid)
+            category = models.Category.get(uuid)
             return category.to_dict()
         except DoesNotExist:
             request.errors.add('api', 'DoesNotExist', 'Category not found.')
             return
-    return [c.to_dict() for c in models.Category().all()]
+    return [c.to_dict() for c in models.Category.all()]
 
 
 @category_service.post(validators=validators.validate_post_category)
@@ -32,7 +32,7 @@ def post_category(request):
     models = utils.get_repo_models(request)
     if uuid:
         try:
-            category = models.Category().get(uuid)
+            category = models.Category.get(uuid)
             category.title = title
             category.save(True, message='Category updated: %s' % title)
             utils.get_registered_ws(request).sync_repo_index()
@@ -60,7 +60,7 @@ def delete_category(request):
     uuid = request.GET.get('uuid')
     models = utils.get_repo_models(request)
     try:
-        category = models.Category().get(uuid)
+        category = models.Category.get(uuid)
         models.Category.delete(
             uuid, True, message='Category delete: %s' % category.title)
         return {'success': True}
