@@ -69,6 +69,9 @@ class Page(FilterMixin, SlugifyMixin, models.GitModel):
     primary_category = fields.RelatedField(Category, required=False)
 
     def to_dict(self):
+        primary_category = self.primary_category.to_dict()\
+            if self.primary_category else None
+
         return {
             'id': self.id,
             'uuid': self.id,
@@ -76,5 +79,5 @@ class Page(FilterMixin, SlugifyMixin, models.GitModel):
             'title': self.title,
             'content': self.content,
             'published': self.published,
-            'primary_category': self.primary_category.to_dict(),
+            'primary_category': primary_category,
         }
