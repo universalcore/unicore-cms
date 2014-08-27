@@ -1,0 +1,10 @@
+language: python
+python:
+  - "2.7"
+install:
+  - "pip install coveralls coverage --use-wheel"
+  - "pip install -r requirements.pip --use-wheel"
+script:
+  - coverage run --source=cms setup.py test
+after_success:
+  - coveralls
