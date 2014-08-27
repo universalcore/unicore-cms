@@ -3,6 +3,7 @@ import pygit2
 
 from cornice import Service
 from cms import models as cms_models, validators
+from cms.api import validators
 from gitmodel.workspace import Workspace
 from gitmodel.exceptions import DoesNotExist
 
