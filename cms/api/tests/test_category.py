@@ -1,48 +1,14 @@
-import os
-import pygit2
-import shutil
-import unittest
-
 from pyramid import testing
 from webtest import TestApp
-from cms import main, models as cms_models
-from gitmodel.workspace import Workspace
+from cms import main
+from cms.api.tests.utils import BaseTestCase
 
 
-class CategoryTestCase(unittest.TestCase):
-
-    def delete_test_repo(self):
-        try:
-            shutil.rmtree(self.repo_path)
-        except:
-            pass
-
-    def get_repo_models(self):
-        repo = pygit2.Repository(self.repo_path)
-        try:
-            ws = Workspace(repo.path, repo.head.name)
-        except:
-            ws = Workspace(repo.path)
-
-        ws.register_model(cms_models.Page)
-        ws.register_model(cms_models.Category)
-        return ws.import_models(cms_models)
-
-    def init_categories(self):
-        models = self.get_repo_models()
-
-        models.Category(
-            title='Diarrhoea', slug='diarrhoea'
-        ).save(True, message='added diarrhoea Category')
-
-        models.Category(
-            title='Hygiene', slug='hygiene'
-        ).save(True, message='added hygiene Category')
+class CategoryTestCase(BaseTestCase):
 
     def setUp(self):
         self.config = testing.setUp()
         self.delete_test_repo()
-        self.repo_path = os.path.join(os.getcwd(), '.test_repo/')
         settings = {'git.path': self.repo_path}
         self.app = TestApp(main({}, **settings))
 
