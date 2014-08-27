@@ -5,19 +5,24 @@ from cms import models as cms_models
 from gitmodel.workspace import Workspace
 
 
-def get_registered_ws(request):
-    repo_path = os.path.join(request.registry.settings['git.path'], '.git')
-    repo = pygit2.Repository(repo_path)
-    try:
-        ws = Workspace(repo.path, repo.head.name)
-    except:
-        ws = Workspace(repo.path)
+class ApiBase(object):
 
-    ws.register_model(cms_models.Page)
-    ws.register_model(cms_models.Category)
-    return ws
+    def __init__(self, request):
+        self.request = request
 
+    def get_registered_ws(self):
+        repo_path = os.path.join(
+            self.request.registry.settings['git.path'], '.git')
+        repo = pygit2.Repository(repo_path)
+        try:
+            ws = Workspace(repo.path, repo.head.name)
+        except:
+            ws = Workspace(repo.path)
 
-def get_repo_models(request):
-    ws = get_registered_ws(request)
-    return ws.import_models(cms_models)
+        ws.register_model(cms_models.Page)
+        ws.register_model(cms_models.Category)
+        return ws
+
+    def get_repo_models(self):
+        ws = self.get_registered_ws()
+        return ws.import_models(cms_models)
