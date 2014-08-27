@@ -9,7 +9,7 @@ from cms import main, models as cms_models
 from gitmodel.workspace import Workspace
 
 
-class ViewTests(unittest.TestCase):
+class CategoryTestCase(unittest.TestCase):
 
     def delete_test_repo(self):
         try:
