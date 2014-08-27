@@ -110,6 +110,51 @@ class PageTestCase(BaseTestCase):
         resp = self.app.get('/api/pages.json', status=200)
         self.assertEquals(len(resp.json), 3)
 
+    def test_post_page(self):
+        models = self.get_repo_models()
+        resp = self.app.get('/api/pages.json', status=200)
+        self.assertEquals(len(resp.json), 2)
+        uuid = resp.json[0]['uuid']
+
+        diarrhoea_category = models.Category.filter(slug='diarrhoea')[0]
+        data = {
+            'uuid': uuid,
+            'title': 'Another New Page',
+            'content': 'Another sample page content',
+            'primary_category': diarrhoea_category.id
+        }
+        resp = self.app.post_json(
+            '/api/pages/%s.json' % uuid, data, status=200)
+        self.assertEquals(resp.json['title'], 'Another New Page')
+        self.assertEquals(resp.json['primary_category']['title'], 'Diarrhoea')
+
+        resp = self.app.get('/api/pages.json', status=200)
+        self.assertEquals(len(resp.json), 2)
+
+        data = {
+            'title': 'Yet Another New Page',
+            'content': 'Yet Another sample page content',
+            'primary_category': diarrhoea_category.id
+        }
+        resp = self.app.post_json(
+            '/api/pages/some-invalid-id.json', data, status=400)
+        self.assertEquals(
+            resp.json['errors'][0]['description'],
+            'Page not found.')
+
+        data['primary_category'] = 'some-invalid-id'
+        resp = self.app.post_json(
+            '/api/pages/%s.json' % uuid, data, status=400)
+        self.assertEquals(
+            resp.json['errors'][0]['description'],
+            'Category not found.')
+
+        resp = self.app.get('/api/pages/%s.json' % uuid, status=200)
+        self.assertEquals(resp.json['uuid'], uuid)
+        self.assertEquals(resp.json['title'], 'Another New Page')
+        self.assertEquals(resp.json['content'], 'Another sample page content')
+        self.assertEquals(resp.json['primary_category']['title'], 'Diarrhoea')
+
     def test_delete_page(self):
         resp = self.app.get('/api/pages.json', status=200)
         self.assertEquals(len(resp.json), 2)

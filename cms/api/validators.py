@@ -24,7 +24,7 @@ def validate_put_category(request):
     validate_required_field(request, data, 'title')
 
 
-def validate_put_page(request):
+def validate_page(request):
     data = json.loads(request.body)
     validate_required_field(request, data, 'title')
     validate_required_field(request, data, 'content')

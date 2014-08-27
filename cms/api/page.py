@@ -53,7 +53,29 @@ class PageApi(utils.ApiBase):
             return
 
     @view(
-        validators=(validators.validate_put_page, 'validate_primary_category'),
+        validators=(validators.validate_page, 'validate_primary_category'),
+        renderer='json')
+    def post(self):
+        uuid = self.request.matchdict['uuid']
+        title = self.request.validated['title']
+        content = self.request.validated['content']
+        primary_category = self.request.validated.get('primary_category')
+
+        models = self.get_repo_models()
+        try:
+            page = models.Page().get(uuid)
+            page.title = title
+            page.content = content
+            page.primary_category = primary_category
+            page.save(True, message='Page updated: %s' % title)
+            self.get_registered_ws().sync_repo_index()
+            return page.to_dict()
+        except DoesNotExist:
+            self.request.errors.add(
+                'api', 'DoesNotExist', 'Page not found.')
+
+    @view(
+        validators=(validators.validate_page, 'validate_primary_category'),
         renderer='json')
     def collection_put(self):
         title = self.request.validated['title']
