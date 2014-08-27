@@ -1,10 +1,5 @@
-import os
-import pygit2
-
 from cornice import Service
-from cms import models as cms_models
-from cms.api import validators
-from gitmodel.workspace import Workspace
+from cms.api import validators, utils
 from gitmodel.exceptions import DoesNotExist
 
 category_service = Service(
@@ -14,27 +9,9 @@ category_service = Service(
 )
 
 
-def get_registered_ws(request):
-    repo_path = os.path.join(request.registry.settings['git.path'], '.git')
-    repo = pygit2.Repository(repo_path)
-    try:
-        ws = Workspace(repo.path, repo.head.name)
-    except:
-        ws = Workspace(repo.path)
-
-    ws.register_model(cms_models.Page)
-    ws.register_model(cms_models.Category)
-    return ws
-
-
-def get_repo_models(request):
-    ws = get_registered_ws(request)
-    return ws.import_models(cms_models)
-
-
 @category_service.get()
 def get_categories(request):
-    models = get_repo_models(request)
+    models = utils.get_repo_models(request)
 
     uuid = request.GET.get('uuid', None)
     if uuid:
@@ -52,13 +29,13 @@ def post_category(request):
     uuid = request.validated['uuid']
     title = request.validated['title']
 
-    models = get_repo_models(request)
+    models = utils.get_repo_models(request)
     if uuid:
         try:
             category = models.Category().get(uuid)
             category.title = title
             category.save(True, message='Category updated: %s' % title)
-            get_registered_ws(request).sync_repo_index()
+            utils.get_registered_ws(request).sync_repo_index()
             return {'success': True}
         except DoesNotExist:
             request.errors.add('api', 'DoesNotExist', 'Category not found.')
@@ -71,17 +48,17 @@ def put_category(request):
 
     title = request.validated['title']
 
-    models = get_repo_models(request)
+    models = utils.get_repo_models(request)
     category = models.Category(title=title)
     category.save(True, message='Category added: %s' % title)
-    get_registered_ws(request).sync_repo_index()
+    utils.get_registered_ws(request).sync_repo_index()
     return category.to_dict()
 
 
 @category_service.delete(validators=validators.validate_delete_category)
 def delete_category(request):
     uuid = request.GET.get('uuid')
-    models = get_repo_models(request)
+    models = utils.get_repo_models(request)
     try:
         category = models.Category().get(uuid)
         models.Category.delete(

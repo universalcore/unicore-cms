@@ -40,3 +40,14 @@ class BaseTestCase(unittest.TestCase):
         models.Category(
             title='Hygiene', slug='hygiene'
         ).save(True, message='added hygiene Category')
+
+    def init_pages(self):
+        models = self.get_repo_models()
+
+        models.Page(
+            title='Test Page 1', content='this is sample content for pg 1'
+        ).save(True, message='added page 1')
+
+        models.Page(
+            title='Test Page 2', content='this is sample content for pg 2'
+        ).save(True, message='added page 2')
