@@ -69,8 +69,6 @@ class CategoryApi(object):
 
     @view(validators=validators.validate_put_category, renderer='json')
     def collection_put(self):
-        # TODO - raise exception when duplicate category is posted
-
         title = self.request.validated['title']
 
         models = get_repo_models(self.request)

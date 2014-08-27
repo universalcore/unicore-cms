@@ -114,8 +114,6 @@ class CategoryTestCase(unittest.TestCase):
             resp.json['errors'][0]['description'],
             'title is a required field.')
 
-        # TODO - Test for duplicates
-
     def test_delete_category(self):
         resp = self.app.get('/api/categories.json', status=200)
         self.assertEquals(len(resp.json), 2)
