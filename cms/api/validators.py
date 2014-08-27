@@ -17,3 +17,9 @@ def validate_post_category(request):
 def validate_put_category(request):
     data = json.loads(request.body)
     validate_required_field(request, data, 'title')
+
+
+def validate_put_page(request):
+    data = json.loads(request.body)
+    validate_required_field(request, data, 'title')
+    validate_required_field(request, data, 'content')

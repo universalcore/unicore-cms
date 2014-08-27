@@ -55,6 +55,34 @@ class PageTestCase(BaseTestCase):
         resp = self.app.get('/api/pages.json', data, status=200)
         self.assertEquals(len(resp.json), 1)
 
+    def test_put_page(self):
+        resp = self.app.get('/api/pages.json', status=200)
+        self.assertEquals(len(resp.json), 2)
+
+        data = {
+            'title': 'New Page',
+            'content': 'Sample page content',
+        }
+        resp = self.app.put_json('/api/pages.json', data, status=200)
+        self.assertEquals(resp.json['title'], 'New Page')
+        new_uuid = resp.json['uuid']
+
+        resp = self.app.get('/api/pages.json', status=200)
+        self.assertEquals(len(resp.json), 3)
+
+        data = {'uuid': new_uuid}
+        resp = self.app.get('/api/pages/%(uuid)s.json' % data, status=200)
+        self.assertEquals(resp.json['title'], 'New Page')
+        self.assertEquals(resp.json['uuid'], new_uuid)
+
+        resp = self.app.put_json('/api/pages.json', {}, status=400)
+        self.assertEquals(
+            resp.json['errors'][0]['description'],
+            'title is a required field.')
+        self.assertEquals(
+            resp.json['errors'][1]['description'],
+            'content is a required field.')
+
     def test_delete_page(self):
         resp = self.app.get('/api/pages.json', status=200)
         self.assertEquals(len(resp.json), 2)

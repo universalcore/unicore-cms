@@ -45,15 +45,11 @@ class CategoryApi(utils.ApiBase):
         title = self.request.validated['title']
 
         models = self.get_repo_models()
-        try:
-            category = models.Category(title=title)
-            category.save(True, message='Category added: %s' % title)
-            self.get_registered_ws().sync_repo_index()
-            return category.to_dict()
-        except DoesNotExist:
-            self.request.errors.add(
-                'api', 'DoesNotExist', 'Category not found.')
-            return
+
+        category = models.Category(title=title)
+        category.save(True, message='Category added: %s' % title)
+        self.get_registered_ws().sync_repo_index()
+        return category.to_dict()
 
     @view()
     def delete(self):

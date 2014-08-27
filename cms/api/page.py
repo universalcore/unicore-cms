@@ -40,6 +40,21 @@ class PageApi(utils.ApiBase):
             self.request.errors.add('api', 'DoesNotExist', 'Page not found.')
             return
 
+    @view(validators=validators.validate_put_page, renderer='json')
+    def collection_put(self):
+        title = self.request.validated['title']
+        content = self.request.validated['content']
+
+        models = self.get_repo_models()
+
+        page = models.Page(
+            title=title,
+            content=content
+        )
+        page.save(True, message='Page added: %s' % title)
+        self.get_registered_ws().sync_repo_index()
+        return page.to_dict()
+
     @view()
     def delete(self):
         uuid = self.request.matchdict['uuid']
