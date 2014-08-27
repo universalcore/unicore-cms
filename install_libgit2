@@ -4,6 +4,8 @@ wget https://github.com/libgit2/libgit2/archive/v0.21.1.tar.gz
 tar xzf v0.21.1.tar.gz
 cd libgit2-0.21.1/
 cmake . -DCMAKE_INSTALL_PREFIX=$LIBGIT2
+cmake --build . --target install
+cmake --build .
 make
 make install
 pip install cffi
