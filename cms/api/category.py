@@ -84,7 +84,7 @@ class CategoryApi(object):
                 'api', 'DoesNotExist', 'Category not found.')
             return
 
-    @view(renderer='json')
+    @view()
     def delete(self):
         uuid = self.request.matchdict['uuid']
         models = get_repo_models(self.request)
@@ -92,7 +92,6 @@ class CategoryApi(object):
             category = models.Category().get(uuid)
             models.Category.delete(
                 uuid, True, message='Category delete: %s' % category.title)
-            return {'success': True}
         except DoesNotExist:
             self.request.errors.add(
                 'api', 'DoesNotExist', 'Category not found.')
