@@ -1,68 +1,96 @@
-from cornice import Service
-from cms.api import validators, utils
+import os
+import pygit2
+
+from cornice.resource import resource, view
+
+from cms import models as cms_models
+from cms.api import validators
+from gitmodel.workspace import Workspace
 from gitmodel.exceptions import DoesNotExist
 
-category_service = Service(
-    name='category_service',
-    path='/api/categories.json',
-    description="Manage categories"
+
+
+def get_registered_ws(request):
+    repo_path = os.path.join(request.registry.settings['git.path'], '.git')
+    repo = pygit2.Repository(repo_path)
+    try:
+        ws = Workspace(repo.path, repo.head.name)
+    except:
+        ws = Workspace(repo.path)
+
+    ws.register_model(cms_models.Page)
+    ws.register_model(cms_models.Category)
+    return ws
+
+
+def get_repo_models(request):
+    ws = get_registered_ws(request)
+    return ws.import_models(cms_models)
+
+
+@resource(
+    collection_path='/api/categories.json',
+    path='/api/categories/{uuid}.json'
 )
+class CategoryApi(object):
 
+    def __init__(self, request):
+        self.request = request
 
-@category_service.get()
-def get_categories(request):
-    models = utils.get_repo_models(request)
+    def collection_get(self):
+        models = get_repo_models(self.request)
+        return [c.to_dict() for c in models.Category().all()]
 
-    uuid = request.GET.get('uuid', None)
-    if uuid:
+    @view(renderer='json')
+    def get(self):
+        models = get_repo_models(self.request)
+        uuid = self.request.matchdict['uuid']
         try:
-            category = models.Category.get(uuid)
+            category = models.Category().get(uuid)
             return category.to_dict()
         except DoesNotExist:
-            request.errors.add('api', 'DoesNotExist', 'Category not found.')
-            return
-    return [c.to_dict() for c in models.Category.all()]
+            self.request.errors.add(
+                'api', 'DoesNotExist', 'Category not found.')
 
+    @view(validators=validators.validate_post_category, renderer='json')
+    def post(self):
+        uuid = self.request.matchdict['uuid']
+        title = self.request.validated['title']
 
-@category_service.post(validators=validators.validate_post_category)
-def post_category(request):
-    uuid = request.validated['uuid']
-    title = request.validated['title']
-
-    models = utils.get_repo_models(request)
-    if uuid:
+        models = get_repo_models(self.request)
         try:
-            category = models.Category.get(uuid)
+            category = models.Category().get(uuid)
             category.title = title
             category.save(True, message='Category updated: %s' % title)
-            utils.get_registered_ws(request).sync_repo_index()
-            return {'success': True}
+            get_registered_ws(self.request).sync_repo_index()
+            return category.to_dict()
         except DoesNotExist:
-            request.errors.add('api', 'DoesNotExist', 'Category not found.')
+            self.request.errors.add(
+                'api', 'DoesNotExist', 'Category not found.')
+
+    @view(validators=validators.validate_put_category, renderer='json')
+    def collection_put(self):
+        title = self.request.validated['title']
+
+        models = get_repo_models(self.request)
+        try:
+            category = models.Category(title=title)
+            category.save(True, message='Category added: %s' % title)
+            get_registered_ws(self.request).sync_repo_index()
+            return category.to_dict()
+        except DoesNotExist:
+            self.request.errors.add(
+                'api', 'DoesNotExist', 'Category not found.')
             return
 
-
-@category_service.put(validators=validators.validate_put_category)
-def put_category(request):
-    # TODO - raise exception when duplicate category is posted
-
-    title = request.validated['title']
-
-    models = utils.get_repo_models(request)
-    category = models.Category(title=title)
-    category.save(True, message='Category added: %s' % title)
-    utils.get_registered_ws(request).sync_repo_index()
-    return category.to_dict()
-
-
-@category_service.delete(validators=validators.validate_delete_category)
-def delete_category(request):
-    uuid = request.GET.get('uuid')
-    models = utils.get_repo_models(request)
-    try:
-        category = models.Category.get(uuid)
-        models.Category.delete(
-            uuid, True, message='Category delete: %s' % category.title)
-        return {'success': True}
-    except DoesNotExist:
-        request.errors.add('api', 'DoesNotExist', 'Category not found.')
+    @view()
+    def delete(self):
+        uuid = self.request.matchdict['uuid']
+        models = get_repo_models(self.request)
+        try:
+            category = models.Category().get(uuid)
+            models.Category.delete(
+                uuid, True, message='Category delete: %s' % category.title)
+        except DoesNotExist:
+            self.request.errors.add(
+                'api', 'DoesNotExist', 'Category not found.')

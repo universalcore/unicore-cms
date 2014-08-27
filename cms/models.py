@@ -65,7 +65,7 @@ class Category(FilterMixin, SlugifyMixin, models.GitModel):
             'id': self.id,
             'uuid': self.id,
             'slug': self.slug,
-            'title': self.title
+            'title': self.title,
         }
 
 

@@ -1,14 +1,9 @@
 import json
 
 
-def update_validated_field(request, data, key):
-    if key in data and data[key] is not None:
-        request.validated[key] = data[key]
-
-
 def validate_required_field(request, data, key):
     if key in data and data[key] is not None:
-        update_validated_field(request, data, key)
+        request.validated[key] = data[key]
     else:
         request.errors.add('body', key, '%s is a required field.' % key)
 
@@ -22,8 +17,3 @@ def validate_post_category(request):
 def validate_put_category(request):
     data = json.loads(request.body)
     validate_required_field(request, data, 'title')
-
-
-def validate_delete_category(request):
-    data = {'uuid': request.GET.get('uuid', None)}
-    validate_required_field(request, data, 'uuid')
