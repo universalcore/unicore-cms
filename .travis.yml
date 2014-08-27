@@ -4,7 +4,6 @@ python:
 install:
   - ./install_libgit2
   - "pip install coveralls coverage --use-wheel"
-  - "pip install -r requirements.pip --use-wheel"
 script:
   - LIBGIT2=$VIRTUAL_ENV coverage run --source=cms setup.py test
 after_success:
