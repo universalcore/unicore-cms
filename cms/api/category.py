@@ -72,14 +72,10 @@ def put_category(request):
     title = request.validated['title']
 
     models = get_repo_models(request)
-    try:
-        category = models.Category(title=title)
-        category.save(True, message='Category added: %s' % title)
-        get_registered_ws(request).sync_repo_index()
-        return category.to_dict()
-    except DoesNotExist:
-        request.errors.add('api', 'DoesNotExist', 'Category not found.')
-        return
+    category = models.Category(title=title)
+    category.save(True, message='Category added: %s' % title)
+    get_registered_ws(request).sync_repo_index()
+    return category.to_dict()
 
 
 @category_service.delete(validators=validators.validate_delete_category)
