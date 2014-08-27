@@ -59,7 +59,7 @@ def post_category(request):
             category.title = title
             category.save(True, message='Category updated: %s' % title)
             get_registered_ws(request).sync_repo_index()
-            return {'success': True}
+            return category.to_dict()
         except DoesNotExist:
             request.errors.add('api', 'DoesNotExist', 'Category not found.')
             return
@@ -90,6 +90,5 @@ def delete_category(request):
         category = models.Category().get(uuid)
         models.Category.delete(
             uuid, True, message='Category delete: %s' % category.title)
-        return {'success': True}
     except DoesNotExist:
         request.errors.add('api', 'DoesNotExist', 'Category not found.')

@@ -73,7 +73,7 @@ class CategoryTestCase(unittest.TestCase):
         uuid = resp.json[0]['id']
         data = {'uuid': uuid, 'title': 'New Title'}
         resp = self.app.post_json('/api/categories.json', data, status=200)
-        self.assertTrue(resp.json['success'])
+        self.assertEquals(resp.json['title'], 'New Title')
 
         resp = self.app.get('/api/categories.json', data, status=200)
         self.assertEquals(resp.json['title'], 'New Title')
@@ -127,7 +127,6 @@ class CategoryTestCase(unittest.TestCase):
         data = {'uuid': resp.json[0]['uuid']}
         resp = self.app.delete(
             '/api/categories.json?uuid=%(uuid)s' % data, status=200)
-        self.assertTrue(resp.json['success'])
 
         resp = self.app.get('/api/categories.json', status=200)
         self.assertEquals(len(resp.json), 1)
