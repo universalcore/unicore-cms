@@ -83,6 +83,33 @@ class PageTestCase(BaseTestCase):
             resp.json['errors'][1]['description'],
             'content is a required field.')
 
+    def test_put_page_with_category(self):
+        models = self.get_repo_models()
+        resp = self.app.get('/api/pages.json', status=200)
+        self.assertEquals(len(resp.json), 2)
+
+        hygiene_category = models.Category.filter(slug='hygiene')[0]
+        data = {
+            'title': 'New Page',
+            'content': 'Sample page content',
+            'primary_category': hygiene_category.id
+        }
+        resp = self.app.put_json('/api/pages.json', data, status=200)
+        self.assertEquals(resp.json['title'], 'New Page')
+        self.assertEquals(resp.json['primary_category']['title'], 'Hygiene')
+
+        resp = self.app.get('/api/pages.json', status=200)
+        self.assertEquals(len(resp.json), 3)
+
+        data['primary_category'] = 'some-invalid-id'
+        resp = self.app.put_json('/api/pages.json', data, status=400)
+        self.assertEquals(
+            resp.json['errors'][0]['description'],
+            'Category not found.')
+
+        resp = self.app.get('/api/pages.json', status=200)
+        self.assertEquals(len(resp.json), 3)
+
     def test_delete_page(self):
         resp = self.app.get('/api/pages.json', status=200)
         self.assertEquals(len(resp.json), 2)

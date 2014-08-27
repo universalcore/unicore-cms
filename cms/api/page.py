@@ -9,6 +9,18 @@ from gitmodel.exceptions import DoesNotExist
 )
 class PageApi(utils.ApiBase):
 
+    def validate_primary_category(self, request):
+        models = self.get_repo_models()
+        primary_category_uuid = self.request.validated.get('primary_category')
+
+        if primary_category_uuid:
+            try:
+                category = models.Category.get(primary_category_uuid)
+                self.request.validated['primary_category'] = category
+            except DoesNotExist:
+                self.request.errors.add(
+                    'api', 'DoesNotExist', 'Category not found.')
+
     def collection_get(self):
         models = self.get_repo_models()
 
@@ -40,16 +52,20 @@ class PageApi(utils.ApiBase):
             self.request.errors.add('api', 'DoesNotExist', 'Page not found.')
             return
 
-    @view(validators=validators.validate_put_page, renderer='json')
+    @view(
+        validators=(validators.validate_put_page, 'validate_primary_category'),
+        renderer='json')
     def collection_put(self):
         title = self.request.validated['title']
         content = self.request.validated['content']
+        primary_category = self.request.validated.get('primary_category')
 
         models = self.get_repo_models()
 
         page = models.Page(
             title=title,
-            content=content
+            content=content,
+            primary_category=primary_category
         )
         page.save(True, message='Page added: %s' % title)
         self.get_registered_ws().sync_repo_index()
