@@ -45,11 +45,19 @@ class Category(FilterMixin, SlugifyMixin, models.GitModel):
     title = fields.CharField(required=True)
 
     def __eq__(self, other):
+        if not other:
+            return False
+
         if isinstance(other, dict):
             return self.slug == other['slug']
         return self.slug == other.slug
 
     def __ne__(self, other):
+        if not other:
+            return True
+
+        if isinstance(other, dict):
+            return self.slug != other['slug']
         return self.slug != other.slug
 
     def to_dict(self):
