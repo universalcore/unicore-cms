@@ -1,10 +1,16 @@
 export LIBGIT2=$VIRTUAL_ENV
+echo "-- Checking Virtual ENV path --"
+echo $LIBGIT2
 wget https://github.com/libgit2/libgit2/archive/v0.21.1.tar.gz
 tar xzf v0.21.1.tar.gz
 cd libgit2-0.21.1/
 cmake . -DCMAKE_INSTALL_PREFIX=$LIBGIT2
 make
 make install
-pip install cffi pygit2
+pip install cffi
+echo "-- Checking Virtual ENV installed --"
+pip freeze
+echo "-- end debug --"
+pip install pygit2
 cd ..
 rm v0.21.1.tar.gz*
