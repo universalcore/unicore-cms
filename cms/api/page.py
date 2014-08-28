@@ -55,7 +55,7 @@ class PageApi(utils.ApiBase):
     @view(
         validators=(validators.validate_page, 'validate_primary_category'),
         renderer='json')
-    def post(self):
+    def put(self):
         uuid = self.request.matchdict['uuid']
         title = self.request.validated['title']
         content = self.request.validated['content']
@@ -77,7 +77,7 @@ class PageApi(utils.ApiBase):
     @view(
         validators=(validators.validate_page, 'validate_primary_category'),
         renderer='json')
-    def collection_put(self):
+    def collection_post(self):
         title = self.request.validated['title']
         content = self.request.validated['content']
         primary_category = self.request.validated.get('primary_category')
