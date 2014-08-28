@@ -32,13 +32,13 @@ class CategoryTestCase(BaseTestCase):
             resp.json['errors'][0]['description'],
             'Category not found.')
 
-    def test_post_category(self):
+    def test_put_category(self):
         resp = self.app.get('/api/categories.json', status=200)
         self.assertEquals(len(resp.json), 2)
 
         uuid = resp.json[0]['id']
         data = {'uuid': uuid, 'title': 'New Title'}
-        resp = self.app.post_json(
+        resp = self.app.put_json(
             '/api/categories/%(uuid)s.json' % data, data, status=200)
         self.assertEquals(resp.json['title'], 'New Title')
 
@@ -46,24 +46,27 @@ class CategoryTestCase(BaseTestCase):
         self.assertEquals(resp.json['title'], 'New Title')
 
         data = {'uuid': 'some-invalid-id', 'title': 'New Title'}
-        resp = self.app.post_json(
+        resp = self.app.put_json(
             '/api/categories/%(uuid)s.json' % data, data, status=400)
         self.assertEquals(
             resp.json['errors'][0]['description'],
             'Category not found.')
 
         data = {'uuid': uuid}
-        resp = self.app.post_json('/api/categories/%(uuid)s.json' % data, data, status=400)
+        resp = self.app.put_json(
+            '/api/categories/%(uuid)s.json' % data, data, status=400)
         self.assertEquals(
             resp.json['errors'][0]['description'],
             'title is a required field.')
 
-    def test_put_category(self):
+    def test_post_category(self):
         resp = self.app.get('/api/categories.json', status=200)
         self.assertEquals(len(resp.json), 2)
 
         data = {'title': 'New Category'}
-        resp = self.app.put_json('/api/categories.json', data, status=200)
+        resp = self.app.post_json('/api/categories.json', data, status=201)
+        self.assertTrue(resp.location.endswith(
+            '/api/categories/%s.json' % resp.json['uuid']))
         self.assertEquals(resp.json['title'], 'New Category')
         new_uuid = resp.json['uuid']
 
@@ -75,7 +78,7 @@ class CategoryTestCase(BaseTestCase):
         self.assertEquals(resp.json['title'], 'New Category')
         self.assertEquals(resp.json['uuid'], new_uuid)
 
-        resp = self.app.put_json('/api/categories.json', {}, status=400)
+        resp = self.app.post_json('/api/categories.json', {}, status=400)
         self.assertEquals(
             resp.json['errors'][0]['description'],
             'title is a required field.')
