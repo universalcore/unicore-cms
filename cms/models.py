@@ -62,7 +62,6 @@ class Category(FilterMixin, SlugifyMixin, models.GitModel):
 
     def to_dict(self):
         return {
-            'id': self.id,
             'uuid': self.id,
             'slug': self.slug,
             'title': self.title,
@@ -81,7 +80,6 @@ class Page(FilterMixin, SlugifyMixin, models.GitModel):
             if self.primary_category else None
 
         return {
-            'id': self.id,
             'uuid': self.id,
             'slug': self.slug,
             'title': self.title,

@@ -22,9 +22,9 @@ class CategoryTestCase(BaseTestCase):
         resp = self.app.get('/api/categories.json', status=200)
         self.assertEquals(len(resp.json), 2)
 
-        data = {'uuid': resp.json[0]['id']}
+        data = {'uuid': resp.json[0]['uuid']}
         resp = self.app.get('/api/categories/%(uuid)s.json' % data, status=200)
-        self.assertEquals(resp.json['id'], data['uuid'])
+        self.assertEquals(resp.json['uuid'], data['uuid'])
 
         data = {'uuid': 'some-invalid-id'}
         resp = self.app.get('/api/categories/%(uuid)s.json' % data, status=400)
@@ -36,7 +36,7 @@ class CategoryTestCase(BaseTestCase):
         resp = self.app.get('/api/categories.json', status=200)
         self.assertEquals(len(resp.json), 2)
 
-        uuid = resp.json[0]['id']
+        uuid = resp.json[0]['uuid']
         data = {'uuid': uuid, 'title': 'New Title'}
         resp = self.app.put_json(
             '/api/categories/%(uuid)s.json' % data, data, status=200)

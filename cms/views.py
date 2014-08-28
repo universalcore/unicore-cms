@@ -36,9 +36,9 @@ class CmsViews(object):
         return [c.to_dict() for c in models.Category().all()]
 
     @cache_region(CACHE_TIME)
-    def get_category(self, id):
+    def get_category(self, uuid):
         models = self.get_repo_models()
-        return models.Category().get(id).to_dict()
+        return models.Category().get(uuid).to_dict()
 
     @cache_region(CACHE_TIME)
     def get_pages_for_category(self, category_id):
@@ -50,9 +50,9 @@ class CmsViews(object):
         ]
 
     @cache_region(CACHE_TIME)
-    def get_page(self, id):
+    def get_page(self, uuid):
         models = self.get_repo_models()
-        return models.Page().get(id).to_dict()
+        return models.Page().get(uuid).to_dict()
 
     @view_config(route_name='home', renderer='templates/home.pt')
     def home(self):
@@ -71,4 +71,4 @@ class CmsViews(object):
 
     @view_config(route_name='content', renderer='cms:templates/content.pt')
     def content(self):
-        return {'page': self.get_page(self.request.matchdict['id'])}
+        return {'page': self.get_page(self.request.matchdict['uuid'])}
