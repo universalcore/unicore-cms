@@ -63,7 +63,9 @@ class PageTestCase(BaseTestCase):
             'title': 'New Page',
             'content': 'Sample page content',
         }
-        resp = self.app.post_json('/api/pages.json', data, status=200)
+        resp = self.app.post_json('/api/pages.json', data, status=201)
+        self.assertTrue(resp.location.endswith(
+            '/api/pages/%s.json' % resp.json['uuid']))
         self.assertEquals(resp.json['title'], 'New Page')
         new_uuid = resp.json['uuid']
 
@@ -94,7 +96,9 @@ class PageTestCase(BaseTestCase):
             'content': 'Sample page content',
             'primary_category': hygiene_category.id
         }
-        resp = self.app.post_json('/api/pages.json', data, status=200)
+        resp = self.app.post_json('/api/pages.json', data, status=201)
+        self.assertTrue(resp.location.endswith(
+            '/api/pages/%s.json' % resp.json['uuid']))
         self.assertEquals(resp.json['title'], 'New Page')
         self.assertEquals(resp.json['primary_category']['title'], 'Hygiene')
 

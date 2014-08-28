@@ -91,6 +91,9 @@ class PageApi(utils.ApiBase):
         )
         page.save(True, message='Page added: %s' % title)
         self.get_registered_ws().sync_repo_index()
+
+        self.request.response.status = 201
+        self.request.response.location = '/api/pages/%s.json' % page.id
         return page.to_dict()
 
     @view()
