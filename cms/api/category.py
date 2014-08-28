@@ -49,6 +49,9 @@ class CategoryApi(utils.ApiBase):
         category = models.Category(title=title)
         category.save(True, message='Category added: %s' % title)
         self.get_registered_ws().sync_repo_index()
+        next = '/api/categories/%s.json' % category.id
+        self.request.response.status = 201
+        self.request.response.location = next
         return category.to_dict()
 
     @view()

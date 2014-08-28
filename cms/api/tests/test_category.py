@@ -64,7 +64,9 @@ class CategoryTestCase(BaseTestCase):
         self.assertEquals(len(resp.json), 2)
 
         data = {'title': 'New Category'}
-        resp = self.app.post_json('/api/categories.json', data, status=200)
+        resp = self.app.post_json('/api/categories.json', data, status=201)
+        self.assertTrue(resp.location.endswith(
+            '/api/categories/%s.json' % resp.json['uuid']))
         self.assertEquals(resp.json['title'], 'New Category')
         new_uuid = resp.json['uuid']
 
