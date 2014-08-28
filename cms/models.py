@@ -45,11 +45,19 @@ class Category(FilterMixin, SlugifyMixin, models.GitModel):
     title = fields.CharField(required=True)
 
     def __eq__(self, other):
+        if not other:
+            return False
+
         if isinstance(other, dict):
             return self.slug == other['slug']
         return self.slug == other.slug
 
     def __ne__(self, other):
+        if not other:
+            return True
+
+        if isinstance(other, dict):
+            return self.slug != other['slug']
         return self.slug != other.slug
 
     def to_dict(self):
@@ -69,6 +77,9 @@ class Page(FilterMixin, SlugifyMixin, models.GitModel):
     primary_category = fields.RelatedField(Category, required=False)
 
     def to_dict(self):
+        primary_category = self.primary_category.to_dict()\
+            if self.primary_category else None
+
         return {
             'id': self.id,
             'uuid': self.id,
@@ -76,5 +87,5 @@ class Page(FilterMixin, SlugifyMixin, models.GitModel):
             'title': self.title,
             'content': self.content,
             'published': self.published,
-            'primary_category': self.primary_category.to_dict(),
+            'primary_category': primary_category,
         }
