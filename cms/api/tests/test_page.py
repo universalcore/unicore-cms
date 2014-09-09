@@ -159,6 +159,23 @@ class PageTestCase(BaseTestCase):
         self.assertEquals(resp.json['content'], 'Another sample page content')
         self.assertEquals(resp.json['primary_category']['title'], 'Diarrhoea')
 
+    def test_put_page_with_blank_category(self):
+        resp = self.app.get('/api/pages.json', status=200)
+        self.assertEquals(len(resp.json), 2)
+        uuid = resp.json[0]['uuid']
+
+        data = {
+            'uuid': uuid,
+            'title': 'Edited Page with no category',
+            'content': 'Another sample page content',
+            'primary_category': ''
+        }
+        resp = self.app.put_json(
+            '/api/pages/%s.json' % uuid, data, status=200)
+        self.assertEquals(resp.json['title'], 'Edited Page with no category')
+        self.assertEquals(resp.json['content'], 'Another sample page content')
+        self.assertEquals(resp.json['primary_category'], None)
+
     def test_delete_page(self):
         resp = self.app.get('/api/pages.json', status=200)
         self.assertEquals(len(resp.json), 2)
