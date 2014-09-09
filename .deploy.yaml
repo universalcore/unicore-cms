@@ -10,6 +10,7 @@ pip:
  - pyramid_beaker
  - python-memcached
  - waitress
+ - cornice
  - cffi
  - pygit2
  - praekelt-python-gitmodel
