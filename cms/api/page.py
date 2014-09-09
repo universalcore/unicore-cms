@@ -13,13 +13,16 @@ class PageApi(utils.ApiBase):
         models = self.get_repo_models()
         primary_category_uuid = self.request.validated.get('primary_category')
 
-        if primary_category_uuid:
-            try:
-                category = models.Category.get(primary_category_uuid)
-                self.request.validated['primary_category'] = category
-            except DoesNotExist:
-                self.request.errors.add(
-                    'api', 'DoesNotExist', 'Category not found.')
+        if primary_category_uuid is not None:
+            if primary_category_uuid:
+                try:
+                    category = models.Category.get(primary_category_uuid)
+                    self.request.validated['primary_category'] = category
+                except DoesNotExist:
+                    self.request.errors.add(
+                        'api', 'DoesNotExist', 'Category not found.')
+            else:
+                self.request.validated['primary_category'] = None
 
     def collection_get(self):
         models = self.get_repo_models()
