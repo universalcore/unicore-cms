@@ -17,6 +17,10 @@ class AdminViews(object):
     def __init__(self, request):
         self.request = request
 
+    @view_config(route_name='admin_home', renderer='templates/admin/home.pt')
+    def home(self):
+        return {}
+
     def get_ws(self):
         repo_path = self.request.registry.settings['git.path']
         repo = pygit2.Repository(repo_path)

@@ -53,6 +53,7 @@ def includeme(config):
     config.add_route('categories', '/content/list/')
     config.add_route('category', '/content/list/{category}/')
     config.add_route('content', '/content/detail/{uuid}/')
+    config.add_route('admin_home', '/admin/')
     config.add_route('configure', '/admin/configure/')
     config.add_route('configure_switch', '/admin/configure/switch/')
     config.add_route('check_updates', '/admin/configure/update/')
