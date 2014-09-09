@@ -65,11 +65,10 @@
     <div class="container">
       <div class="starter-template">
         <div class="row">
-          <div class="col-md-10">
-            <div class="content">
-              <h1>Admin</h1>
-              <div id="pages"></div>
-            </div>
+          <div class="content">
+            <h1>Admin</h1>
+            <div id="pages" class="col-md-8"></div>
+            <div id="categories" class="col-md-4"></div>
           </div>
         </div>
         <div class="row"></div>
@@ -81,6 +80,23 @@
             <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
               <h4 class="modal-title">Edit page</h4>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+      </div><!-- /.modal -->
+
+      <div class="modal fade" id="category_edit">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+              <h4 class="modal-title">Edit category</h4>
             </div>
             <div class="modal-body">
             </div>
@@ -147,6 +163,26 @@
 
       });
     }
+    function load_categories(){
+      $.get('/api/categories.json').done(function(data){
+        var pages_div = $('#categories').html('<h2>Categories</h2>');
+        var pages_div = $('#categories').html('<h2>Categories</h2>');
+
+        var ul = $('<ul/>').addClass('nav nav-stacked');
+        $.each(data, function(key, value){
+          $('<li/>')
+            .append(
+              $('<a/>').attr({
+                href: '#',
+                uuid: value.uuid
+              })
+              .append(value.title))
+            .appendTo(ul);
+        });
+        ul.appendTo(pages_div);
+
+      });
+    }
 
     function build_dropdown_options(current, categories, opts){
       var dropdown = new Array();
@@ -202,33 +238,74 @@
       });
     }
 
-    function submit_form(e){
-      var postData = $(this).serializeObject();
-      console.log(postData);
-      var formURL = $(this).attr("action");
+    function edit_category(uuid){
+      var category_url = '/api/categories/'+uuid+'.json';
+
+      $.get(category_url).done(function(data){
+        $('#category_edit .modal-body').html('').append(
+          $('<div/>', {class: 'form-group'}).append(
+            $('<form/>', {action: category_url, method: 'PUT'}).append(
+              $('<input />',
+                {
+                  id: 'title',
+                  name: 'title',
+                  placeholder: 'Title',
+                  type: 'text',
+                  value: data.title
+                }).addClass('form-control')
+            )
+          )
+        );
+
+        $('#category_edit').modal();
+      });
+    }
+
+    function submit_form(e, form, on_success){
+      var postData = form.serializeObject();
+      var formURL = form.attr("action");
       $.ajax(
       {
           url : formURL,
           contentType : 'application/json',
           type: "PUT",
           data : JSON.stringify(postData)
-      }).done(function(data){
-        $('#page_edit').modal('hide');
-        load_pages();
-      });
+      }).done(on_success);
       e.preventDefault(); //STOP default action
     }
 
     $(function(){
       load_pages();
+      load_categories();
+
       $('#pages').on('click', 'li a', function(e){
         e.preventDefault();
         edit_page($(this).attr('uuid'));
       });
+      $('#categories').on('click', 'li a', function(e){
+        e.preventDefault();
+        edit_category($(this).attr('uuid'));
+      });
 
-      $('#page_edit').on('submit', 'form', submit_form);
+      $('#page_edit').on('submit', 'form', function(e){
+        submit_form(e, $(this), function(data){
+          $('#page_edit').modal('hide');
+          load_pages();
+        });
+      });
+      $('#category_edit').on('submit', 'form', function(e){
+        submit_form(e, $(this), function(data){
+          $('#category_edit').modal('hide');
+          load_categories();
+          load_pages();
+        });
+      });
+
       $('#page_edit button.btn-primary').click(function(e){
         $('#page_edit form').submit();
+      });
+      $('#category_edit button.btn-primary').click(function(e){
+        $('#category_edit form').submit();
       });
     });
     </script>
