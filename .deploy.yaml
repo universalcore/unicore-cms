@@ -9,6 +9,7 @@ pip:
  - pyramid_debugtoolbar
  - pyramid_beaker
  - python-memcached
+ - webtest
  - waitress
  - cornice
  - cffi
