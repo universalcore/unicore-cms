@@ -13,9 +13,8 @@ def validate_optional_field(request, data, key):
         request.validated[key] = data[key]
 
 
-def validate_post_category(request):
+def validate_category(request):
     data = json.loads(request.body)
-    validate_required_field(request, data, 'uuid')
     validate_required_field(request, data, 'title')
 
 

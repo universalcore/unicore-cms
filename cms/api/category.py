@@ -24,7 +24,7 @@ class CategoryApi(utils.ApiBase):
             self.request.errors.add(
                 'api', 'DoesNotExist', 'Category not found.')
 
-    @view(validators=validators.validate_post_category, renderer='json')
+    @view(validators=validators.validate_category, renderer='json')
     def put(self):
         uuid = self.request.matchdict['uuid']
         title = self.request.validated['title']
@@ -40,7 +40,7 @@ class CategoryApi(utils.ApiBase):
             self.request.errors.add(
                 'api', 'DoesNotExist', 'Category not found.')
 
-    @view(validators=validators.validate_put_category, renderer='json')
+    @view(validators=validators.validate_category, renderer='json')
     def collection_post(self):
         title = self.request.validated['title']
 
