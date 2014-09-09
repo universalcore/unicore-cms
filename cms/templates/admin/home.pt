@@ -131,11 +131,16 @@
 
         var ul = $('<ul/>').addClass('nav nav-stacked');
         $.each(data, function(key, value){
+          var primary_category_title = value.primary_category ? value.primary_category.title : '';
           $('<li/>')
-            .append($('<a/>').attr({
+            .append(
+              $('<a/>').attr({
                 href: '#',
                 uuid: value.uuid
-              }).text(value.title))
+              })
+              .append($('<span/>').addClass('label label-xs label-primary').text(primary_category_title))
+              .append('&nbsp;')
+              .append(value.title))
             .appendTo(ul);
         });
         ul.appendTo(pages_div);
@@ -143,33 +148,57 @@
       });
     }
 
+    function build_dropdown_options(current, categories, opts){
+      var dropdown = new Array();
+      dropdown.push($('<option/>', {value: '', text: ''}));
+
+      for(var i in categories){
+        var cat = categories[i]
+        if (current && cat.uuid == current.uuid){
+          dropdown.push($('<option/>', {value: cat.uuid, text: cat.title, selected: 'selected'}));
+        }else{
+          dropdown.push($('<option/>', {value: cat.uuid, text: cat.title}));
+        }
+      }
+      return dropdown;
+    }
+
     function edit_page(uuid){
       var page_url = '/api/pages/'+uuid+'.json';
 
-      $.get(page_url).done(function(data){
-        $('#page_edit .modal-body').html('').append(
-          $('<div/>', {class: 'form-group'}).append(
-            $('<form/>', {action: page_url, method: 'PUT'}).append(
-              $('<input />',
-                {
-                  id: 'title',
-                  name: 'title',
-                  placeholder: 'Title',
-                  type: 'text',
-                  value: data.title
-                }).addClass('form-control'),
-              $('<textarea />',
-                {
-                  id: 'content',
-                  name: 'content',
-                  placeholder: 'Content',
-                  rows: '10'
-                }).addClass('form-control').text(data.content)
+      $.get('/api/categories.json').done(function(categories){
+        $.get(page_url).done(function(data){
+          $('#page_edit .modal-body').html('').append(
+            $('<div/>', {class: 'form-group'}).append(
+              $('<form/>', {action: page_url, method: 'PUT'}).append(
+                $('<input />',
+                  {
+                    id: 'title',
+                    name: 'title',
+                    placeholder: 'Title',
+                    type: 'text',
+                    value: data.title
+                  }).addClass('form-control'),
+                $('<textarea />',
+                  {
+                    id: 'content',
+                    name: 'content',
+                    placeholder: 'Content',
+                    rows: '10'
+                  }).addClass('form-control').text(data.content),
+                $('<select />',
+                  {
+                    id: 'primary_category',
+                    name: 'primary_category'
+                  }).addClass('form-control').append(
+                    build_dropdown_options(data.primary_category, categories)
+                  )
+              )
             )
-          )
-        );
+          );
 
-        $('#page_edit').modal();
+          $('#page_edit').modal();
+        });
       });
     }
 
