@@ -1,4 +1,3 @@
-import json
 import pygit2
 import shutil
 
@@ -8,6 +7,8 @@ from gitmodel.workspace import Workspace
 
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound
+from pyramid.renderers import get_renderer
+from pyramid.decorator import reify
 
 CACHE_TIME = 'long_term'
 
@@ -16,6 +17,11 @@ class AdminViews(object):
 
     def __init__(self, request):
         self.request = request
+
+    @reify
+    def global_template(self):
+        renderer = get_renderer("templates/admin/base.pt")
+        return renderer.implementation().macros['layout']
 
     @view_config(route_name='admin_home', renderer='templates/admin/home.pt')
     def home(self):
@@ -40,7 +46,9 @@ class AdminViews(object):
         commits = []
         for commit in r.walk(last.id, pygit2.GIT_SORT_TIME):
             commits.append(commit)
-        return [{'message': c.message, 'author': c.author.name} for c in commits][:10]
+        return [
+            {'message': c.message, 'author': c.author.name}
+            for c in commits][:10]
 
     def get_updates(self, branch=None):
         commits = utils.get_remote_updates_log(self.get_ws().repo, branch)
@@ -70,7 +78,8 @@ class AdminViews(object):
         utils.fast_forward(self.get_ws().repo)
         return HTTPFound(location=self.request.route_url('configure'))
 
-    @view_config(route_name='configure', renderer='cms:templates/admin/configure.pt')
+    @view_config(
+        route_name='configure', renderer='cms:templates/admin/configure.pt')
     def configure(self):
         repo_path = self.request.registry.settings['git.path']
         ws = self.get_ws()
