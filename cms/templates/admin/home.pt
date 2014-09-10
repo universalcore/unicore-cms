@@ -8,7 +8,7 @@
     <meta name="author" content="Pylons Project">
     <link rel="shortcut icon" href="${request.static_url('cms:static/pyramid-16x16.png')}">
 
-    <title>Unicore CMS</title>
+    <title>Unicore CMS Admin</title>
 
     <!-- Bootstrap core CSS -->
     <link href="//cdn.jsdelivr.net/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
@@ -47,7 +47,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="/">Unicore CMS</a>
+          <a class="navbar-brand" href="/">Unicore CMS Admin</a>
         </div>
         <!--
         <div class="collapse navbar-collapse">
@@ -66,7 +66,6 @@
       <div class="starter-template">
         <div class="row">
           <div class="content">
-            <h1>Admin</h1>
             <div id="pages" class="col-md-8"></div>
             <div id="categories" class="col-md-4"></div>
           </div>
@@ -207,6 +206,7 @@
           $('#page_edit .modal-body').html('').append(
             $('<div/>', {class: 'form-group'}).append(
               $('<form/>', {action: page_url, method: 'PUT'}).append(
+                $('<label/>', {for: 'title', text: 'Title'}),
                 $('<input />',
                   {
                     id: 'title',
@@ -215,6 +215,7 @@
                     type: 'text',
                     value: data.title
                   }).addClass('form-control'),
+                $('<label/>', {for: 'content', text: 'Content'}),
                 $('<textarea />',
                   {
                     id: 'content',
@@ -222,6 +223,7 @@
                     placeholder: 'Content',
                     rows: '10'
                   }).addClass('form-control').text(data.content),
+                $('<label/>', {for: 'primary_category', text: 'Primary Category'}),
                 $('<select />',
                   {
                     id: 'primary_category',
