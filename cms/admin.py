@@ -10,6 +10,8 @@ from pyramid.httpexceptions import HTTPFound
 from pyramid.renderers import get_renderer
 from pyramid.decorator import reify
 
+from pyramid_handlers import action
+
 CACHE_TIME = 'long_term'
 
 
@@ -23,8 +25,12 @@ class AdminViews(object):
         renderer = get_renderer("templates/admin/base.pt")
         return renderer.implementation().macros['layout']
 
-    @view_config(route_name='admin_home', renderer='templates/admin/home.pt')
+    @action(renderer='templates/admin/home.pt')
     def home(self):
+        return {}
+
+    @action(renderer='templates/admin/add.pt')
+    def add(self):
         return {}
 
     def get_ws(self):
@@ -78,8 +84,7 @@ class AdminViews(object):
         utils.fast_forward(self.get_ws().repo)
         return HTTPFound(location=self.request.route_url('configure'))
 
-    @view_config(
-        route_name='configure', renderer='cms:templates/admin/configure.pt')
+    @action(renderer='cms:templates/admin/configure.pt')
     def configure(self):
         repo_path = self.request.registry.settings['git.path']
         ws = self.get_ws()
