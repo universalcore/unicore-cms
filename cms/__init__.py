@@ -48,6 +48,7 @@ def init_repository(config):
 def includeme(config):
     config.include('pyramid_beaker')
     config.include("cornice")
+    config.include("pyramid_celery")
     config.add_static_view('static', 'cms:static', cache_max_age=3600)
     config.add_route('home', '/')
     config.add_route('categories', '/content/list/')
