@@ -21,9 +21,9 @@ requires = [
     'pyramid_redis',
 ]
 
-setup(name='cms',
+setup(name='unicore-cms',
       version='0.1',
-      description='cms',
+      description='JSON based CMS for Universal Core',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[
       "Programming Language :: Python",
