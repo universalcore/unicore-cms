@@ -1,2 +1,6 @@
-include *.txt *.ini *.cfg *.rst
-recursive-include cms *.ico *.png *.css *.gif *.jpg *.pt *.txt *.mak *.mako *.js *.html *.xml
+include LICENSE
+include README.rst
+include CHANGES.rst
+include install_libgit2
+include requirements.txt
+recursive-include cms
