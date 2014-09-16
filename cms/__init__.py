@@ -1,7 +1,7 @@
 import os
 import pygit2
 
-from cms.models import Page, Category
+from unicore_gitmodels import models
 from cms import utils
 from gitmodel.workspace import Workspace
 
@@ -41,8 +41,8 @@ def init_repository(config):
     except:
         ws = Workspace(os.path.join(repo_path, '.git'))
 
-    ws.register_model(Page)
-    ws.register_model(Category)
+    ws.register_model(models.GitPageModel)
+    ws.register_model(models.GitCategoryModel)
 
 
 def includeme(config):

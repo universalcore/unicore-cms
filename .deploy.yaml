@@ -15,6 +15,7 @@ pip:
  - cffi
  - pygit2
  - praekelt-python-gitmodel
+ - unicore_gitmodels
 dependencies:
  - python-yaml
  - cmake

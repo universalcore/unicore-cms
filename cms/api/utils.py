@@ -1,7 +1,7 @@
 import os
 import pygit2
 
-from cms import models as cms_models
+from unicore_gitmodels import models
 from gitmodel.workspace import Workspace
 
 
@@ -19,10 +19,10 @@ class ApiBase(object):
         except:
             ws = Workspace(repo.path)
 
-        ws.register_model(cms_models.Page)
-        ws.register_model(cms_models.Category)
+        ws.register_model(models.GitPageModel)
+        ws.register_model(models.GitCategoryModel)
         return ws
 
     def get_repo_models(self):
         ws = self.get_registered_ws()
-        return ws.import_models(cms_models)
+        return ws.import_models(models)

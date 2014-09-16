@@ -11,14 +11,14 @@ class CategoryApi(utils.ApiBase):
 
     def collection_get(self):
         models = self.get_repo_models()
-        return [c.to_dict() for c in models.Category().all()]
+        return [c.to_dict() for c in models.GitCategoryModel().all()]
 
     @view(renderer='json')
     def get(self):
         models = self.get_repo_models()
         uuid = self.request.matchdict['uuid']
         try:
-            category = models.Category().get(uuid)
+            category = models.GitCategoryModel().get(uuid)
             return category.to_dict()
         except DoesNotExist:
             self.request.errors.add(
@@ -31,7 +31,7 @@ class CategoryApi(utils.ApiBase):
 
         models = self.get_repo_models()
         try:
-            category = models.Category().get(uuid)
+            category = models.GitCategoryModel().get(uuid)
             category.title = title
             category.save(True, message='Category updated: %s' % title)
             self.get_registered_ws().sync_repo_index()
@@ -46,7 +46,7 @@ class CategoryApi(utils.ApiBase):
 
         models = self.get_repo_models()
 
-        category = models.Category(title=title)
+        category = models.GitCategoryModel(title=title)
         category.save(True, message='Category added: %s' % title)
         self.get_registered_ws().sync_repo_index()
 
@@ -60,8 +60,8 @@ class CategoryApi(utils.ApiBase):
         uuid = self.request.matchdict['uuid']
         models = self.get_repo_models()
         try:
-            category = models.Category().get(uuid)
-            models.Category.delete(
+            category = models.GitCategoryModel().get(uuid)
+            models.GitCategoryModel.delete(
                 uuid, True, message='Category delete: %s' % category.title)
         except DoesNotExist:
             self.request.errors.add(

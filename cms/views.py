@@ -2,7 +2,7 @@ import os
 import pygit2
 
 from beaker.cache import cache_region
-from cms import models as cms_models
+from unicore_gitmodels import models
 from gitmodel.workspace import Workspace
 
 from pyramid.view import view_config
@@ -23,7 +23,7 @@ class CmsViews(object):
     def get_repo_models(self):
         repo = pygit2.Repository(self.repo_path)
         ws = Workspace(repo.path, repo.head.name)
-        return ws.import_models(cms_models)
+        return ws.import_models(models)
 
     @reify
     def global_template(self):
@@ -33,26 +33,26 @@ class CmsViews(object):
     @cache_region(CACHE_TIME)
     def get_categories(self):
         models = self.get_repo_models()
-        return [c.to_dict() for c in models.Category().all()]
+        return [c.to_dict() for c in models.GitCategoryModel().all()]
 
     @cache_region(CACHE_TIME)
     def get_category(self, uuid):
         models = self.get_repo_models()
-        return models.Category().get(uuid).to_dict()
+        return models.GitCategoryModel().get(uuid).to_dict()
 
     @cache_region(CACHE_TIME)
     def get_pages_for_category(self, category_id):
         models = self.get_repo_models()
-        category = models.Category().get(category_id)
+        category = models.GitCategoryModel().get(category_id)
         return [
             p.to_dict()
-            for p in models.Page().filter(primary_category=category)
+            for p in models.GitPageModel().filter(primary_category=category)
         ]
 
     @cache_region(CACHE_TIME)
     def get_page(self, uuid):
         models = self.get_repo_models()
-        return models.Page().get(uuid).to_dict()
+        return models.GitPageModel().get(uuid).to_dict()
 
     @view_config(route_name='home', renderer='templates/home.pt')
     def home(self):
