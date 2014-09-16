@@ -17,6 +17,8 @@ requires = [
     'python-memcached',
     'webtest',
     'cornice',
+    'praekelt_pyramid_celery',
+    'pyramid_redis',
 ]
 
 setup(name='cms',

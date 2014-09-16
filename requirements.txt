@@ -7,3 +7,5 @@ waitress
 -e .
 cffi
 praekelt-python-gitmodel
+praekelt_pyramid_celery
+pyramid_redis
