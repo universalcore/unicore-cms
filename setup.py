@@ -19,6 +19,7 @@ requires = [
     'cornice',
     'praekelt_pyramid_celery',
     'pyramid_redis',
+    'unicore-gitmodels',
 ]
 
 setup(name='unicore-cms',
