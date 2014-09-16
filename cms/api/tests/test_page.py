@@ -35,8 +35,8 @@ class PageTestCase(BaseTestCase):
 
     def test_get_pages_for_category(self):
         models = self.get_repo_models()
-        hygiene_category = models.Category.filter(slug='hygiene')[0]
-        p = models.Page(
+        hygiene_category = models.GitCategoryModel.filter(slug='hygiene')[0]
+        p = models.GitPageModel(
             title='Test Category Page',
             content='this is sample content for a hygiene page',
             primary_category=hygiene_category
@@ -90,7 +90,7 @@ class PageTestCase(BaseTestCase):
         resp = self.app.get('/api/pages.json', status=200)
         self.assertEquals(len(resp.json), 2)
 
-        hygiene_category = models.Category.filter(slug='hygiene')[0]
+        hygiene_category = models.GitCategoryModel.filter(slug='hygiene')[0]
         data = {
             'title': 'New Page',
             'content': 'Sample page content',
@@ -120,7 +120,8 @@ class PageTestCase(BaseTestCase):
         self.assertEquals(len(resp.json), 2)
         uuid = resp.json[0]['uuid']
 
-        diarrhoea_category = models.Category.filter(slug='diarrhoea')[0]
+        diarrhoea_category = models.GitCategoryModel.filter(
+            slug='diarrhoea')[0]
         data = {
             'uuid': uuid,
             'title': 'Another New Page',

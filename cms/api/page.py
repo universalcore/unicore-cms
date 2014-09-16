@@ -16,7 +16,8 @@ class PageApi(utils.ApiBase):
         if primary_category_uuid is not None:
             if primary_category_uuid:
                 try:
-                    category = models.Category.get(primary_category_uuid)
+                    category = models.GitCategoryModel.get(
+                        primary_category_uuid)
                     self.request.validated['primary_category'] = category
                 except DoesNotExist:
                     self.request.errors.add(
@@ -30,17 +31,18 @@ class PageApi(utils.ApiBase):
         primary_category_uuid = self.request.GET.get('primary_category', None)
         if primary_category_uuid:
             try:
-                category = models.Category.get(primary_category_uuid)
+                category = models.GitCategoryModel.get(primary_category_uuid)
                 return [
                     p.to_dict()
-                    for p in models.Page().filter(primary_category=category)
+                    for p in models.GitPageModel.filter(
+                        primary_category=category)
                 ]
             except DoesNotExist:
                 self.request.errors.add(
                     'api', 'DoesNotExist', 'Category not found.')
                 return
 
-        return [p.to_dict() for p in models.Page.all()]
+        return [p.to_dict() for p in models.GitPageModel.all()]
 
     @view(renderer='json')
     def get(self):
@@ -49,7 +51,7 @@ class PageApi(utils.ApiBase):
         uuid = self.request.matchdict['uuid']
 
         try:
-            page = models.Page.get(uuid)
+            page = models.GitPageModel.get(uuid)
             return page.to_dict()
         except DoesNotExist:
             self.request.errors.add('api', 'DoesNotExist', 'Page not found.')
@@ -66,7 +68,7 @@ class PageApi(utils.ApiBase):
 
         models = self.get_repo_models()
         try:
-            page = models.Page().get(uuid)
+            page = models.GitPageModel.get(uuid)
             page.title = title
             page.content = content
             page.primary_category = primary_category
@@ -87,7 +89,7 @@ class PageApi(utils.ApiBase):
 
         models = self.get_repo_models()
 
-        page = models.Page(
+        page = models.GitPageModel(
             title=title,
             content=content,
             primary_category=primary_category
@@ -104,8 +106,8 @@ class PageApi(utils.ApiBase):
         uuid = self.request.matchdict['uuid']
         models = self.get_repo_models()
         try:
-            page = models.Page().get(uuid)
-            models.Page.delete(
+            page = models.GitPageModel().get(uuid)
+            models.GitPageModel.delete(
                 uuid, True, message='Page delete: %s' % page.title)
         except DoesNotExist:
             self.request.errors.add(

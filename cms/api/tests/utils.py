@@ -3,7 +3,7 @@ import pygit2
 import shutil
 import unittest
 
-from cms import models as cms_models
+from unicore_gitmodels import models
 from gitmodel.workspace import Workspace
 
 
@@ -26,28 +26,28 @@ class BaseTestCase(unittest.TestCase):
         except:
             ws = Workspace(repo.path)
 
-        ws.register_model(cms_models.Page)
-        ws.register_model(cms_models.Category)
-        return ws.import_models(cms_models)
+        ws.register_model(models.GitPageModel)
+        ws.register_model(models.GitCategoryModel)
+        return ws.import_models(models)
 
     def init_categories(self):
         models = self.get_repo_models()
 
-        models.Category(
+        models.GitCategoryModel(
             title='Diarrhoea', slug='diarrhoea'
         ).save(True, message='added diarrhoea Category')
 
-        models.Category(
+        models.GitCategoryModel(
             title='Hygiene', slug='hygiene'
         ).save(True, message='added hygiene Category')
 
     def init_pages(self):
         models = self.get_repo_models()
 
-        models.Page(
+        models.GitPageModel(
             title='Test Page 1', content='this is sample content for pg 1'
         ).save(True, message='added page 1')
 
-        models.Page(
+        models.GitPageModel(
             title='Test Page 2', content='this is sample content for pg 2'
         ).save(True, message='added page 2')
