@@ -3,6 +3,7 @@ import pygit2
 
 from cms.models import Page, Category
 from cms import utils
+from cms.admin import AdminViews
 from gitmodel.workspace import Workspace
 
 from pyramid_beaker import set_cache_regions_from_settings
@@ -47,6 +48,7 @@ def init_repository(config):
 
 def includeme(config):
     config.include('pyramid_beaker')
+    config.include('pyramid_handlers')
     config.include("cornice")
     config.include("pyramid_celery")
     config.add_static_view('static', 'cms:static', cache_max_age=3600)
@@ -54,8 +56,9 @@ def includeme(config):
     config.add_route('categories', '/content/list/')
     config.add_route('category', '/content/list/{category}/')
     config.add_route('content', '/content/detail/{uuid}/')
-    config.add_route('admin_home', '/admin/')
-    config.add_route('configure', '/admin/configure/')
+    config.add_handler(
+        'admin_home', '/admin/', handler=AdminViews, action='home')
+    config.add_handler('admin', '/admin/{action}', handler=AdminViews)
     config.add_route('configure_switch', '/admin/configure/switch/')
     config.add_route('check_updates', '/admin/configure/update/')
     config.add_route('configure_fast_forward', '/admin/configure/fastforward/')
