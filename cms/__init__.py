@@ -14,7 +14,6 @@ def main(global_config, **settings):
     """
     set_cache_regions_from_settings(settings)
     config = Configurator(settings=settings)
-    config.include('pyramid_chameleon')
     config.include('cms')
     return config.make_wsgi_app()
 
@@ -46,6 +45,7 @@ def init_repository(config):
 
 
 def includeme(config):
+    config.include('pyramid_chameleon')
     config.include('pyramid_beaker')
     config.include("cornice")
     config.include("pyramid_celery")
