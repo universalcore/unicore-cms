@@ -3,4 +3,4 @@ include README.rst
 include CHANGES.rst
 include install_libgit2
 include requirements.txt
-recursive-include cms
+recursive-include cms *
