@@ -7,8 +7,8 @@ from cms.tasks import fastforward
 @resource(path='/api/notify/')
 class NotifyApi(ApiBase):
 
-    def get(self):
+    def post(self):
         repo_path = os.path.join(
             self.request.registry.settings['git.path'], '.git')
         fastforward.delay(repo_path)
-        return {'status': 'OK'}
+        return {}
