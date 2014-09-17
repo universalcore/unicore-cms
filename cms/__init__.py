@@ -28,6 +28,10 @@ def init_repository(config):
 
     repo_path = settings['git.path'].strip()
 
+    if 'git.content_repo_url' in settings and not os.path.exists(repo_path):
+        content_repo_url = settings['git.content_repo_url'].strip()
+        pygit2.clone_repository(content_repo_url, repo_path)
+
     try:
         repo = pygit2.Repository(repo_path)
     except:
