@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="${request.locale_name}">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="pyramid web application">
+    <meta name="author" content="Pylons Project">
+    <link rel="shortcut icon" href="${request.static_url('cms:static/pyramid-16x16.png')}">
+
+    <title>Unicore CMS Admin</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="//cdn.jsdelivr.net/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//cdn.jsdelivr.net/bootstrap/3.2.0/css/bootstrap-theme.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="//oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+
+    <style type="text/css">
+        body {
+          padding-top: 70px;
+          padding-bottom: 30px;
+        }
+
+        #commit-log{
+          color: #777;
+        }
+
+        h1 .label{
+          font-size: 11px;
+        }
+    </style>
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">Unicore CMS Admin</a>
+        </div>
+        <!--
+        <div class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div>
+        -->
+        <!--/.nav-collapse -->
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="starter-template">
+        <div class="row">
+          <div class="content">
+            <div id="pages" class="col-md-8"></div>
+            <div id="categories" class="col-md-4"></div>
+          </div>
+        </div>
+        <div class="row"></div>
+      <br/>
+
+      <div class="modal fade" id="page_edit">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+              <h4 class="modal-title">Edit page</h4>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+      </div><!-- /.modal -->
+
+      <div class="modal fade" id="category_edit">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+              <h4 class="modal-title">Edit category</h4>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+          </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+      </div><!-- /.modal -->
+
+      <div class="row">
+        <div class="content copyright">
+          Copyright &copy; Praekelt
+        </div>
+      </div>
+    </div>
+    </div>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="//oss.maxcdn.com/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="//oss.maxcdn.com/libs/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
+    <script src="${request.static_url('cms:static/js/jquery.rest.min.js')}" rel="stylesheet"></script>
+    <script type="text/javascript">
+    $.fn.serializeObject = function()
+    {
+        var o = {};
+        var a = this.serializeArray();
+        $.each(a, function() {
+            if (o[this.name] !== undefined) {
+                if (!o[this.name].push) {
+                    o[this.name] = [o[this.name]];
+                }
+                o[this.name].push(this.value || '');
+            } else {
+                o[this.name] = this.value || '';
+            }
+        });
+        return o;
+    };
+
+    function load_pages(){
+      $.get('/api/pages.json').done(function(data){
+        var pages_div = $('#pages').html('<h2>Pages</h2>');
+
+        var ul = $('<ul/>').addClass('nav nav-stacked');
+        $.each(data, function(key, value){
+          var primary_category_title = value.primary_category ? value.primary_category.title : '';
+          $('<li/>')
+            .append(
+              $('<a/>').attr({
+                href: '#',
+                uuid: value.uuid
+              })
+              .append($('<span/>').addClass('label label-xs label-primary').text(primary_category_title))
+              .append('&nbsp;')
+              .append(value.title))
+            .appendTo(ul);
+        });
+        ul.appendTo(pages_div);
+
+      });
+    }
+    function load_categories(){
+      $.get('/api/categories.json').done(function(data){
+        var pages_div = $('#categories').html('<h2>Categories</h2>');
+        var pages_div = $('#categories').html('<h2>Categories</h2>');
+
+        var ul = $('<ul/>').addClass('nav nav-stacked');
+        $.each(data, function(key, value){
+          $('<li/>')
+            .append(
+              $('<a/>').attr({
+                href: '#',
+                uuid: value.uuid
+              })
+              .append(value.title))
+            .appendTo(ul);
+        });
+        ul.appendTo(pages_div);
+
+      });
+    }
+
+    function build_dropdown_options(current, categories, opts){
+      var dropdown = new Array();
+      dropdown.push($('<option/>', {value: '', text: ''}));
+
+      for(var i in categories){
+        var cat = categories[i]
+        if (current && cat.uuid == current.uuid){
+          dropdown.push($('<option/>', {value: cat.uuid, text: cat.title, selected: 'selected'}));
+        }else{
+          dropdown.push($('<option/>', {value: cat.uuid, text: cat.title}));
+        }
+      }
+      return dropdown;
+    }
+
+    function edit_page(uuid){
+      var page_url = '/api/pages/'+uuid+'.json';
+
+      $.get('/api/categories.json').done(function(categories){
+        $.get(page_url).done(function(data){
+          $('#page_edit .modal-body').html('').append(
+            $('<div/>', {class: 'form-group'}).append(
+              $('<form/>', {action: page_url, method: 'PUT'}).append(
+                $('<label/>', {for: 'title', text: 'Title'}),
+                $('<input />',
+                  {
+                    id: 'title',
+                    name: 'title',
+                    placeholder: 'Title',
+                    type: 'text',
+                    value: data.title
+                  }).addClass('form-control'),
+                $('<label/>', {for: 'content', text: 'Content'}),
+                $('<textarea />',
+                  {
+                    id: 'content',
+                    name: 'content',
+                    placeholder: 'Content',
+                    rows: '10'
+                  }).addClass('form-control').text(data.content),
+                $('<label/>', {for: 'primary_category', text: 'Primary Category'}),
+                $('<select />',
+                  {
+                    id: 'primary_category',
+                    name: 'primary_category'
+                  }).addClass('form-control').append(
+                    build_dropdown_options(data.primary_category, categories)
+                  )
+              )
+            )
+          );
+
+          $('#page_edit').modal();
+        });
+      });
+    }
+
+    function edit_category(uuid){
+      var category_url = '/api/categories/'+uuid+'.json';
+
+      $.get(category_url).done(function(data){
+        $('#category_edit .modal-body').html('').append(
+          $('<div/>', {class: 'form-group'}).append(
+            $('<form/>', {action: category_url, method: 'PUT'}).append(
+              $('<input />',
+                {
+                  id: 'title',
+                  name: 'title',
+                  placeholder: 'Title',
+                  type: 'text',
+                  value: data.title
+                }).addClass('form-control')
+            )
+          )
+        );
+
+        $('#category_edit').modal();
+      });
+    }
+
+    function submit_form(e, form, on_success){
+      var postData = form.serializeObject();
+      var formURL = form.attr("action");
+      $.ajax(
+      {
+          url : formURL,
+          contentType : 'application/json',
+          type: "PUT",
+          data : JSON.stringify(postData)
+      }).done(on_success);
+      e.preventDefault(); //STOP default action
+    }
+
+    $(function(){
+      load_pages();
+      load_categories();
+
+      $('#pages').on('click', 'li a', function(e){
+        e.preventDefault();
+        edit_page($(this).attr('uuid'));
+      });
+      $('#categories').on('click', 'li a', function(e){
+        e.preventDefault();
+        edit_category($(this).attr('uuid'));
+      });
+
+      $('#page_edit').on('submit', 'form', function(e){
+        submit_form(e, $(this), function(data){
+          $('#page_edit').modal('hide');
+          load_pages();
+        });
+      });
+      $('#category_edit').on('submit', 'form', function(e){
+        submit_form(e, $(this), function(data){
+          $('#category_edit').modal('hide');
+          load_categories();
+          load_pages();
+        });
+      });
+
+      $('#page_edit button.btn-primary').click(function(e){
+        $('#page_edit form').submit();
+      });
+      $('#category_edit button.btn-primary').click(function(e){
+        $('#category_edit form').submit();
+      });
+    });
+    </script>
+  </body>
+</html>

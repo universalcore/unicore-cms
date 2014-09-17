@@ -1,0 +1,24 @@
+<div metal:use-macro="view.global_template">
+    <div metal:fill-slot="content">
+
+        <div class="object-category-list modelbase-category-list">
+        <div class="h1">
+            <img src="/static/img/icon-${category.slug}.jpg"/> ${category.title}
+            <div class="clear"></div>
+        </div>
+
+        <div class="items">
+            <div class="box">
+                <div class="item" tal:repeat="page pages">
+                    <div class="text">
+                        <a href="/content/detail/${page.uuid}/">${page.title}</a>
+                    </div>
+                </div>
+            </div>
+            <div class="pagi">
+                <a href="/about/${category.slug}/">Why it is important</a>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>

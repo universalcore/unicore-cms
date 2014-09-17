@@ -1,0 +1,59 @@
+/*  SETTINGS  */
+
+	*, *:before, *:after { -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; }
+
+/*  GLOBAL  */
+
+	html, body { margin: 0; padding: 0; color: #666; background: #fff; font-size: 1em; font-family: Arial, Helvetica, sans-serif; line-height: 1.3em; -webkit-text-size-adjust: none; }
+	input, select, textarea { font-size: 95%; font-family: Arial, Helvetica, sans-serif; }
+	a { color: #009aef; text-decoration: none; }
+	.clear { width: 100%; height: 0px; clear: both; display: block; }
+	.align-right { float: right; }
+	.text-center { text-align: center; }
+
+
+/*  HEADER  */
+
+	#header { padding: 10px; background: #cce9fc; text-align: center; border-bottom: 1px dotted #0093ef; }
+		#header img { display: block; margin: 0 auto }
+
+
+/*  NAV  */
+
+	#nav { padding: 10px; background: #cce9fc; color: #fff; text-align: center; }
+		#nav a { color: #0093ef; }
+
+
+/*  BANNER  */
+
+	#banner {}
+		#banner img { width: 100%; display: block; }
+
+
+/*  CONTENT  */
+
+	#content {}
+		#content .h1 { background: #cce9fc; border-top: 1px dotted #fff; font-weight: bold; color: #0093ef; vertical-align: middle; line-height: 44px }
+		#content .h1 img { float: left; padding: 0 10px 0 0; }
+		#content .h1 a { display: block; }
+		#content .h2 { padding: 10px; background: #cce9fc; font-weight: bold; color: #0093ef; border-top: 1px dotted #0093ef; }
+		#content .box { padding: 10px; }
+			#content .box .item { padding: 0 0 10px 0; margin: 0 0 10px 0; border-bottom: 1px dotted #cce9fc; }
+			#content .box .item:last-child { padding: 0; margin: 0; border: 0; }
+			#content .box .item a.pic { float: left; padding: 0 10px 0 0; }
+			#content .box .item a.pic img { display: block; }
+			#content .box .item .text { margin: 0 0 0 0; }
+		#content .intro { padding: 10px; background: #0093ef; color: #fff; }
+		#content .detail { padding: 0 10px; }
+		#content .pagination { padding: 10px 0; margin: 0 10px; border-top: 1px dotted #0093ef; }
+
+
+/*  MENU  */
+
+	#menu { background: #0093ef; color: #87cae3; text-align: center; }
+		#menu a { padding: 8px 10px; display: block; border-bottom: 1px dotted #fff; text-align: left; color: #fff; }
+
+
+/*  FOOTER  */
+
+	#footer { padding: 10px; background: #cce9fc; color: #666; }
