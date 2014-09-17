@@ -9,7 +9,7 @@ class PageTestCase(BaseTestCase):
     def setUp(self):
         self.config = testing.setUp()
         self.delete_test_repo()
-        settings = {'git.path': self.repo_path}
+        settings = {'git.path': self.repo_path, 'git.content_repo_url': ''}
         self.app = TestApp(main({}, **settings))
 
         self.init_categories()
