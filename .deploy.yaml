@@ -12,10 +12,10 @@ pip:
  - webtest
  - waitress
  - cornice
+ - unicore-gitmodels
  - cffi
  - pygit2
  - praekelt-python-gitmodel
- - unicore-gitmodels
 dependencies:
  - python-yaml
  - cmake
