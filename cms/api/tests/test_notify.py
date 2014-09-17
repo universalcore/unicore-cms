@@ -30,10 +30,6 @@ class NotifyTestCase(BaseTestCase):
             []
         )
 
-        # cloning the remote repo will set it up as the upstream
-        # changes made to the remote repo can then be pulled by a fastforward
-        pygit2.clone_repository(self.repo_path_remote, self.repo_path)
-
     def get_remote_repo_models(self):
         repo = self.repo_remote
         try:
@@ -74,7 +70,11 @@ class NotifyTestCase(BaseTestCase):
         self.setup_repositories()
 
         self.config = testing.setUp()
-        settings = {'git.path': self.repo_path, 'CELERY_ALWAYS_EAGER': True}
+        settings = {
+            'git.path': self.repo_path,
+            'git.content_repo_url': self.repo_path_remote,
+            'CELERY_ALWAYS_EAGER': True
+        }
         self.app = TestApp(main({}, **settings))
 
         self.init_remote_categories()
