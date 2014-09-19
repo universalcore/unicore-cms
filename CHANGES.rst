@@ -1,3 +1,7 @@
+0.2.1
+-----
+-  Bump required version for praekelt-python-gitmodel
+
 0.2
 ---
 -  Added `git.content_repo_url` for cloning when app starts
