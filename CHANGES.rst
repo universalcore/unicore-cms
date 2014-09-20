@@ -1,3 +1,7 @@
+0.2.2
+-----
+-  Fix development.ini file
+
 0.2.1
 -----
 -  Bump required version for praekelt-python-gitmodel
