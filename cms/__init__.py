@@ -41,10 +41,7 @@ def init_repository(config):
 
     utils.checkout_all_upstream(repo)
 
-    try:
-        ws = Workspace(os.path.join(repo_path, '.git'), repo.head.name)
-    except:
-        ws = Workspace(os.path.join(repo_path, '.git'))
+    ws = utils.get_workspace(repo)
 
     ws.register_model(models.GitPageModel)
     ws.register_model(models.GitCategoryModel)

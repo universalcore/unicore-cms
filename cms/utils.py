@@ -65,7 +65,7 @@ def fast_forward(repo):
             # fast-forward
             repo.reset(branch.target, pygit2.GIT_RESET_HARD)
     # update repo working directory
-    Workspace(repo.path).sync_repo_index()
+    get_workspace(repo).sync_repo_index()
 
 
 def checkout_upstream(repo, branch):
@@ -99,3 +99,11 @@ def checkout_all_upstream(repo):
 def getall_branches(repo, mode=pygit2.GIT_BRANCH_LOCAL):
     branches = repo.listall_branches(mode)
     return [repo.lookup_branch(b, mode) for b in branches]
+
+
+def get_workspace(repo):
+    try:
+        ws = Workspace(repo.path, repo.head.name)
+    except pygit2.GitError:
+        ws = Workspace(repo.path)
+    return ws
