@@ -14,6 +14,8 @@ need to make sure of is that your version of `libgit2` and `pygit2` are
     $ brew install libffi
     $ brew install libgit2
 
+The requirements.txt file doesn't pin a specific version because it
+varies per platform.
 
 Installing Unicore CMS
 ----------------------
