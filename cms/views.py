@@ -31,12 +31,6 @@ class CmsViews(object):
         renderer = get_renderer("templates/base.pt")
         return renderer.implementation().macros['layout']
 
-    @reify
-    def site_info(self):
-        parent = self.context.__parent__
-        parent_url = self.request.resource_url(parent)
-        return {'url': parent_url}
-
     @cache_region(CACHE_TIME)
     def get_categories(self):
         models = self.get_repo_models()
