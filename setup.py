@@ -24,7 +24,7 @@ requires = [
 ]
 
 setup(name='unicore-cms',
-      version='0.2.3',
+      version='0.2.4',
       description='JSON based CMS for Universal Core',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[

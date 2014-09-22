@@ -1,3 +1,7 @@
+0.2.4
+-----
+-  Allow top nav to be global variable
+
 0.2.2
 -----
 -  Use `utils.get_workspace()` to avoid duplication
