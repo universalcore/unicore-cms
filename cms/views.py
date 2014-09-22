@@ -2,13 +2,13 @@ import os
 import pygit2
 
 from beaker.cache import cache_region
-from unicore_gitmodels import models
-from gitmodel.workspace import Workspace
 
 from pyramid.view import view_config
 from pyramid.renderers import get_renderer
 from pyramid.decorator import reify
 
+from unicore_gitmodels import models
+from cms import utils
 
 CACHE_TIME = 'long_term'
 
@@ -22,7 +22,7 @@ class CmsViews(object):
 
     def get_repo_models(self):
         repo = pygit2.Repository(self.repo_path)
-        ws = Workspace(repo.path, repo.head.name)
+        ws = utils.get_workspace(repo)
         return ws.import_models(models)
 
     @reify
@@ -54,13 +54,14 @@ class CmsViews(object):
         models = self.get_repo_models()
         return models.GitPageModel().get(uuid).to_dict()
 
-    @view_config(route_name='home', renderer='templates/home.pt')
-    def home(self):
-        return {'categories': self.get_categories()}
+    @reify
+    def get_top_nav(self):
+        return self.get_categories()
 
+    @view_config(route_name='home', renderer='templates/home.pt')
     @view_config(route_name='categories', renderer='templates/categories.pt')
     def categories(self):
-        return {'categories': self.get_categories()}
+        return {}
 
     @view_config(route_name='category', renderer='cms:templates/category.pt')
     def category(self):

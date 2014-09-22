@@ -4,7 +4,7 @@ import shutil
 import unittest
 
 from unicore_gitmodels import models
-from gitmodel.workspace import Workspace
+from cms import utils
 
 
 class BaseTestCase(unittest.TestCase):
@@ -21,11 +21,7 @@ class BaseTestCase(unittest.TestCase):
 
     def get_repo_models(self):
         repo = pygit2.Repository(self.repo_path)
-        try:
-            ws = Workspace(repo.path, repo.head.name)
-        except:
-            ws = Workspace(repo.path)
-
+        ws = utils.get_workspace(repo)
         ws.register_model(models.GitPageModel)
         ws.register_model(models.GitCategoryModel)
         return ws.import_models(models)

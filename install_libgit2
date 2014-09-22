@@ -9,6 +9,6 @@ cmake --build .
 make
 make install
 pip install cffi
-pip install pygit2
+pip install pygit2==0.21.1
 cd ..
 rm v0.21.1.tar.gz*

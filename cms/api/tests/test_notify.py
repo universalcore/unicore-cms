@@ -3,10 +3,9 @@ import pygit2
 import shutil
 from pyramid import testing
 from webtest import TestApp
-from cms import main
 from unicore_gitmodels import models
+from cms import main, utils
 from cms.api.tests.utils import BaseTestCase
-from gitmodel.workspace import Workspace
 
 
 class NotifyTestCase(BaseTestCase):
@@ -32,11 +31,7 @@ class NotifyTestCase(BaseTestCase):
 
     def get_remote_repo_models(self):
         repo = self.repo_remote
-        try:
-            ws = Workspace(repo.path, repo.head.name)
-        except:
-            ws = Workspace(repo.path)
-
+        ws = utils.get_workspace(repo)
         ws.register_model(models.GitPageModel)
         ws.register_model(models.GitCategoryModel)
         return ws.import_models(models)

@@ -20,10 +20,11 @@ requires = [
     'praekelt_pyramid_celery',
     'pyramid_redis',
     'unicore-gitmodels',
+    'praekelt-python-gitmodel>=0.1.2'
 ]
 
 setup(name='unicore-cms',
-      version='0.2',
+      version='0.2.3',
       description='JSON based CMS for Universal Core',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[
