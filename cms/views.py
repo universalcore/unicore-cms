@@ -54,13 +54,14 @@ class CmsViews(object):
         models = self.get_repo_models()
         return models.GitPageModel().get(uuid).to_dict()
 
-    @view_config(route_name='home', renderer='templates/home.pt')
-    def home(self):
-        return {'categories': self.get_categories()}
+    @reify
+    def get_top_nav(self):
+        return self.get_categories()
 
+    @view_config(route_name='home', renderer='templates/home.pt')
     @view_config(route_name='categories', renderer='templates/categories.pt')
     def categories(self):
-        return {'categories': self.get_categories()}
+        return {}
 
     @view_config(route_name='category', renderer='cms:templates/category.pt')
     def category(self):
