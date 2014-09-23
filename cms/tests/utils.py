@@ -1,3 +1,5 @@
+import arrow
+from datetime import timedelta
 import os
 import pygit2
 import shutil
@@ -52,9 +54,11 @@ class RepoHelper(object):
     def create_pages(self, count=2):
         models = self.get_models()
         for i in range(count):
+            print u'Test Page %s' % (i,), arrow.utcnow() - timedelta(days=i)
             models.GitPageModel(
                 title=u'Test Page %s' % (i,),
-                content=u'this is sample content for pg %s' % (i,)
+                content=u'this is sample content for pg %s' % (i,),
+                modified_at=(arrow.utcnow() - timedelta(days=i)).datetime
             ).save(True, message=u'added page %s' % (i,))
 
 
