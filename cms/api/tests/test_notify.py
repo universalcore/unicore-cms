@@ -1,7 +1,7 @@
 import os
 from pyramid import testing
 from webtest import TestApp
-from cms import main, utils
+from cms import main
 from cms.api.tests.utils import ApiBaseTestCase, RepoHelper
 
 

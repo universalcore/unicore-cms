@@ -1,6 +1,4 @@
-import os
-
-from cms.tests.utils import BaseTestCase, RepoHelper
+from cms.tests.utils import BaseTestCase
 
 
 class ApiBaseTestCase(BaseTestCase):
