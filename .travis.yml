@@ -3,9 +3,12 @@ python:
   - "2.7"
 install:
   - ./utils/install_libgit2.sh
-  - "pip install coveralls coverage --use-wheel"
+  - "pip install coveralls --use-wheel"
   - "pip install -r requirements.txt --use-wheel"
+  - "pip install pytest --use-wheel"
+  - "pip install pytest-cov --use-wheel"
+  - "pip install pytest-pep8 --use-wheel"
 script:
-  - LIBGIT2=$VIRTUAL_ENV coverage run --source=cms setup.py test
+  - LIBGIT2=$VIRTUAL_ENV py.test --verbose --pep8 --cov ./cms cms
 after_success:
   - coveralls
