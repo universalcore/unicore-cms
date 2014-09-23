@@ -36,7 +36,7 @@ class RepoHelper(object):
         return self.repo.workdir
 
     def destroy(self):
-        shutil.rmtree(self.path)
+        shutil.rmtree(self.workdir)
 
     def get_models(self):
         return self.ws.import_models(models)
