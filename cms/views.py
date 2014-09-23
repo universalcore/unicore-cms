@@ -1,4 +1,3 @@
-import os
 import pygit2
 
 from beaker.cache import cache_region
@@ -18,8 +17,7 @@ class CmsViews(object):
     def __init__(self, context, request):
         self.context = context
         self.request = request
-        self.repo_path = os.path.join(
-            self.request.registry.settings['git.path'], '.git')
+        self.repo_path = self.request.registry.settings['git.path']
 
     def get_repo_models(self):
         repo = pygit2.Repository(self.repo_path)
@@ -40,6 +38,24 @@ class CmsViews(object):
     def get_category(self, uuid):
         models = self.get_repo_models()
         return models.GitCategoryModel().get(uuid).to_dict()
+
+    # @cache_region(CACHE_TIME)
+    def get_pages(self, limit=5, order_by=('modified_at',), reverse=False):
+        """
+        Return pages the GitModel knows about.
+
+        :param int limit:
+            The number of pages to return, defaults to 5.
+        :param tuple order_by:
+            The attributes to order on, defaults to modified_at
+        :param bool reverse:
+            Return the results in reverse order or not, defaults to False
+        """
+        models = self.get_repo_models()
+        sort_key = lambda page: [getattr(page, field) for field in order_by]
+        latest_pages = sorted(models.GitPageModel().all(),
+                              key=sort_key, reverse=reverse)[:limit]
+        return [c.to_dict() for c in latest_pages]
 
     @cache_region(CACHE_TIME)
     def get_pages_for_category(self, category_id):

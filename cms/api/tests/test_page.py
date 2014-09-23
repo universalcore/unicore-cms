@@ -1,23 +1,22 @@
 from pyramid import testing
 from webtest import TestApp
 from cms import main
-from cms.api.tests.utils import BaseTestCase
+from cms.api.tests.utils import ApiBaseTestCase
 
 
-class PageTestCase(BaseTestCase):
+class PageTestCase(ApiBaseTestCase):
 
     def setUp(self):
         self.config = testing.setUp()
-        self.delete_test_repo()
         settings = {'git.path': self.repo_path, 'git.content_repo_url': ''}
         self.app = TestApp(main({}, **settings))
 
-        self.init_categories()
-        self.init_pages()
+        self.repo_helper.init_categories()
+        self.repo_helper.init_pages()
 
     def tearDown(self):
         testing.tearDown()
-        self.delete_test_repo()
+        self.repo_helper.destroy()
 
     def test_get_pages(self):
         resp = self.app.get('/api/pages.json', status=200)
@@ -34,7 +33,7 @@ class PageTestCase(BaseTestCase):
             'Page not found.')
 
     def test_get_pages_for_category(self):
-        models = self.get_repo_models()
+        models = self.repo_helper.get_repo_models()
         hygiene_category = models.GitCategoryModel.filter(slug='hygiene')[0]
         p = models.GitPageModel(
             title='Test Category Page',
@@ -86,7 +85,7 @@ class PageTestCase(BaseTestCase):
             'content is a required field.')
 
     def test_post_page_with_category(self):
-        models = self.get_repo_models()
+        models = self.repo_helper.get_repo_models()
         resp = self.app.get('/api/pages.json', status=200)
         self.assertEquals(len(resp.json), 2)
 
@@ -115,7 +114,7 @@ class PageTestCase(BaseTestCase):
         self.assertEquals(len(resp.json), 3)
 
     def test_put_page(self):
-        models = self.get_repo_models()
+        models = self.repo_helper.get_repo_models()
         resp = self.app.get('/api/pages.json', status=200)
         self.assertEquals(len(resp.json), 2)
         uuid = resp.json[0]['uuid']

@@ -5,10 +5,10 @@ from pyramid import testing
 from webtest import TestApp
 from unicore_gitmodels import models
 from cms import main, utils
-from cms.api.tests.utils import BaseTestCase
+from cms.api.tests.utils import ApiBaseTestCase, RepoHelper
 
 
-class NotifyTestCase(BaseTestCase):
+class NotifyTestCase(ApiBaseTestCase):
 
     def delete_test_repo(self):
         try:
@@ -59,7 +59,10 @@ class NotifyTestCase(BaseTestCase):
         ).save(True, message='added page 2')
 
     def setUp(self):
+
         self.repo_path_remote = os.path.join(os.getcwd(), '.test_remote_repo/')
+        self.remote_repo_helper = RepoHelper(self.repo_path_remote)
+        self.remote_repo_helper.destroy()
 
         self.delete_test_repo()
         self.setup_repositories()

@@ -9,13 +9,11 @@ class TestViews(BaseTestCase):
 
     def setUp(self):
         super(TestViews, self).setUp()
-        self.repo = RepoHelper.create(os.path.join(os.getcwd(), '.test_repo/'))
-        print 'created repo', self.repo.path
+        self.repo = RepoHelper.create(os.path.join(os.getcwd(), '.test_repo'))
         self.config = testing.setUp(settings={
             'git.path': self.repo.path,
             'git.content_repo_url': '',
         })
-        # init_repository(self.config)
         self.views = CmsViews({}, testing.DummyRequest())
 
     def tearDown(self):

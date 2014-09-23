@@ -1,3 +1,4 @@
+import os
 import pygit2
 import shutil
 import unittest
@@ -11,21 +12,17 @@ class RepoHelper(object):
     @classmethod
     def create(cls, repo_path, name='Test Kees', email='test@example.org',
                bare=True, commit_message='initialize repository'):
-        repo = pygit2.init_repository(repo_path, bare)
+        repo = pygit2.init_repository(os.path.join(repo_path, '.git'), bare)
         author = pygit2.Signature(name, email)
         committer = author
         tree = repo.TreeBuilder().write()
         repo.create_commit(
             'refs/heads/master',
             author, committer, commit_message, tree, [])
-        return cls(repo)
+        return cls(repo_path)
 
-    @classmethod
-    def read(cls, repo_path):
-        return cls(pygit2.Repository(repo_path))
-
-    def __init__(self, repo):
-        self.repo = repo
+    def __init__(self, repo_path):
+        self.repo = pygit2.Repository(repo_path)
         self.ws = utils.get_workspace(self.repo)
         self.ws.register_model(models.GitPageModel)
         self.ws.register_model(models.GitCategoryModel)
@@ -33,6 +30,10 @@ class RepoHelper(object):
     @property
     def path(self):
         return self.repo.path
+
+    @property
+    def workdir(self):
+        return self.repo.workdir
 
     def destroy(self):
         shutil.rmtree(self.path)
