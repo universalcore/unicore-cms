@@ -21,7 +21,7 @@ def main(global_config, **settings):
 def init_repository(config):
     settings = config.registry.settings
 
-    if not 'git.path' in settings:
+    if 'git.path' not in settings:
         raise KeyError(
             'Please specify the git repo path '
             'e.g [app:main] git.path = %(here)s/repo/')

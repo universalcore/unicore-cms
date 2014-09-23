@@ -3,12 +3,11 @@ python:
   - "2.7"
 install:
   - ./utils/install_libgit2.sh
-  - "pip install coveralls --use-wheel"
-  - "pip install -r requirements.txt --use-wheel"
-  - "pip install pytest --use-wheel"
-  - "pip install pytest-cov --use-wheel"
-  - "pip install pytest-pep8 --use-wheel"
+  - pip install -r requirements.txt --use-wheel
+  - pip install -r requirements-dev.txt --use-wheel
+  - pip install -e . --use-wheel
 script:
-  - LIBGIT2=$VIRTUAL_ENV py.test --verbose --pep8 --cov ./cms cms
+  - find ./cms -name '*.py' | xargs pep8
+  - LIBGIT2=$VIRTUAL_ENV ./run-tests.sh
 after_success:
   - coveralls

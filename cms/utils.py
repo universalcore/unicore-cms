@@ -23,7 +23,7 @@ def get_remote_updates_log(repo, branch_name=None):
     if remote_name is None:
         return []
 
-    if not branch_name is None:
+    if branch_name is not None:
         local_branch = repo.lookup_branch(branch_name)
     else:
         local_branch = repo.head
@@ -85,7 +85,6 @@ def checkout_branch(repo, name):
 
 
 def checkout_all_upstream(repo):
-    #fastforward(repo)
     for branch in repo.listall_branches(pygit2.GIT_BRANCH_REMOTE):
         name = branch.split('/')[1]
 
