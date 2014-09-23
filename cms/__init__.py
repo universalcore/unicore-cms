@@ -36,7 +36,7 @@ def init_repository(config):
 
     try:
         repo = pygit2.Repository(repo_path)
-    except (KeyError,), e:
+    except KeyError:
         repo = pygit2.init_repository(repo_path, False)
 
     utils.checkout_all_upstream(repo)
