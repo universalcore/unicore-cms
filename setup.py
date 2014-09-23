@@ -8,20 +8,8 @@ with open(os.path.join(here, 'README.rst')) as f:
 with open(os.path.join(here, 'CHANGES.rst')) as f:
     CHANGES = f.read()
 
-requires = [
-    'pyramid',
-    'pyramid_chameleon',
-    'pyramid_debugtoolbar',
-    'waitress',
-    'pyramid_beaker',
-    'python-memcached',
-    'webtest',
-    'cornice',
-    'praekelt_pyramid_celery',
-    'pyramid_redis',
-    'unicore-gitmodels',
-    'praekelt-python-gitmodel>=0.1.2'
-]
+with open(os.path.join(here, 'requirements.txt')) as f:
+    requires = filter(None, f.readlines())
 
 setup(name='unicore-cms',
       version='0.2.3',
