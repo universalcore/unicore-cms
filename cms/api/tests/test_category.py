@@ -4,7 +4,7 @@ from pyramid import testing
 from webtest import TestApp
 
 from cms import main
-from cms.api.tests.utils import BaseTestCase
+from cms.tests.utils import BaseTestCase
 from cms.tests.utils import RepoHelper
 
 
