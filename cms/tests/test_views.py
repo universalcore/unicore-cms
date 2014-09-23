@@ -1,3 +1,5 @@
+import arrow
+from datetime import timedelta
 import os
 from pyramid import testing
 
@@ -33,7 +35,10 @@ class TestViews(BaseTestCase):
             ['Test Page 0', 'Test Page 1'])
 
     def test_get_pages_reversed(self):
-        self.repo.create_pages(count=10)
+        self.repo.create_pages(
+            count=10,
+            timestamp_cb=lambda i: (
+                arrow.utcnow() - timedelta(days=i)).isoformat())
         pages = self.views.get_pages(limit=2, reverse=True)
         self.assertEqual(
             [p['title'] for p in pages],

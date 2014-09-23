@@ -39,7 +39,6 @@ class CmsViews(object):
         models = self.get_repo_models()
         return models.GitCategoryModel().get(uuid).to_dict()
 
-    # @cache_region(CACHE_TIME)
     def get_pages(self, limit=5, order_by=('modified_at',), reverse=False):
         """
         Return pages the GitModel knows about.
