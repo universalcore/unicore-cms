@@ -1,6 +1,6 @@
 include LICENSE
 include README.rst
 include CHANGES.rst
-include install_libgit2
 include requirements.txt
+recursive-include utils/*
 recursive-include cms *
