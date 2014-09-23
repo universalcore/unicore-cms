@@ -15,7 +15,8 @@ CACHE_TIME = 'long_term'
 
 class CmsViews(object):
 
-    def __init__(self, request):
+    def __init__(self, context, request):
+        self.context = context
         self.request = request
         self.repo_path = os.path.join(
             self.request.registry.settings['git.path'], '.git')
