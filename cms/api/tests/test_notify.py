@@ -2,10 +2,10 @@ import os
 from pyramid import testing
 from webtest import TestApp
 from cms import main
-from cms.api.tests.utils import ApiBaseTestCase, RepoHelper
+from cms.tests.utils import BaseTestCase, RepoHelper
 
 
-class NotifyTestCase(ApiBaseTestCase):
+class NotifyTestCase(BaseTestCase):
 
     def setUp(self):
         self.repo_path = os.path.join(os.getcwd(), '.test_repo')
