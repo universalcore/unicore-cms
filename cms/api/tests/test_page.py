@@ -1,22 +1,29 @@
+import os
 from pyramid import testing
 from webtest import TestApp
 from cms import main
 from cms.api.tests.utils import ApiBaseTestCase
+from cms.tests.utils import RepoHelper
 
 
 class PageTestCase(ApiBaseTestCase):
 
     def setUp(self):
         self.config = testing.setUp()
-        settings = {'git.path': self.repo_path, 'git.content_repo_url': ''}
-        self.app = TestApp(main({}, **settings))
+        self.repo_path = os.path.join(os.getcwd(), '.test_repo')
+        self.repo = RepoHelper.create(self.repo_path)
+        self.repo.create_categories()
+        self.repo.create_pages()
 
-        self.repo_helper.init_categories()
-        self.repo_helper.init_pages()
+        settings = {
+            'git.path': self.repo.path,
+            'git.content_repo_url': '',
+        }
+        self.app = TestApp(main({}, **settings))
 
     def tearDown(self):
         testing.tearDown()
-        self.repo_helper.destroy()
+        self.repo.destroy()
 
     def test_get_pages(self):
         resp = self.app.get('/api/pages.json', status=200)
@@ -33,7 +40,7 @@ class PageTestCase(ApiBaseTestCase):
             'Page not found.')
 
     def test_get_pages_for_category(self):
-        models = self.repo_helper.get_repo_models()
+        models = self.repo.get_models()
         hygiene_category = models.GitCategoryModel.filter(slug='hygiene')[0]
         p = models.GitPageModel(
             title='Test Category Page',
@@ -85,7 +92,7 @@ class PageTestCase(ApiBaseTestCase):
             'content is a required field.')
 
     def test_post_page_with_category(self):
-        models = self.repo_helper.get_repo_models()
+        models = self.repo.get_models()
         resp = self.app.get('/api/pages.json', status=200)
         self.assertEquals(len(resp.json), 2)
 
@@ -114,7 +121,7 @@ class PageTestCase(ApiBaseTestCase):
         self.assertEquals(len(resp.json), 3)
 
     def test_put_page(self):
-        models = self.repo_helper.get_repo_models()
+        models = self.repo.get_models()
         resp = self.app.get('/api/pages.json', status=200)
         self.assertEquals(len(resp.json), 2)
         uuid = resp.json[0]['uuid']

@@ -11,7 +11,7 @@ class RepoHelper(object):
 
     @classmethod
     def create(cls, repo_path, name='Test Kees', email='test@example.org',
-               bare=True, commit_message='initialize repository'):
+               bare=False, commit_message='initialize repository'):
         repo = pygit2.init_repository(os.path.join(repo_path, '.git'), bare)
         author = pygit2.Signature(name, email)
         committer = author

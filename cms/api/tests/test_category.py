@@ -1,22 +1,30 @@
+import os
+
 from pyramid import testing
 from webtest import TestApp
+
 from cms import main
 from cms.api.tests.utils import BaseTestCase
+from cms.tests.utils import RepoHelper
 
 
 class CategoryTestCase(BaseTestCase):
 
     def setUp(self):
         self.config = testing.setUp()
-        self.delete_test_repo()
-        settings = {'git.path': self.repo_path}
-        self.app = TestApp(main({}, **settings))
 
-        self.init_categories()
+        self.repo_path = os.path.join(os.getcwd(), '.test_repo')
+        self.repo = RepoHelper.create(self.repo_path)
+        self.repo.create_categories()
+
+        settings = {
+            'git.path': self.repo.path,
+        }
+        self.app = TestApp(main({}, **settings))
 
     def tearDown(self):
         testing.tearDown()
-        self.delete_test_repo()
+        self.repo.destroy()
 
     def test_get_categories(self):
         resp = self.app.get('/api/categories.json', status=200)
