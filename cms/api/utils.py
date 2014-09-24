@@ -1,4 +1,3 @@
-import os
 import pygit2
 
 from unicore_gitmodels import models
@@ -11,8 +10,7 @@ class ApiBase(object):
         self.request = request
 
     def get_registered_ws(self):
-        repo_path = os.path.join(
-            self.request.registry.settings['git.path'], '.git')
+        repo_path = self.request.registry.settings['git.path']
         repo = pygit2.Repository(repo_path)
         ws = utils.get_workspace(repo)
         ws.register_model(models.GitPageModel)
