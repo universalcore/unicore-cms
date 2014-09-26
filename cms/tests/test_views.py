@@ -46,7 +46,7 @@ class TestViews(BaseTestCase):
             ['Test Page 0', 'Test Page 1'])
 
     def test_get_available_languages(self):
-        languages = self.views.get_available_languages()
+        languages = self.views.get_available_languages
         self.assertEqual(languages[0]['code'], 'eng_UK')
         self.assertEqual(languages[1]['code'], 'swh_KE')
 
