@@ -31,7 +31,7 @@ class CmsViews(object):
         langs = self.request.registry.settings.get('available_languages', '')
         return [
             {'code': l.split(':')[0], 'title': l.split(':')[1]}
-            for l in langs.split()
+            for l in langs.split(',')
         ]
 
     @reify
