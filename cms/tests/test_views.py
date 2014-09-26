@@ -16,6 +16,7 @@ class TestViews(BaseTestCase):
         self.config = testing.setUp(settings={
             'git.path': self.repo.path,
             'git.content_repo_url': '',
+            'cache.enabled': False,
             'available_languages': languages,
         })
         self.views = CmsViews({}, testing.DummyRequest())
