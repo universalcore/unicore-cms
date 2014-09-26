@@ -63,6 +63,7 @@ def includeme(config):
     config.add_route('configure_fast_forward', '/admin/configure/fastforward/')
     config.add_route('commit_log', '/admin/configure/log.json')
     config.add_route('get_updates', '/admin/configure/updates.json')
+    config.add_route('locale', '/locale/')
     config.scan()
 
     init_repository(config)

@@ -12,4 +12,6 @@ unicore-gitmodels
 cffi
 pygit2
 praekelt-python-gitmodel>=0.1.2
+babel
+lingua
 arrow
