@@ -1,5 +1,7 @@
 import pygit2
 
+from ast import literal_eval
+
 from beaker.cache import cache_region
 
 from pyramid.view import view_config
@@ -29,10 +31,7 @@ class CmsViews(object):
     @reify
     def get_available_languages(self):
         langs = self.request.registry.settings.get('available_languages', '')
-        return [
-            {'code': l.split(':')[0].strip(), 'title': l.split(':')[1].strip()}
-            for l in langs.split(',')
-        ]
+        return literal_eval(langs)
 
     @reify
     def global_template(self):
