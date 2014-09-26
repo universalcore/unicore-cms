@@ -30,7 +30,7 @@ class CmsViews(object):
     def get_available_languages(self):
         langs = self.request.registry.settings.get('available_languages', '')
         return [
-            {'code': l.split(':')[0], 'title': l.split(':')[1]}
+            {'code': l.split(':')[0].strip(), 'title': l.split(':')[1].strip()}
             for l in langs.split(',')
         ]
 
