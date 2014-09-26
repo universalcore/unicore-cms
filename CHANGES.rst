@@ -1,3 +1,7 @@
+0.2.5
+-----
+-  Added support for translations
+
 0.2.4
 -----
 -  Allow top nav to be global variable
