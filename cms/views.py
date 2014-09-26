@@ -30,7 +30,8 @@ class CmsViews(object):
 
     @reify
     def get_available_languages(self):
-        langs = self.request.registry.settings.get('available_languages', '')
+        langs = self.request.registry.settings.get(
+            'available_languages', '[]')
         return literal_eval(langs)
 
     @reify
