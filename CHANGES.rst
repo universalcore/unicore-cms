@@ -1,3 +1,7 @@
+0.2.6
+-----
+-  Added sensible default for available_languages
+
 0.2.5
 -----
 -  Added support for translations
