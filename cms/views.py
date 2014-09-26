@@ -1,10 +1,14 @@
 import pygit2
 
+from ast import literal_eval
+
 from beaker.cache import cache_region
 
 from pyramid.view import view_config
 from pyramid.renderers import get_renderer
 from pyramid.decorator import reify
+from pyramid.response import Response
+from pyramid.httpexceptions import HTTPFound
 
 from unicore_gitmodels import models
 from cms import utils
@@ -23,6 +27,11 @@ class CmsViews(object):
         repo = pygit2.Repository(self.repo_path)
         ws = utils.get_workspace(repo)
         return ws.import_models(models)
+
+    @reify
+    def get_available_languages(self):
+        langs = self.request.registry.settings.get('available_languages', '')
+        return literal_eval(langs)
 
     @reify
     def global_template(self):
@@ -99,3 +108,14 @@ class CmsViews(object):
     @view_config(route_name='content', renderer='cms:templates/content.pt')
     def content(self):
         return {'page': self.get_page(self.request.matchdict['uuid'])}
+
+    @view_config(route_name='locale')
+    def set_locale_cookie(self):
+        if self.request.GET['language']:
+            language = self.request.GET['language']
+            response = Response()
+            response.set_cookie('_LOCALE_',
+                                value=language,
+                                max_age=31536000)  # max_age = year
+        return HTTPFound(location=self.request.environ['HTTP_REFERER'],
+                         headers=response.headers)

@@ -12,9 +12,11 @@ class TestViews(BaseTestCase):
     def setUp(self):
         super(TestViews, self).setUp()
         self.repo = RepoHelper.create(os.path.join(os.getcwd(), '.test_repo'))
+        languages = "[('eng_UK', 'English'), ('swh_KE', 'Swahili (Kenya)')]"
         self.config = testing.setUp(settings={
             'git.path': self.repo.path,
             'git.content_repo_url': '',
+            'available_languages': languages,
         })
         self.views = CmsViews({}, testing.DummyRequest())
 
@@ -43,6 +45,12 @@ class TestViews(BaseTestCase):
         self.assertEqual(
             [p['title'] for p in pages],
             ['Test Page 0', 'Test Page 1'])
+
+    def test_get_available_languages(self):
+        languages = self.views.get_available_languages
+        self.assertEqual(languages[0][0], 'eng_UK')
+        self.assertEqual(languages[1][0], 'swh_KE')
+        self.assertEqual(languages[1][1], 'Swahili (Kenya)')
 
     def test_get_featured_category_pages(self):
         category1, category2 = self.repo.create_categories()
