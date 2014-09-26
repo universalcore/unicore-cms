@@ -43,21 +43,29 @@ class RepoHelper(object):
 
     def create_categories(self, names=[u'Diarrhoea', u'Hygiene']):
         models = self.get_models()
-
+        categories = []
         for name in names:
             category = models.GitCategoryModel(title=name)
             category.slug = category.slugify(name)
             category.save(True, message=u'added %s Category' % (name,))
+            categories.append(
+                models.GitCategoryModel().get(category.uuid))
+
+        return categories
 
     def create_pages(self, count=2, timestamp_cb=None):
         timestamp_cb = timestamp_cb or (lambda i: None)
         models = self.get_models()
+        pages = []
         for i in range(count):
-            models.GitPageModel(
+            page = models.GitPageModel(
                 title=u'Test Page %s' % (i,),
                 content=u'this is sample content for pg %s' % (i,),
-                modified_at=timestamp_cb(i)
-            ).save(True, message=u'added page %s' % (i,))
+                modified_at=timestamp_cb(i))
+            page.save(True, message=u'added page %s' % (i,))
+            pages.append(models.GitPageModel().get(page.uuid))
+
+        return pages
 
 
 class BaseTestCase(unittest.TestCase):
