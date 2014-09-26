@@ -43,3 +43,23 @@ class TestViews(BaseTestCase):
         self.assertEqual(
             [p['title'] for p in pages],
             ['Test Page 0', 'Test Page 1'])
+
+    def test_get_featured_category_pages(self):
+        category1, category2 = self.repo.create_categories()
+        pages = self.repo.create_pages(count=10)
+
+        for page in pages[:8]:
+            page.primary_category = category1
+            page.save(True, message='Added category.')
+
+        for page in pages[8:]:
+            page.primary_category = category1
+            page.featured_in_category = True
+            page.save(True, message='Added category & set featured.')
+
+        page1, page2 = self.views.get_featured_category_pages(category1.uuid)
+        self.assertEqual(
+            set([page1['title'], page2['title']]),
+            set(['Test Page 8', 'Test Page 9']))
+        self.assertEqual(
+            [], self.views.get_featured_category_pages(category2.uuid))
