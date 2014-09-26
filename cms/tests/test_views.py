@@ -15,6 +15,7 @@ class TestViews(BaseTestCase):
         self.config = testing.setUp(settings={
             'git.path': self.repo.path,
             'git.content_repo_url': '',
+            'available_languages': 'eng_UK:English swh_KE:Swahili',
         })
         self.views = CmsViews({}, testing.DummyRequest())
 
@@ -43,3 +44,8 @@ class TestViews(BaseTestCase):
         self.assertEqual(
             [p['title'] for p in pages],
             ['Test Page 0', 'Test Page 1'])
+
+    def test_get_available_languages(self):
+        languages = self.views.get_available_languages()
+        self.assertEqual(languages[0]['code'], 'eng_UK')
+        self.assertEqual(languages[1]['code'], 'swh_KE')
