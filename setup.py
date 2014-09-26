@@ -12,7 +12,7 @@ with open(os.path.join(here, 'requirements.txt')) as f:
     requires = filter(None, f.readlines())
 
 setup(name='unicore-cms',
-      version='0.2.6',
+      version='0.2.7',
       description='JSON based CMS for Universal Core',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[

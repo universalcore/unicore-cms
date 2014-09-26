@@ -1,3 +1,10 @@
+CHANGELOG
+=========
+
+0.2.7
+-----
+-  Add caching to `get_featured_category_pages`
+
 0.2.6
 -----
 -  Added sensible default for available_languages

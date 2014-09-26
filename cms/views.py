@@ -75,6 +75,7 @@ class CmsViews(object):
             for p in models.GitPageModel().filter(primary_category=category)
         ]
 
+    @cache_region(CACHE_TIME)
     def get_featured_category_pages(self, category_id):
         models = self.get_repo_models()
         category = models.GitCategoryModel().get(category_id)
