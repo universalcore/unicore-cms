@@ -120,7 +120,6 @@ class CmsViews(object):
 
     @view_config(route_name='flatpage', renderer='cms:templates/flatpage.pt')
     def flatpage(self):
-        print self.request.matchdict['slug']
         try:
             page = self.get_page(None, self.request.matchdict['slug'])
             return {'page': page}
