@@ -4,11 +4,13 @@ from ast import literal_eval
 
 from beaker.cache import cache_region
 
+from gitmodel import exceptions
+
 from pyramid.view import view_config
 from pyramid.renderers import get_renderer
 from pyramid.decorator import reify
 from pyramid.response import Response
-from pyramid.httpexceptions import HTTPFound
+from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 
 from unicore_gitmodels import models
 from cms import utils
@@ -86,9 +88,15 @@ class CmsViews(object):
         ]
 
     @cache_region(CACHE_TIME)
-    def get_page(self, uuid):
+    def get_page(self, uuid=None, slug=None):
         models = self.get_repo_models()
-        return models.GitPageModel().get(uuid).to_dict()
+        if uuid:
+            return models.GitPageModel().get(uuid).to_dict()
+        if slug:
+            pages = models.GitPageModel().filter(slug=slug)
+            if any(pages):
+                return pages[0].to_dict()
+        raise exceptions.DoesNotExist()
 
     @reify
     def get_top_nav(self):
@@ -109,6 +117,15 @@ class CmsViews(object):
     @view_config(route_name='content', renderer='cms:templates/content.pt')
     def content(self):
         return {'page': self.get_page(self.request.matchdict['uuid'])}
+
+    @view_config(route_name='flatpage', renderer='cms:templates/flatpage.pt')
+    def flatpage(self):
+        print self.request.matchdict['slug']
+        try:
+            page = self.get_page(None, self.request.matchdict['slug'])
+            return {'page': page}
+        except exceptions.DoesNotExist:
+            raise HTTPNotFound()
 
     @view_config(route_name='locale')
     def set_locale_cookie(self):

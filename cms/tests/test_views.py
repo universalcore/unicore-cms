@@ -1,6 +1,9 @@
 import arrow
 from datetime import timedelta
 import os
+
+from gitmodel import exceptions
+
 from pyramid import testing
 from pyramid_beaker import set_cache_regions_from_settings
 
@@ -77,3 +80,11 @@ class TestViews(BaseTestCase):
             set(['Test Page 8', 'Test Page 9']))
         self.assertEqual(
             [], self.views.get_featured_category_pages(category2.uuid))
+
+    def test_get_page_by_slug(self):
+        self.repo.create_pages(count=10)
+        p = self.views.get_page(None, 'test-page-1')
+        self.assertEqual(p['title'], 'Test Page 1')
+
+        with self.assertRaises(exceptions.DoesNotExist):
+            p = self.views.get_page(None, 'invalid-slug')
