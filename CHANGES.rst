@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+0.2.8
+-----
+-  Add support for flat pages
+
 0.2.7
 -----
 -  Add caching to `get_featured_category_pages`
