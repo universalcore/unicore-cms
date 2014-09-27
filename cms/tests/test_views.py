@@ -2,6 +2,7 @@ import arrow
 from datetime import timedelta
 import os
 from pyramid import testing
+from pyramid_beaker import set_cache_regions_from_settings
 
 from cms.views import CmsViews
 from cms.tests.utils import BaseTestCase, RepoHelper
@@ -13,13 +14,17 @@ class TestViews(BaseTestCase):
         super(TestViews, self).setUp()
         self.repo = RepoHelper.create(os.path.join(os.getcwd(), '.test_repo'))
         languages = "[('eng_UK', 'English'), ('swh_KE', 'Swahili (Kenya)')]"
-        self.config = testing.setUp(settings={
+        settings = {
             'git.path': self.repo.path,
             'git.content_repo_url': '',
-            'cache.enabled': False,
+            'cache.enabled': 'false',
+            'cache.regions': 'long_term',
+            'cache.long_term.expire': '1',
             'available_languages': languages,
-        })
-        self.views = CmsViews({}, testing.DummyRequest())
+        }
+        self.config = testing.setUp(settings=settings)
+        set_cache_regions_from_settings(settings)
+        self.views = CmsViews(testing.DummyRequest())
 
     def tearDown(self):
         self.repo.destroy()
