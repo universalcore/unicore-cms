@@ -82,6 +82,44 @@ class TestViews(BaseTestCase):
         self.assertEqual(
             [], self.views.get_featured_category_pages(category2.uuid))
 
+    def test_get_featured_category_pages_swahili(self):
+        self.views = CmsViews(testing.DummyRequest({'_LOCALE_': 'swh_KE'}))
+
+        category1, category2 = self.repo.create_categories()
+        category3, category4 = self.repo.create_categories(
+            [u'Dog', u'Cat'], 'swh_KE')
+        pages = self.repo.create_pages(count=10)
+        pages_swh = self.repo.create_pages(count=10, locale='swh_KE')
+
+        # Default english pages
+        for page in pages[:8]:
+            page.primary_category = category1
+            page.save(True, message='Added category.')
+
+        # Pages in swahili
+        for page in pages_swh[:8]:
+            page.primary_category = category3
+            page.save(True, message='Added category.')
+
+        # Default english pages
+        for page in pages[8:]:
+            page.primary_category = category1
+            page.featured_in_category = True
+            page.save(True, message='Added category & set featured.')
+
+        # Pages in swahili
+        for page in pages_swh[8:]:
+            page.primary_category = category3
+            page.featured_in_category = True
+            page.save(True, message='Added category & set featured.')
+
+        page1, page2 = self.views.get_featured_category_pages(category3.uuid)
+        self.assertEqual(
+            set([page1['language'], page2['language']]),
+            set(['swh_KE', 'swh_KE']))
+        self.assertEqual(
+            [], self.views.get_featured_category_pages(category4.uuid))
+
     def test_get_page_by_slug(self):
         self.repo.create_pages(count=10)
         p = self.views.get_page(None, 'test-page-1')
