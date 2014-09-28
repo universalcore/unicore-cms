@@ -80,6 +80,9 @@ class TestViews(BaseTestCase):
             set([page1['title'], page2['title']]),
             set(['Test Page 8', 'Test Page 9']))
         self.assertEqual(
+            set([page1['language'], page2['language']]),
+            set(['eng_UK', 'eng_UK']))
+        self.assertEqual(
             [], self.views.get_featured_category_pages(category2.uuid))
 
     def test_get_featured_category_pages_swahili(self):
@@ -96,23 +99,26 @@ class TestViews(BaseTestCase):
             page.primary_category = category1
             page.save(True, message='Added category.')
 
-        # Pages in swahili
-        for page in pages_swh[:8]:
-            page.primary_category = category3
-            page.save(True, message='Added category.')
-
-        # Default english pages
         for page in pages[8:]:
             page.primary_category = category1
             page.featured_in_category = True
             page.save(True, message='Added category & set featured.')
 
         # Pages in swahili
+        for page in pages_swh[:8]:
+            page.primary_category = category3
+            page.save(True, message='Added category.')
+
         for page in pages_swh[8:]:
             page.primary_category = category3
             page.featured_in_category = True
             page.save(True, message='Added category & set featured.')
 
+        # Assert english content not return since language is swahili
+        self.assertEqual(
+            [], self.views.get_featured_category_pages(category1.uuid))
+
+        # Assert swahili content
         page1, page2 = self.views.get_featured_category_pages(category3.uuid)
         self.assertEqual(
             set([page1['language'], page2['language']]),
