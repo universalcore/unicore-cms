@@ -41,11 +41,12 @@ class RepoHelper(object):
     def get_models(self):
         return self.ws.import_models(models)
 
-    def create_categories(self, names=[u'Diarrhoea', u'Hygiene']):
+    def create_categories(
+            self, names=[u'Diarrhoea', u'Hygiene'], locale='eng_UK'):
         models = self.get_models()
         categories = []
         for name in names:
-            category = models.GitCategoryModel(title=name)
+            category = models.GitCategoryModel(title=name, language=locale)
             category.slug = category.slugify(name)
             category.save(True, message=u'added %s Category' % (name,))
             categories.append(
@@ -53,7 +54,7 @@ class RepoHelper(object):
 
         return categories
 
-    def create_pages(self, count=2, timestamp_cb=None):
+    def create_pages(self, count=2, timestamp_cb=None, locale='eng_UK'):
         timestamp_cb = timestamp_cb or (lambda i: None)
         models = self.get_models()
         pages = []
@@ -61,7 +62,8 @@ class RepoHelper(object):
             page = models.GitPageModel(
                 title=u'Test Page %s' % (i,),
                 content=u'this is sample content for pg %s' % (i,),
-                modified_at=timestamp_cb(i))
+                modified_at=timestamp_cb(i),
+                language=locale)
             page.save(True, message=u'added page %s' % (i,))
             pages.append(models.GitPageModel().get(page.uuid))
 

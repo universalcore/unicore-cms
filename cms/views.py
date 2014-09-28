@@ -24,6 +24,9 @@ class CmsViews(object):
         self.request = request
         self.repo_path = self.request.registry.settings['git.path']
 
+        locale = request.registry.settings.get('pyramid.default_locale_name')
+        self.locale = self.request.cookies.get('_LOCALE_', locale)
+
     def get_repo_models(self):
         repo = pygit2.Repository(self.repo_path)
         ws = utils.get_workspace(repo)
@@ -40,10 +43,15 @@ class CmsViews(object):
         renderer = get_renderer("templates/base.pt")
         return renderer.implementation().macros['layout']
 
-    @cache_region(CACHE_TIME)
     def get_categories(self):
+        return self._get_categories(self.locale)
+
+    @cache_region(CACHE_TIME)
+    def _get_categories(self, locale):
         models = self.get_repo_models()
-        return [c.to_dict() for c in models.GitCategoryModel().all()]
+        return [
+            c.to_dict()
+            for c in models.GitCategoryModel().filter(language=locale)]
 
     @cache_region(CACHE_TIME)
     def get_category(self, uuid):
@@ -63,28 +71,34 @@ class CmsViews(object):
         """
         models = self.get_repo_models()
         sort_key = lambda page: [getattr(page, field) for field in order_by]
-        latest_pages = sorted(models.GitPageModel().all(),
-                              key=sort_key, reverse=reverse)[:limit]
+        latest_pages = sorted(
+            models.GitPageModel().filter(language=self.locale),
+            key=sort_key, reverse=reverse)[:limit]
         return [c.to_dict() for c in latest_pages]
 
     @cache_region(CACHE_TIME)
-    def get_pages_for_category(self, category_id):
+    def get_pages_for_category(self, category_id, locale):
         models = self.get_repo_models()
         category = models.GitCategoryModel().get(category_id)
         return [
             p.to_dict()
-            for p in models.GitPageModel().filter(primary_category=category)
+            for p in models.GitPageModel().filter(
+                primary_category=category, language=locale)
         ]
 
-    @cache_region(CACHE_TIME)
     def get_featured_category_pages(self, category_id):
+        return self._get_featured_category_pages(category_id, self.locale)
+
+    @cache_region(CACHE_TIME)
+    def _get_featured_category_pages(self, category_id, locale):
         models = self.get_repo_models()
         category = models.GitCategoryModel().get(category_id)
         return [
             p.to_dict()
             for p in models.GitPageModel().filter(
                 primary_category=category,
-                featured_in_category=True)
+                featured_in_category=True,
+                language=locale)
         ]
 
     @cache_region(CACHE_TIME)
@@ -111,17 +125,28 @@ class CmsViews(object):
     def category(self):
         category_id = self.request.matchdict['category']
         category = self.get_category(category_id)
-        pages = self.get_pages_for_category(category_id)
+
+        if category.language != self.locale:
+            raise HTTPNotFound()
+
+        pages = self.get_pages_for_category(category_id, self.locale)
         return {'category': category, 'pages': pages}
 
     @view_config(route_name='content', renderer='cms:templates/content.pt')
     def content(self):
-        return {'page': self.get_page(self.request.matchdict['uuid'])}
+        page = self.get_page(self.request.matchdict['uuid'])
+        if page.language != self.locale:
+            raise HTTPNotFound()
+        return {'page': page}
 
     @view_config(route_name='flatpage', renderer='cms:templates/flatpage.pt')
     def flatpage(self):
         try:
             page = self.get_page(None, self.request.matchdict['slug'])
+
+            if page.language != self.locale:
+                raise exceptions.DoesNotExist()
+
             return {'page': page}
         except exceptions.DoesNotExist:
             raise HTTPNotFound()

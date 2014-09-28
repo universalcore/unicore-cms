@@ -24,6 +24,7 @@ class TestViews(BaseTestCase):
             'cache.regions': 'long_term',
             'cache.long_term.expire': '1',
             'available_languages': languages,
+            'pyramid.default_locale_name': 'eng_UK',
         }
         self.config = testing.setUp(settings=settings)
         set_cache_regions_from_settings(settings)
