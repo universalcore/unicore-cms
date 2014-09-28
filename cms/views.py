@@ -23,14 +23,7 @@ class CmsViews(object):
     def __init__(self, request):
         self.request = request
         self.repo_path = self.request.registry.settings['git.path']
-
-        # TODO
-        # Replace with locale use by pyramid
-        default_locale = request.registry.settings.get(
-            'pyramid.default_locale_name')
-        locale = self.request.cookies.get('_LOCALE_', default_locale)
-        self.locale = self.request.GET.get(
-            '_LOCALE_', locale)
+        self.locale = request.locale_name
 
     def get_repo_models(self):
         repo = pygit2.Repository(self.repo_path)
