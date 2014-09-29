@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+0.3.2
+-----
+-  Ensure setting locale always redirects
+
 0.3.1
 -----
 -  Fix error when checking language for cached category/page
