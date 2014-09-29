@@ -114,7 +114,7 @@ class TestViews(BaseTestCase):
             page.featured_in_category = True
             page.save(True, message='Added category & set featured.')
 
-        # Assert english content not return since language is swahili
+        # Assert english content not returned since language is swahili
         self.assertEqual(
             [], self.views.get_featured_category_pages(category1.uuid))
 
