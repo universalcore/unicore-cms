@@ -154,7 +154,7 @@ class TestViews(BaseTestCase):
     def test_get_top_nav(self):
         category1, category2 = self.repo.create_categories()
         category3, category4 = self.repo.create_categories(
-            [u'Dog', u'Cat'], 'swh_KE', featured=True)
+            [u'Dog', u'Cat'], 'swh_KE', featured_in_navbar=True)
 
         self.assertEqual([], self.views.get_top_nav)
 
