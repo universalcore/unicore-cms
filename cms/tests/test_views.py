@@ -150,3 +150,17 @@ class TestViews(BaseTestCase):
         self.assertEqual(
             set([cat1['language'], cat2['language']]),
             set(['swh_KE', 'swh_KE']))
+
+    def test_get_top_nav(self):
+        category1, category2 = self.repo.create_categories()
+        category3, category4 = self.repo.create_categories(
+            [u'Dog', u'Cat'], 'swh_KE', featured_in_navbar=True)
+
+        self.assertEqual([], self.views.get_top_nav)
+
+        # Change language
+        self.views = CmsViews(testing.DummyRequest({'_LOCALE_': 'swh_KE'}))
+        cat1, cat2 = self.views.get_top_nav
+        self.assertEqual(
+            set([cat1['language'], cat2['language']]),
+            set(['swh_KE', 'swh_KE']))

@@ -112,7 +112,15 @@ class CmsViews(object):
 
     @reify
     def get_top_nav(self):
-        return self.get_categories()
+        return self._get_top_nav(self.locale)
+
+    @cache_region(CACHE_TIME)
+    def _get_top_nav(self, locale):
+        models = self.get_repo_models()
+        return [
+            c.to_dict()
+            for c in models.GitCategoryModel().filter(
+                language=locale, featured_in_navbar=True)]
 
     @view_config(route_name='home', renderer='templates/home.pt')
     @view_config(route_name='categories', renderer='templates/categories.pt')
