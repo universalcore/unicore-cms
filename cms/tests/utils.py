@@ -42,11 +42,13 @@ class RepoHelper(object):
         return self.ws.import_models(models)
 
     def create_categories(
-            self, names=[u'Diarrhoea', u'Hygiene'], locale='eng_UK'):
+            self, names=[u'Diarrhoea', u'Hygiene'], locale='eng_UK',
+            featured_in_navbar=False):
         models = self.get_models()
         categories = []
         for name in names:
             category = models.GitCategoryModel(title=name, language=locale)
+            category.featured_in_navbar = featured_in_navbar
             category.slug = category.slugify(name)
             category.save(True, message=u'added %s Category' % (name,))
             categories.append(
