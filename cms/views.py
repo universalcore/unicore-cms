@@ -124,7 +124,7 @@ class CmsViews(object):
         category_id = self.request.matchdict['category']
         category = self.get_category(category_id)
 
-        if category.language != self.locale:
+        if category['language'] != self.locale:
             raise HTTPNotFound()
 
         pages = self.get_pages_for_category(category_id, self.locale)
@@ -133,7 +133,7 @@ class CmsViews(object):
     @view_config(route_name='content', renderer='cms:templates/content.pt')
     def content(self):
         page = self.get_page(self.request.matchdict['uuid'])
-        if page.language != self.locale:
+        if page['language'] != self.locale:
             raise HTTPNotFound()
         return {'page': page}
 
@@ -142,7 +142,7 @@ class CmsViews(object):
         try:
             page = self.get_page(None, self.request.matchdict['slug'])
 
-            if page.language != self.locale:
+            if page['language'] != self.locale:
                 raise exceptions.DoesNotExist()
 
             return {'page': page}

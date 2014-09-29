@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+0.3.1
+-----
+-  Fix error when checking language for cached category/page
+
 0.3.0
 -----
 -  Allow content to be filtered by language selection
