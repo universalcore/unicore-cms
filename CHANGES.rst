@@ -1,6 +1,18 @@
 CHANGELOG
 =========
 
+0.4.0
+-----
+-  Allow content to be featured on homepage
+
+0.3.2
+-----
+-  Ensure setting locale always redirects
+
+0.3.1
+-----
+-  Fix error when checking language for cached category/page
+
 0.3.0
 -----
 -  Allow content to be filtered by language selection

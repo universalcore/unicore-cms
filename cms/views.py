@@ -75,6 +75,32 @@ class CmsViews(object):
         return [c.to_dict() for c in latest_pages]
 
     @cache_region(CACHE_TIME)
+    def _get_featured_pages(self, locale, limit, order_by, reverse):
+        models = self.get_repo_models()
+        sort_key = lambda page: [getattr(page, field) for field in order_by]
+        featured_pages = sorted(
+            models.GitPageModel().filter(language=locale,
+                                         featured=True),
+            key=sort_key, reverse=reverse)[:limit]
+        return [c.to_dict() for c in featured_pages]
+
+    def get_featured_pages(self, limit=5, order_by=('modified_at',),
+                           reverse=False):
+        """
+        Return featured pages the GitModel knows about.
+
+        :param str locale:
+            The locale string, like `eng_UK`.
+        :param int limit:
+            The number of pages to return, defaults to 5.
+        :param tuple order_by:
+            The attributes to order on, defaults to ('modified_at',).
+        :param bool reverse:
+            Return the results in reverse order or not, defaults to False.
+        """
+        return self._get_featured_pages(self.locale, limit, order_by, reverse)
+
+    @cache_region(CACHE_TIME)
     def get_pages_for_category(self, category_id, locale):
         models = self.get_repo_models()
         category = models.GitCategoryModel().get(category_id)
@@ -112,7 +138,15 @@ class CmsViews(object):
 
     @reify
     def get_top_nav(self):
-        return self.get_categories()
+        return self._get_top_nav(self.locale)
+
+    @cache_region(CACHE_TIME)
+    def _get_top_nav(self, locale):
+        models = self.get_repo_models()
+        return [
+            c.to_dict()
+            for c in models.GitCategoryModel().filter(
+                language=locale, featured_in_navbar=True)]
 
     @view_config(route_name='home', renderer='templates/home.pt')
     @view_config(route_name='categories', renderer='templates/categories.pt')
@@ -124,7 +158,7 @@ class CmsViews(object):
         category_id = self.request.matchdict['category']
         category = self.get_category(category_id)
 
-        if category.language != self.locale:
+        if category['language'] != self.locale:
             raise HTTPNotFound()
 
         pages = self.get_pages_for_category(category_id, self.locale)
@@ -133,7 +167,7 @@ class CmsViews(object):
     @view_config(route_name='content', renderer='cms:templates/content.pt')
     def content(self):
         page = self.get_page(self.request.matchdict['uuid'])
-        if page.language != self.locale:
+        if page['language'] != self.locale:
             raise HTTPNotFound()
         return {'page': page}
 
@@ -142,7 +176,7 @@ class CmsViews(object):
         try:
             page = self.get_page(None, self.request.matchdict['slug'])
 
-            if page.language != self.locale:
+            if page['language'] != self.locale:
                 raise exceptions.DoesNotExist()
 
             return {'page': page}
@@ -157,5 +191,6 @@ class CmsViews(object):
             response.set_cookie('_LOCALE_',
                                 value=language,
                                 max_age=31536000)  # max_age = year
-        return HTTPFound(location=self.request.environ['HTTP_REFERER'],
-                         headers=response.headers)
+        return HTTPFound(
+            location=self.request.environ.get('HTTP_REFERER', '/'),
+            headers=response.headers)

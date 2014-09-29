@@ -34,6 +34,21 @@ class TestViews(BaseTestCase):
         self.repo.destroy()
         testing.tearDown()
 
+    def test_get_featured_pages(self):
+        pages = self.repo.create_pages(
+            count=10,
+            timestamp_cb=lambda i: (
+                arrow.utcnow() - timedelta(days=i)).isoformat())
+
+        for page in pages[8:]:
+            page.featured = True
+            page.save(True, message='Make featured')
+
+        featured_pages = self.views.get_featured_pages(limit=10)
+        self.assertEqual(
+            ['Test Page 9', 'Test Page 8'],
+            [p['title'] for p in featured_pages])
+
     def test_get_pages_count(self):
         self.repo.create_pages(count=10)
         pages = self.views.get_pages(limit=7)
@@ -147,6 +162,20 @@ class TestViews(BaseTestCase):
         # Change language
         self.views = CmsViews(testing.DummyRequest({'_LOCALE_': 'swh_KE'}))
         cat1, cat2 = self.views.get_categories()
+        self.assertEqual(
+            set([cat1['language'], cat2['language']]),
+            set(['swh_KE', 'swh_KE']))
+
+    def test_get_top_nav(self):
+        category1, category2 = self.repo.create_categories()
+        category3, category4 = self.repo.create_categories(
+            [u'Dog', u'Cat'], 'swh_KE', featured_in_navbar=True)
+
+        self.assertEqual([], self.views.get_top_nav)
+
+        # Change language
+        self.views = CmsViews(testing.DummyRequest({'_LOCALE_': 'swh_KE'}))
+        cat1, cat2 = self.views.get_top_nav
         self.assertEqual(
             set([cat1['language'], cat2['language']]),
             set(['swh_KE', 'swh_KE']))
