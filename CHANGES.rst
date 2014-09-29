@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+0.3.0
+-----
+-  Allow content to be filtered by language selection
+
 0.2.8
 -----
 -  Add support for flat pages
