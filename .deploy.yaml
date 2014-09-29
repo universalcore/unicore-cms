@@ -12,6 +12,8 @@ pip:
  - webtest
  - waitress
  - cornice
+ - babel
+ - lingua
  - unicore-gitmodels
  - cffi
  - pygit2

@@ -1,3 +1,7 @@
+#!/bin/bash
+set -e
+# Any subsequent commands which fail will cause the shell script to exit immediately
+
 export LIBGIT2=$VIRTUAL_ENV
 export LDFLAGS="-Wl,-rpath='$LIBGIT2/lib',--enable-new-dtags $LDFLAGS"
 wget https://github.com/libgit2/libgit2/archive/v0.21.1.tar.gz
@@ -9,6 +13,6 @@ cmake --build .
 make
 make install
 pip install cffi
-pip install pygit2
+pip install pygit2==0.21.1
 cd ..
 rm v0.21.1.tar.gz*

@@ -2,10 +2,13 @@ language: python
 python:
   - "2.7"
 install:
-  - ./install_libgit2
-  - "pip install coveralls coverage --use-wheel"
-  - "pip install -r requirements.txt --use-wheel"
+  - ./utils/install_libgit2.sh
+  - pip install -r requirements.txt --use-wheel
+  - pip install -r requirements-dev.txt --use-wheel
+  - pip install -e . --use-wheel
 script:
-  - LIBGIT2=$VIRTUAL_ENV coverage run --source=cms setup.py test
+  - find ./cms -name '*.py' | xargs pep8
+  - find ./cms -name '*.py' | xargs pyflakes
+  - LIBGIT2=$VIRTUAL_ENV py.test --verbose --cov ./cms cms
 after_success:
   - coveralls

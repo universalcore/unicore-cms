@@ -3,7 +3,6 @@ import pygit2
 
 from unicore_gitmodels import models
 from cms import utils
-from gitmodel.workspace import Workspace
 
 from pyramid_beaker import set_cache_regions_from_settings
 from pyramid.config import Configurator
@@ -21,7 +20,7 @@ def main(global_config, **settings):
 def init_repository(config):
     settings = config.registry.settings
 
-    if not 'git.path' in settings:
+    if 'git.path' not in settings:
         raise KeyError(
             'Please specify the git repo path '
             'e.g [app:main] git.path = %(here)s/repo/')
@@ -36,15 +35,12 @@ def init_repository(config):
 
     try:
         repo = pygit2.Repository(repo_path)
-    except:
+    except KeyError:
         repo = pygit2.init_repository(repo_path, False)
 
     utils.checkout_all_upstream(repo)
 
-    try:
-        ws = Workspace(os.path.join(repo_path, '.git'), repo.head.name)
-    except:
-        ws = Workspace(os.path.join(repo_path, '.git'))
+    ws = utils.get_workspace(repo)
 
     ws.register_model(models.GitPageModel)
     ws.register_model(models.GitCategoryModel)
@@ -67,6 +63,8 @@ def includeme(config):
     config.add_route('configure_fast_forward', '/admin/configure/fastforward/')
     config.add_route('commit_log', '/admin/configure/log.json')
     config.add_route('get_updates', '/admin/configure/updates.json')
+    config.add_route('locale', '/locale/')
+    config.add_route('flatpage', '/{slug}/')
     config.scan()
 
     init_repository(config)

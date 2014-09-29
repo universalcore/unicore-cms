@@ -23,7 +23,7 @@ def get_remote_updates_log(repo, branch_name=None):
     if remote_name is None:
         return []
 
-    if not branch_name is None:
+    if branch_name is not None:
         local_branch = repo.lookup_branch(branch_name)
     else:
         local_branch = repo.head
@@ -65,7 +65,7 @@ def fast_forward(repo):
             # fast-forward
             repo.reset(branch.target, pygit2.GIT_RESET_HARD)
     # update repo working directory
-    Workspace(repo.path).sync_repo_index()
+    get_workspace(repo).sync_repo_index()
 
 
 def checkout_upstream(repo, branch):
@@ -85,7 +85,6 @@ def checkout_branch(repo, name):
 
 
 def checkout_all_upstream(repo):
-    #fastforward(repo)
     for branch in repo.listall_branches(pygit2.GIT_BRANCH_REMOTE):
         name = branch.split('/')[1]
 
@@ -99,3 +98,11 @@ def checkout_all_upstream(repo):
 def getall_branches(repo, mode=pygit2.GIT_BRANCH_LOCAL):
     branches = repo.listall_branches(mode)
     return [repo.lookup_branch(b, mode) for b in branches]
+
+
+def get_workspace(repo):
+    try:
+        ws = Workspace(repo.path, repo.head.name)
+    except pygit2.GitError:
+        ws = Workspace(repo.path)
+    return ws
