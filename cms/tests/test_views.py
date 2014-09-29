@@ -34,7 +34,7 @@ class TestViews(BaseTestCase):
         self.repo.destroy()
         testing.tearDown()
 
-    def test_get_pages(self):
+    def test_get_featured_pages(self):
         pages = self.repo.create_pages(
             count=10,
             timestamp_cb=lambda i: (
