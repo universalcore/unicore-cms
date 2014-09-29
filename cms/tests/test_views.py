@@ -44,7 +44,8 @@ class TestViews(BaseTestCase):
             page.featured = True
             page.save(True, message='Make featured')
 
-        featured_pages = self.views.get_featured_pages(limit=10)
+        featured_pages = self.views.get_featured_pages(
+            10, ('modified_at',), False)
         self.assertEqual(
             ['Test Page 9', 'Test Page 8'],
             [p['title'] for p in featured_pages])
