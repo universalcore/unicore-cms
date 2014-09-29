@@ -34,6 +34,21 @@ class TestViews(BaseTestCase):
         self.repo.destroy()
         testing.tearDown()
 
+    def test_get_featured_pages(self):
+        pages = self.repo.create_pages(
+            count=10,
+            timestamp_cb=lambda i: (
+                arrow.utcnow() - timedelta(days=i)).isoformat())
+
+        for page in pages[8:]:
+            page.featured = True
+            page.save(True, message='Make featured')
+
+        featured_pages = self.views.get_featured_pages(limit=10)
+        self.assertEqual(
+            ['Test Page 9', 'Test Page 8'],
+            [p['title'] for p in featured_pages])
+
     def test_get_pages_count(self):
         self.repo.create_pages(count=10)
         pages = self.views.get_pages(limit=7)

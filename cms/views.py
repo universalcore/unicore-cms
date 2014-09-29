@@ -75,6 +75,32 @@ class CmsViews(object):
         return [c.to_dict() for c in latest_pages]
 
     @cache_region(CACHE_TIME)
+    def _get_featured_pages(self, locale, limit, order_by, reverse):
+        models = self.get_repo_models()
+        sort_key = lambda page: [getattr(page, field) for field in order_by]
+        featured_pages = sorted(
+            models.GitPageModel().filter(language=locale,
+                                         featured=True),
+            key=sort_key, reverse=reverse)[:limit]
+        return [c.to_dict() for c in featured_pages]
+
+    def get_featured_pages(self, limit=5, order_by=('modified_at',),
+                           reverse=False):
+        """
+        Return featured pages the GitModel knows about.
+
+        :param str locale:
+            The locale string, like `eng_UK`.
+        :param int limit:
+            The number of pages to return, defaults to 5.
+        :param tuple order_by:
+            The attributes to order on, defaults to ('modified_at',).
+        :param bool reverse:
+            Return the results in reverse order or not, defaults to False.
+        """
+        return self._get_featured_pages(self.locale, limit, order_by, reverse)
+
+    @cache_region(CACHE_TIME)
     def get_pages_for_category(self, category_id, locale):
         models = self.get_repo_models()
         category = models.GitCategoryModel().get(category_id)
