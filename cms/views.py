@@ -15,7 +15,7 @@ from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 from unicore_gitmodels import models
 from cms import utils
 
-CACHE_TIME = 'long_term'
+CACHE_TIME = 'default_term'
 
 
 class CmsViews(object):
