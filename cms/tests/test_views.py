@@ -21,8 +21,9 @@ class TestViews(BaseTestCase):
             'git.path': self.repo.path,
             'git.content_repo_url': '',
             'cache.enabled': 'false',
-            'cache.regions': 'long_term',
+            'cache.regions': 'long_term, default_term',
             'cache.long_term.expire': '1',
+            'cache.default_term.expire': '1',
             'available_languages': languages,
             'pyramid.default_locale_name': 'eng_UK',
         }
