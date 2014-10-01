@@ -149,6 +149,21 @@ class TestViews(BaseTestCase):
         with self.assertRaises(exceptions.DoesNotExist):
             p = self.views.get_page(None, 'invalid-slug')
 
+    def test_markdown_rendering(self):
+        [page] = self.repo.create_pages(count=1)
+        page.content = '**strong**'
+        page.description = '_emphasised_'
+        page.save(True, message='Add markdown markup')
+
+        request = testing.DummyRequest()
+        request.matchdict['uuid'] = page.uuid
+        self.views = CmsViews(request)
+        response = self.views.content()
+        self.assertEqual(
+            response['content'], '<p><strong>strong</strong></p>')
+        self.assertEqual(
+            response['description'], '<p><em>emphasised</em></p>')
+
     def test_get_categories(self):
         category1, category2 = self.repo.create_categories()
         category3, category4 = self.repo.create_categories(
