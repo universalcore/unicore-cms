@@ -12,7 +12,7 @@
                 <div class="detail">
                     <div class="content">
                         <a name="jmbo-post"></a>
-                        <div>${structure:page.content}</div>
+                        <div>${structure:content}</div>
                     </div>
                     <div class="clear"></div>
                 </div>
