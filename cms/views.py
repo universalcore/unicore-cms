@@ -6,6 +6,8 @@ from beaker.cache import cache_region
 
 from gitmodel import exceptions
 
+from markdown import markdown
+
 from pyramid.view import view_config
 from pyramid.renderers import get_renderer
 from pyramid.decorator import reify
@@ -169,7 +171,11 @@ class CmsViews(object):
         page = self.get_page(self.request.matchdict['uuid'])
         if page['language'] != self.locale:
             raise HTTPNotFound()
-        return {'page': page}
+        return {
+            'page': page,
+            'content': markdown(page['content']),
+            'description': markdown(page['description']),
+        }
 
     @view_config(route_name='flatpage', renderer='cms:templates/flatpage.pt')
     def flatpage(self):
@@ -179,7 +185,11 @@ class CmsViews(object):
             if page['language'] != self.locale:
                 raise exceptions.DoesNotExist()
 
-            return {'page': page}
+            return {
+                'page': page,
+                'content': markdown(page['content']),
+                'description': markdown(page['description']),
+            }
         except exceptions.DoesNotExist:
             raise HTTPNotFound()
 
