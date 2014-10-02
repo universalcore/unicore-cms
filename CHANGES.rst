@@ -1,6 +1,14 @@
 CHANGELOG
 =========
 
+0.4.1
+-----
+-  Change default cache duration to 10mins
+
+0.4.0
+-----
+-  Allow content to be featured on homepage
+
 0.3.2
 -----
 -  Ensure setting locale always redirects
