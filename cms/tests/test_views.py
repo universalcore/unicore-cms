@@ -149,7 +149,7 @@ class TestViews(BaseTestCase):
         self.assertEqual(p['title'], 'Test Page 1')
 
         self.views = CmsViews(testing.DummyRequest({'_LOCALE_': 'swh_KE'}))
-        p = self.views.get_page(None, 'test-page-1')
+        p = self.views.get_page(None, 'test-page-1', 'swh_KE')
         self.assertEqual(p['language'], 'swh_KE')
 
         with self.assertRaises(exceptions.DoesNotExist):
