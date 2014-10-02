@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+0.4.2
+-----
+-  Pages now render markdown
+
 0.4.1
 -----
 -  Change default cache duration to 10mins
