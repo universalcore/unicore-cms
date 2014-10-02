@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+0.4.3
+-----
+-  Fixed bug when filtering multiple language pages by slug
+
 0.4.2
 -----
 -  Pages now render markdown
