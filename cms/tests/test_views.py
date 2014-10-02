@@ -147,6 +147,7 @@ class TestViews(BaseTestCase):
         self.repo.create_pages(count=5, locale='swh_KE')
         p = self.views.get_page(None, 'test-page-1', 'eng_UK')
         self.assertEqual(p['title'], 'Test Page 1')
+        self.assertEqual(p['language'], 'eng_UK')
 
         p = self.views.get_page(None, 'test-page-1', 'swh_KE')
         self.assertEqual(p['language'], 'swh_KE')
