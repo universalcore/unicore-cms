@@ -144,8 +144,13 @@ class TestViews(BaseTestCase):
 
     def test_get_page_by_slug(self):
         self.repo.create_pages(count=10)
+        self.repo.create_pages(count=10, locale='swh_KE')
         p = self.views.get_page(None, 'test-page-1')
         self.assertEqual(p['title'], 'Test Page 1')
+
+        self.views = CmsViews(testing.DummyRequest({'_LOCALE_': 'swh_KE'}))
+        p = self.views.get_page(None, 'test-page-1')
+        self.assertEqual(p['language'], 'swh_KE')
 
         with self.assertRaises(exceptions.DoesNotExist):
             p = self.views.get_page(None, 'invalid-slug')
