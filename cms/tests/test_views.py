@@ -143,9 +143,14 @@ class TestViews(BaseTestCase):
             [], self.views.get_featured_category_pages(category4.uuid))
 
     def test_get_page_by_slug(self):
-        self.repo.create_pages(count=10)
-        p = self.views.get_page(None, 'test-page-1')
+        self.repo.create_pages(count=5)
+        self.repo.create_pages(count=5, locale='swh_KE')
+        p = self.views.get_page(None, 'test-page-1', 'eng_UK')
         self.assertEqual(p['title'], 'Test Page 1')
+        self.assertEqual(p['language'], 'eng_UK')
+
+        p = self.views.get_page(None, 'test-page-1', 'swh_KE')
+        self.assertEqual(p['language'], 'swh_KE')
 
         with self.assertRaises(exceptions.DoesNotExist):
             p = self.views.get_page(None, 'invalid-slug')

@@ -9,6 +9,6 @@ install:
 script:
   - find ./cms -name '*.py' | xargs pep8
   - find ./cms -name '*.py' | xargs pyflakes
-  - LIBGIT2=$VIRTUAL_ENV py.test --verbose --cov ./cms cms
+  - ./run_tests.sh
 after_success:
   - coveralls

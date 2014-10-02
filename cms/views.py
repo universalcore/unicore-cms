@@ -128,12 +128,12 @@ class CmsViews(object):
         ]
 
     @cache_region(CACHE_TIME)
-    def get_page(self, uuid=None, slug=None):
+    def get_page(self, uuid=None, slug=None, locale=None):
         models = self.get_repo_models()
         if uuid:
             return models.GitPageModel().get(uuid).to_dict()
-        if slug:
-            pages = models.GitPageModel().filter(slug=slug)
+        if slug and locale:
+            pages = models.GitPageModel().filter(slug=slug, language=locale)
             if any(pages):
                 return pages[0].to_dict()
         raise exceptions.DoesNotExist()
@@ -180,7 +180,8 @@ class CmsViews(object):
     @view_config(route_name='flatpage', renderer='cms:templates/flatpage.pt')
     def flatpage(self):
         try:
-            page = self.get_page(None, self.request.matchdict['slug'])
+            page = self.get_page(
+                None, self.request.matchdict['slug'], self.locale)
 
             if page['language'] != self.locale:
                 raise exceptions.DoesNotExist()
