@@ -129,13 +129,10 @@ class CmsViews(object):
 
     @cache_region(CACHE_TIME)
     def get_page(self, uuid=None, slug=None, locale=None):
-        if not locale:
-            locale = self.locale
-
         models = self.get_repo_models()
         if uuid:
             return models.GitPageModel().get(uuid).to_dict()
-        if slug:
+        if slug and locale:
             pages = models.GitPageModel().filter(slug=slug, language=locale)
             if any(pages):
                 return pages[0].to_dict()
