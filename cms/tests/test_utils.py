@@ -1,12 +1,10 @@
 from unittest import TestCase
 
-from cms.utils import get_workspace, WORKSPACE_CACHE
+from cms.utils import get_workspace
 from cms.tests.utils import RepoHelper
 
 
 class TestUtils(TestCase):
-
-    maxDiff = None
 
     def test_get_worspace_caching(self):
 
