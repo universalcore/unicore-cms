@@ -74,7 +74,7 @@ class CmsViews(object):
         latest_pages = sorted(
             models.GitPageModel().filter(language=self.locale),
             key=sort_key, reverse=reverse)[:limit]
-        return [c.to_dict() for c in latest_pages]
+        return latest_pages
 
     @cache_region(CACHE_TIME)
     def _get_featured_pages(self, locale, limit, order_by, reverse):
@@ -169,12 +169,12 @@ class CmsViews(object):
     @view_config(route_name='content', renderer='cms:templates/content.pt')
     def content(self):
         page = self.get_page(self.request.matchdict['uuid'])
-        if page['language'] != self.locale:
+        if page.language != self.locale:
             raise HTTPNotFound()
         return {
             'page': page,
-            'content': markdown(page['content']),
-            'description': markdown(page['description']),
+            'content': markdown(page.content),
+            'description': markdown(page.description),
         }
 
     @view_config(route_name='flatpage', renderer='cms:templates/flatpage.pt')
@@ -183,13 +183,13 @@ class CmsViews(object):
             page = self.get_page(
                 None, self.request.matchdict['slug'], self.locale)
 
-            if page['language'] != self.locale:
+            if page.language != self.locale:
                 raise exceptions.DoesNotExist()
 
             return {
                 'page': page,
-                'content': markdown(page['content']),
-                'description': markdown(page['description']),
+                'content': markdown(page.content),
+                'description': markdown(page.description),
             }
         except exceptions.DoesNotExist:
             raise HTTPNotFound()

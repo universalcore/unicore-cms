@@ -59,7 +59,7 @@ class TestViews(BaseTestCase):
         self.repo.create_pages(count=10)
         pages = self.views.get_pages(limit=2, order_by=('title',))
         self.assertEqual(
-            [p['title'] for p in pages],
+            [p.title for p in pages],
             ['Test Page 0', 'Test Page 1'])
 
     def test_get_pages_reversed(self):
@@ -69,7 +69,7 @@ class TestViews(BaseTestCase):
                 arrow.utcnow() - timedelta(days=i)).isoformat())
         pages = self.views.get_pages(limit=2, reverse=True)
         self.assertEqual(
-            [p['title'] for p in pages],
+            [p.title for p in pages],
             ['Test Page 0', 'Test Page 1'])
 
     def test_get_available_languages(self):
@@ -146,16 +146,16 @@ class TestViews(BaseTestCase):
         self.repo.create_pages(count=5)
         self.repo.create_pages(count=5, locale='swh_KE')
         p = self.views.get_page(None, 'test-page-1', 'eng_UK')
-        self.assertEqual(p['title'], 'Test Page 1')
-        self.assertEqual(p['language'], 'eng_UK')
+        self.assertEqual(p.title, 'Test Page 1')
+        self.assertEqual(p.language, 'eng_UK')
 
         p = self.views.get_page(None, 'test-page-1', 'swh_KE')
-        self.assertEqual(p['language'], 'swh_KE')
+        self.assertEqual(p.language, 'swh_KE')
 
         with self.assertRaises(exceptions.DoesNotExist):
             p = self.views.get_page(None, 'invalid-slug')
 
-    def test_markdown_rendering(self):
+    def test_content_markdown_rendering(self):
         [page] = self.repo.create_pages(count=1)
         page.content = '**strong**'
         page.description = '_emphasised_'
@@ -165,6 +165,21 @@ class TestViews(BaseTestCase):
         request.matchdict['uuid'] = page.uuid
         self.views = CmsViews(request)
         response = self.views.content()
+        self.assertEqual(
+            response['content'], '<p><strong>strong</strong></p>')
+        self.assertEqual(
+            response['description'], '<p><em>emphasised</em></p>')
+
+    def test_flatpage_markdown_rendering(self):
+        [page] = self.repo.create_pages(count=1)
+        page.content = '**strong**'
+        page.description = '_emphasised_'
+        page.save(True, message='Add markdown markup')
+
+        request = testing.DummyRequest()
+        request.matchdict['slug'] = page.slug
+        self.views = CmsViews(request)
+        response = self.views.flatpage()
         self.assertEqual(
             response['content'], '<p><strong>strong</strong></p>')
         self.assertEqual(
