@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+0.6.1
+-----
+
+- Fix for workspace caching
+
 0.6.0
 -----
 
