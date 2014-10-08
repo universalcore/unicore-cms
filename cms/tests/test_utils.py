@@ -1,3 +1,4 @@
+import os
 from unittest import TestCase
 
 from cms.utils import get_workspace
@@ -8,7 +9,8 @@ class TestUtils(TestCase):
 
     def test_get_worspace_caching(self):
 
-        repo_helper = RepoHelper.create('../.workspace_test')
+        repo_helper = RepoHelper.create(
+            os.path.join(os.getcwd(), '.workspace_test'))
         self.addCleanup(repo_helper.destroy)
 
         repo = repo_helper.repo
