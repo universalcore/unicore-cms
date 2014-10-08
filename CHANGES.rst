@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+0.6.0
+-----
+
+- Cache workspace to reduce number of open files
+
 0.5.0
 -----
 
