@@ -6,16 +6,14 @@ from cms.tests.utils import RepoHelper
 
 class TestUtils(TestCase):
 
-    def setUp(self):
-        self.repo_helper = RepoHelper.create('.workspace_test')
-        self.repo = self.repo_helper.repo
-
-    def tearDown(self):
-        self.repo_helper.destroy()
+    maxDiff = None
 
     def test_get_worspace_caching(self):
-        self.assertEqual(WORKSPACE_CACHE, {})
-        workspace1 = get_workspace(self.repo)
-        workspace2 = get_workspace(self.repo)
-        self.assertEqual(WORKSPACE_CACHE.keys(), [self.repo.path])
+
+        repo_helper = RepoHelper.create('../.workspace_test')
+        self.addCleanup(repo_helper.destroy)
+
+        repo = repo_helper.repo
+        workspace1 = get_workspace(repo)
+        workspace2 = get_workspace(repo)
         self.assertEqual(workspace1, workspace2)
