@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+0.5.0
+-----
+
+- Views now return actual objects instead of dictionaries
+  to the template contexts.
+
 0.4.3
 -----
 -  Fixed bug when filtering multiple language pages by slug
