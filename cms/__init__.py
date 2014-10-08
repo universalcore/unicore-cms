@@ -7,6 +7,9 @@ from cms import utils
 from pyramid_beaker import set_cache_regions_from_settings
 from pyramid.config import Configurator
 
+import logging
+log = logging.getLogger(__name__)
+
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
@@ -31,12 +34,16 @@ def init_repository(config):
             and settings['git.content_repo_url'] \
             and not os.path.exists(repo_path):
         content_repo_url = settings['git.content_repo_url'].strip()
+        log.info('Cloning repository: %s' % (content_repo_url,))
         pygit2.clone_repository(content_repo_url, repo_path)
+        log.info('Cloned repository into: %s' % (repo_path,))
 
     try:
         repo = pygit2.Repository(repo_path)
+        log.info('Using repository found in: %s' % (repo_path,))
     except KeyError:
         repo = pygit2.init_repository(repo_path, False)
+        log.info('Initialising repository in: %s' % (repo_path,))
 
     utils.checkout_all_upstream(repo)
 
