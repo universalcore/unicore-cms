@@ -1,6 +1,8 @@
 import pygit2
 from gitmodel.workspace import Workspace
 
+WORKSPACE_CACHE = {}
+
 
 def get_remote_branch(repo, branch_name=None):
     if not branch_name:
@@ -101,8 +103,14 @@ def getall_branches(repo, mode=pygit2.GIT_BRANCH_LOCAL):
 
 
 def get_workspace(repo):
+    if repo.path in WORKSPACE_CACHE:
+        return WORKSPACE_CACHE[repo.path]
+
     try:
         ws = Workspace(repo.path, repo.head.name)
     except pygit2.GitError:
         ws = Workspace(repo.path)
+
+    WORKSPACE_CACHE[repo.path] = ws
+
     return ws
