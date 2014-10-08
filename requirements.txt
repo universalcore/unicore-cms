@@ -15,3 +15,4 @@ praekelt-python-gitmodel>=0.1.2
 babel
 lingua
 arrow
+Markdown==2.5.1

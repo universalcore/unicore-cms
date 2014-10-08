@@ -1,6 +1,29 @@
 CHANGELOG
 =========
 
+0.6.0
+-----
+
+- Cache workspace to reduce number of open files
+
+0.5.0
+-----
+
+- Views now return actual objects instead of dictionaries
+  to the template contexts.
+
+0.4.3
+-----
+-  Fixed bug when filtering multiple language pages by slug
+
+0.4.2
+-----
+-  Pages now render markdown
+
+0.4.1
+-----
+-  Change default cache duration to 10mins
+
 0.4.0
 -----
 -  Allow content to be featured on homepage
