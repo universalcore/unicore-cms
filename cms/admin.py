@@ -1,10 +1,8 @@
-import json
 import pygit2
 import shutil
 
 from beaker.cache import cache_managers
 from cms import utils
-from gitmodel.workspace import Workspace
 
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound
@@ -24,9 +22,7 @@ class AdminViews(object):
     def get_ws(self):
         repo_path = self.request.registry.settings['git.path']
         repo = pygit2.Repository(repo_path)
-        if repo.is_empty:
-            return Workspace(repo.path)
-        return Workspace(repo.path, repo.head.name)
+        return utils.get_workspace(repo)
 
     @view_config(route_name='commit_log', renderer='json')
     def get_commit_log(self):
@@ -40,7 +36,10 @@ class AdminViews(object):
         commits = []
         for commit in r.walk(last.id, pygit2.GIT_SORT_TIME):
             commits.append(commit)
-        return [{'message': c.message, 'author': c.author.name} for c in commits][:10]
+        return [
+            {'message': c.message, 'author': c.author.name}
+            for c in commits
+        ][:10]
 
     def get_updates(self, branch=None):
         commits = utils.get_remote_updates_log(self.get_ws().repo, branch)
@@ -70,7 +69,8 @@ class AdminViews(object):
         utils.fast_forward(self.get_ws().repo)
         return HTTPFound(location=self.request.route_url('configure'))
 
-    @view_config(route_name='configure', renderer='cms:templates/admin/configure.pt')
+    @view_config(
+        route_name='configure', renderer='cms:templates/admin/configure.pt')
     def configure(self):
         repo_path = self.request.registry.settings['git.path']
         ws = self.get_ws()

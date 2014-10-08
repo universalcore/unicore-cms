@@ -1,8 +1,7 @@
-import os
 import pygit2
 
 from unicore_gitmodels import models
-from gitmodel.workspace import Workspace
+from cms import utils
 
 
 class ApiBase(object):
@@ -11,14 +10,9 @@ class ApiBase(object):
         self.request = request
 
     def get_registered_ws(self):
-        repo_path = os.path.join(
-            self.request.registry.settings['git.path'], '.git')
+        repo_path = self.request.registry.settings['git.path']
         repo = pygit2.Repository(repo_path)
-        try:
-            ws = Workspace(repo.path, repo.head.name)
-        except:
-            ws = Workspace(repo.path)
-
+        ws = utils.get_workspace(repo)
         ws.register_model(models.GitPageModel)
         ws.register_model(models.GitCategoryModel)
         return ws

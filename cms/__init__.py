@@ -3,10 +3,12 @@ import pygit2
 
 from unicore_gitmodels import models
 from cms import utils
-from gitmodel.workspace import Workspace
 
 from pyramid_beaker import set_cache_regions_from_settings
 from pyramid.config import Configurator
+
+import logging
+log = logging.getLogger(__name__)
 
 
 def main(global_config, **settings):
@@ -21,7 +23,7 @@ def main(global_config, **settings):
 def init_repository(config):
     settings = config.registry.settings
 
-    if not 'git.path' in settings:
+    if 'git.path' not in settings:
         raise KeyError(
             'Please specify the git repo path '
             'e.g [app:main] git.path = %(here)s/repo/')
@@ -32,19 +34,20 @@ def init_repository(config):
             and settings['git.content_repo_url'] \
             and not os.path.exists(repo_path):
         content_repo_url = settings['git.content_repo_url'].strip()
+        log.info('Cloning repository: %s' % (content_repo_url,))
         pygit2.clone_repository(content_repo_url, repo_path)
+        log.info('Cloned repository into: %s' % (repo_path,))
 
     try:
         repo = pygit2.Repository(repo_path)
-    except:
+        log.info('Using repository found in: %s' % (repo_path,))
+    except KeyError:
         repo = pygit2.init_repository(repo_path, False)
+        log.info('Initialising repository in: %s' % (repo_path,))
 
     utils.checkout_all_upstream(repo)
 
-    try:
-        ws = Workspace(os.path.join(repo_path, '.git'), repo.head.name)
-    except:
-        ws = Workspace(os.path.join(repo_path, '.git'))
+    ws = utils.get_workspace(repo)
 
     ws.register_model(models.GitPageModel)
     ws.register_model(models.GitCategoryModel)
@@ -67,6 +70,8 @@ def includeme(config):
     config.add_route('configure_fast_forward', '/admin/configure/fastforward/')
     config.add_route('commit_log', '/admin/configure/log.json')
     config.add_route('get_updates', '/admin/configure/updates.json')
+    config.add_route('locale', '/locale/')
+    config.add_route('flatpage', '/{slug}/')
     config.scan()
 
     init_repository(config)
