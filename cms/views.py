@@ -131,11 +131,11 @@ class CmsViews(object):
     def get_page(self, uuid=None, slug=None, locale=None):
         models = self.get_repo_models()
         if uuid:
-            return models.GitPageModel().get(uuid).to_dict()
+            return models.GitPageModel().get(uuid)
         if slug and locale:
             pages = models.GitPageModel().filter(slug=slug, language=locale)
             if any(pages):
-                return pages[0].to_dict()
+                return pages[0]
         raise exceptions.DoesNotExist()
 
     @reify
