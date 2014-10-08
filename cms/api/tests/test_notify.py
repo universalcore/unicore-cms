@@ -1,7 +1,7 @@
 import os
 from pyramid import testing
 from webtest import TestApp
-from cms import main
+from cms import main, utils
 from cms.tests.utils import BaseTestCase, RepoHelper
 
 
@@ -24,7 +24,7 @@ class NotifyTestCase(BaseTestCase):
     def tearDown(self):
         self.remote_repo.destroy()
         try:
-            repo = RepoHelper(self.repo_path)
+            repo = RepoHelper.create(self.repo_path)
             repo.destroy()
         except:
             pass
@@ -42,6 +42,8 @@ class NotifyTestCase(BaseTestCase):
 
         # this should trigger a fastforward
         self.app.post('/api/notify/', status=200)
+
+        utils.WORKSPACE_CACHE = {}
 
         resp = self.app.get('/api/pages.json', status=200)
         self.assertEquals(len(resp.json), 2)

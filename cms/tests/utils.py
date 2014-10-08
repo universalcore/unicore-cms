@@ -12,13 +12,14 @@ class RepoHelper(object):
     @classmethod
     def create(cls, repo_path, name='Test Kees', email='test@example.org',
                bare=False, commit_message='initialize repository'):
-        repo = pygit2.init_repository(os.path.join(repo_path, '.git'), bare)
-        author = pygit2.Signature(name, email)
-        committer = author
-        tree = repo.TreeBuilder().write()
-        repo.create_commit(
-            'refs/heads/master',
-            author, committer, commit_message, tree, [])
+        if not os.path.exists(repo_path):
+            repo = pygit2.init_repository(repo_path, bare)
+            author = pygit2.Signature(name, email)
+            committer = author
+            tree = repo.TreeBuilder().write()
+            repo.create_commit(
+                'refs/heads/master',
+                author, committer, commit_message, tree, [])
         return cls(repo_path)
 
     def __init__(self, repo_path):
@@ -36,7 +37,11 @@ class RepoHelper(object):
         return self.repo.workdir
 
     def destroy(self):
-        shutil.rmtree(self.workdir)
+        try:
+            shutil.rmtree(self.workdir)
+        except:
+            pass
+        utils.WORKSPACE_CACHE = {}
 
     def get_models(self):
         return self.ws.import_models(models)
