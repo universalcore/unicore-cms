@@ -61,7 +61,7 @@ def fast_forward(repo):
 
         branch = repo.lookup_branch(remote_name, pygit2.GIT_BRANCH_REMOTE)
         if branch.target.hex != repo.head.target.hex:
-            if not Workspace(repo.path).has_changes():
+            if not get_workspace(repo).has_changes():
                 # merge changes
                 repo.merge(branch.target)
             # fast-forward
