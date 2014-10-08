@@ -1,6 +1,8 @@
 import pygit2
 from gitmodel.workspace import Workspace
 
+WORKSPACE_CACHE = {}
+
 
 def get_remote_branch(repo, branch_name=None):
     if not branch_name:
@@ -59,7 +61,7 @@ def fast_forward(repo):
 
         branch = repo.lookup_branch(remote_name, pygit2.GIT_BRANCH_REMOTE)
         if branch.target.hex != repo.head.target.hex:
-            if not Workspace(repo.path).has_changes():
+            if not get_workspace(repo).has_changes():
                 # merge changes
                 repo.merge(branch.target)
             # fast-forward
@@ -101,8 +103,14 @@ def getall_branches(repo, mode=pygit2.GIT_BRANCH_LOCAL):
 
 
 def get_workspace(repo):
+    if repo in WORKSPACE_CACHE:
+        return WORKSPACE_CACHE[repo]
+
     try:
         ws = Workspace(repo.path, repo.head.name)
     except pygit2.GitError:
         ws = Workspace(repo.path)
+
+    WORKSPACE_CACHE[repo] = ws
+
     return ws
