@@ -1,7 +1,9 @@
 import pygit2
+import os
+
 from gitmodel.workspace import Workspace
 
-WORKSPACE_CACHE = {}
+from unicore_gitmodels import models
 
 
 def get_remote_branch(repo, branch_name=None):
@@ -103,13 +105,108 @@ def getall_branches(repo, mode=pygit2.GIT_BRANCH_LOCAL):
 
 
 def get_workspace(repo):
-    if repo.path in WORKSPACE_CACHE:
-        return WORKSPACE_CACHE[repo.path]
-
     try:
         ws = Workspace(repo.path, repo.head.name)
     except pygit2.GitError:
         ws = Workspace(repo.path)
 
-    WORKSPACE_CACHE[repo.path] = ws
     return ws
+
+
+class CmsRepoException(Exception):
+    pass
+
+
+class CmsRepo(object):
+
+    WORKSPACE_CACHE = {}
+
+    @classmethod
+    def cache(cls, cms_repo):
+        cls.WORKSPACE_CACHE[cms_repo.repo.path] = cms_repo
+        return cms_repo
+
+    @classmethod
+    def is_cached(cls, repo_path):
+        return repo_path in cls.WORKSPACE_CACHE
+
+    @classmethod
+    def read_from_cache(cls, repo_path):
+        # print 'cache hit ', repo_path
+        return cls.WORKSPACE_CACHE[repo_path]
+
+    @classmethod
+    def expire(cls, cms_repo):
+        print 'expiring  ', cms_repo.repo.path
+        del cls.WORKSPACE_CACHE[cms_repo.repo.path]
+
+    @classmethod
+    def clear_cache(cls):
+        for repo in cls.WORKSPACE_CACHE.values():
+            cls.expire(repo)
+
+    @classmethod
+    def exists(self, repo_path):
+        return os.path.exists(repo_path)
+
+    @classmethod
+    def init(cls, repo_path, name, email, bare=False,
+             commit_message='Initialising repository.'):
+        repo = pygit2.init_repository(repo_path, bare)
+        author = pygit2.Signature(name, email)
+        committer = author
+        tree = repo.TreeBuilder().write()
+        repo.create_commit(
+            'refs/heads/master',
+            author, committer, commit_message, tree, [])
+        return cls.read(repo_path, cached=False)
+
+    @classmethod
+    def clone(cls, repo_url, repo_path):
+        return cls(pygit2.clone_repository(repo_url, repo_path))
+
+    @classmethod
+    def read(cls, repo_path, cached=True):
+        # print 'read      ', repo_path
+        if cached and cls.is_cached(repo_path):
+            return cls.read_from_cache(repo_path)
+
+        if not cls.exists(repo_path):
+            raise CmsRepoException('Path %s does not exist.' % (repo_path,))
+        repo = cls(pygit2.Repository(repo_path))
+        return cls.cache(repo)
+
+    def __init__(self, repo):
+        self.repo = repo
+        self._workspace = get_workspace(self.repo)
+        self._workspace.import_models(models)
+
+    def get_remote_branch(self, branch_name=None):
+        return get_remote_branch(self.repo, branch_name=branch_name)
+
+    def fetch(self):
+        return fetch(self.repo)
+
+    def get_remote_updates_log(self, branch_name=None):
+        return get_remote_updates_log(self.repo, branch_name=branch_name)
+
+    def fast_forward(self):
+        return fast_forward(self.repo)
+
+    def checkout_upstream(self, branch):
+        return checkout_upstream(self.repo, branch)
+
+    def checkout_branch(self, name):
+        return checkout_branch(self.repo, name)
+
+    def checkout_all_upstream(self):
+        return checkout_all_upstream(self.repo)
+
+    def getall_branches(self, mode=pygit2.GIT_BRANCH_LOCAL):
+        return getall_branches(self.repo, mode=mode)
+
+    def get_workspace(self):
+        return self._workspace
+
+    def get_models(self):
+        return self.get_workspace().models

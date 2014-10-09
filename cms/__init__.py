@@ -2,7 +2,7 @@ import os
 import pygit2
 
 from unicore_gitmodels import models
-from cms import utils
+from cms.utils import CmsRepo
 
 from pyramid_beaker import set_cache_regions_from_settings
 from pyramid.config import Configurator
@@ -32,25 +32,21 @@ def init_repository(config):
 
     if 'git.content_repo_url' in settings \
             and settings['git.content_repo_url'] \
-            and not os.path.exists(repo_path):
+            and not CmsRepo.exists(repo_path):
         content_repo_url = settings['git.content_repo_url'].strip()
         log.info('Cloning repository: %s' % (content_repo_url,))
-        pygit2.clone_repository(content_repo_url, repo_path)
+        repo = CmsRepo.clone(content_repo_url, repo_path)
         log.info('Cloned repository into: %s' % (repo_path,))
 
     try:
-        repo = pygit2.Repository(repo_path)
+        repo = CmsRepo.read(repo_path)
         log.info('Using repository found in: %s' % (repo_path,))
     except KeyError:
-        repo = pygit2.init_repository(repo_path, False)
+        repo = CmsRepo.init(
+            repo_path, 'Unicore CMS', 'support@unicore.io')
         log.info('Initialising repository in: %s' % (repo_path,))
 
-    utils.checkout_all_upstream(repo)
-
-    ws = utils.get_workspace(repo)
-
-    ws.register_model(models.GitPageModel)
-    ws.register_model(models.GitCategoryModel)
+    repo.checkout_all_upstream()
 
 
 def includeme(config):
