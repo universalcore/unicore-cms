@@ -181,6 +181,9 @@ class CmsRepo(object):
         self._workspace = get_workspace(self.repo)
         self._workspace.import_models(models)
 
+    def expire_cache(self):
+        return self.__class__.expire(self)
+
     def get_remote_branch(self, branch_name=None):
         return get_remote_branch(self.repo, branch_name=branch_name)
 
@@ -191,6 +194,7 @@ class CmsRepo(object):
         return get_remote_updates_log(self.repo, branch_name=branch_name)
 
     def fast_forward(self):
+        self.expire_cache()
         return fast_forward(self.repo)
 
     def checkout_upstream(self, branch):
