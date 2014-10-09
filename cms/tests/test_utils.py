@@ -15,4 +15,4 @@ class TestUtils(TestCase):
         workspace1 = repo_helper.get_workspace()
         workspace2 = repo_helper.get_workspace()
         self.assertEqual(workspace1, workspace2)
-        self.assertEqual(RepoHelper.WORKSPACE_CACHE.values(), [repo_helper])
+        self.assertTrue(repo_helper in RepoHelper.WORKSPACE_CACHE.values())

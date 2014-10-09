@@ -132,12 +132,10 @@ class CmsRepo(object):
 
     @classmethod
     def read_from_cache(cls, repo_path):
-        # print 'cache hit ', repo_path
         return cls.WORKSPACE_CACHE[repo_path]
 
     @classmethod
     def expire(cls, cms_repo):
-        print 'expiring  ', cms_repo.repo.path
         del cls.WORKSPACE_CACHE[cms_repo.repo.path]
 
     @classmethod
@@ -167,7 +165,6 @@ class CmsRepo(object):
 
     @classmethod
     def read(cls, repo_path, cached=True):
-        # print 'read      ', repo_path
         if cached and cls.is_cached(repo_path):
             return cls.read_from_cache(repo_path)
 
