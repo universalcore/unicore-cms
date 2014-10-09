@@ -25,11 +25,7 @@ class NotifyTestCase(BaseTestCase):
 
     def tearDown(self):
         self.remote_repo.destroy()
-        try:
-            repo = RepoHelper.create(self.repo_path)
-            repo.destroy()
-        except:
-            pass
+        RepoHelper.read(self.repo_path).destroy()
         testing.tearDown()
 
     def test_fastforward(self):
