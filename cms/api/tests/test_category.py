@@ -12,8 +12,8 @@ class CategoryTestCase(BaseTestCase):
 
     def setUp(self):
         self.config = testing.setUp()
-
-        self.repo_path = os.path.join(os.getcwd(), '.test_repo')
+        self.repo_path = os.path.join(
+            os.getcwd(), '.test_repos', self.id())
         self.repo = RepoHelper.create(self.repo_path)
         self.repo.create_categories()
 

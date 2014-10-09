@@ -1,32 +1,16 @@
-import os
-import pygit2
 import shutil
 import unittest
 
-from unicore_gitmodels import models
-from cms import utils
+from cms.utils import CmsRepo
 
 
-class RepoHelper(object):
+class RepoHelper(CmsRepo):
 
     @classmethod
-    def create(cls, repo_path, name='Test Kees', email='test@example.org',
-               bare=False, commit_message='initialize repository'):
-        if not os.path.exists(repo_path):
-            repo = pygit2.init_repository(repo_path, bare)
-            author = pygit2.Signature(name, email)
-            committer = author
-            tree = repo.TreeBuilder().write()
-            repo.create_commit(
-                'refs/heads/master',
-                author, committer, commit_message, tree, [])
-        return cls(repo_path)
-
-    def __init__(self, repo_path):
-        self.repo = pygit2.Repository(repo_path)
-        self.ws = utils.get_workspace(self.repo)
-        self.ws.register_model(models.GitPageModel)
-        self.ws.register_model(models.GitCategoryModel)
+    def create(cls, repo_path, name='Test Kees', email='kees@example.org',
+               bare=False, commit_message='Initialising Repository.'):
+        return cls.init(repo_path=repo_path, name=name, email=email,
+                        bare=bare, commit_message=commit_message)
 
     @property
     def path(self):
@@ -37,14 +21,11 @@ class RepoHelper(object):
         return self.repo.workdir
 
     def destroy(self):
+        CmsRepo.expire(self)
         try:
             shutil.rmtree(self.workdir)
         except:
             pass
-        utils.WORKSPACE_CACHE = {}
-
-    def get_models(self):
-        return self.ws.import_models(models)
 
     def create_categories(
             self, names=[u'Diarrhoea', u'Hygiene'], locale='eng_UK',

@@ -10,16 +10,17 @@ class PageTestCase(BaseTestCase):
 
     def setUp(self):
         self.config = testing.setUp()
-        self.repo_path = os.path.join(os.getcwd(), '.test_repo')
-        self.repo = RepoHelper.create(self.repo_path)
-        self.repo.create_categories()
-        self.repo.create_pages()
+        self.repo_path = os.path.join(os.getcwd(), '.test_repos', self.id())
 
         settings = {
-            'git.path': self.repo.path,
+            'git.path': self.repo_path,
             'git.content_repo_url': '',
         }
         self.app = TestApp(main({}, **settings))
+
+        self.repo = RepoHelper.read(self.repo_path)
+        self.repo.create_categories()
+        self.repo.create_pages()
 
     def tearDown(self):
         testing.tearDown()
