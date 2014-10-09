@@ -59,11 +59,4 @@ class RepoHelper(CmsRepo):
 
 
 class BaseTestCase(unittest.TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        CmsRepo.clear_cache()
-
-    @classmethod
-    def tearDownClass(cls):
-        CmsRepo.clear_cache()
+    pass

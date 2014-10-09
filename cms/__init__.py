@@ -1,7 +1,3 @@
-import os
-import pygit2
-
-from unicore_gitmodels import models
 from cms.utils import CmsRepo
 
 from pyramid_beaker import set_cache_regions_from_settings

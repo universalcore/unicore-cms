@@ -1,7 +1,6 @@
 import os
 from unittest import TestCase
 
-from cms.utils import get_workspace
 from cms.tests.utils import RepoHelper
 
 
