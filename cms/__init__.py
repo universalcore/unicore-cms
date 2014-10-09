@@ -31,18 +31,16 @@ def init_repository(config):
             and not CmsRepo.exists(repo_path):
         content_repo_url = settings['git.content_repo_url'].strip()
         log.info('Cloning repository: %s' % (content_repo_url,))
-        repo = CmsRepo.clone(content_repo_url, repo_path)
+        CmsRepo.clone(content_repo_url, repo_path)
         log.info('Cloned repository into: %s' % (repo_path,))
 
     try:
-        repo = CmsRepo.read(repo_path)
+        CmsRepo.read(repo_path)
         log.info('Using repository found in: %s' % (repo_path,))
     except CmsRepoException:
-        repo = CmsRepo.init(
+        CmsRepo.init(
             repo_path, 'Unicore CMS', 'support@unicore.io')
         log.info('Initialising repository in: %s' % (repo_path,))
-
-    repo.checkout_all_upstream()
 
 
 def includeme(config):

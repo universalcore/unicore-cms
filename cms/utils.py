@@ -157,7 +157,9 @@ class CmsRepo(object):
         repo.create_commit(
             'refs/heads/master',
             author, committer, commit_message, tree, [])
-        return cls.read(repo_path, cached=False)
+        cms_repo = cls.read(repo_path, cached=False)
+        cms_repo.checkout_all_upstream()
+        return cms_repo
 
     @classmethod
     def clone(cls, repo_url, repo_path):
