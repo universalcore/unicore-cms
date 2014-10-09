@@ -1,22 +1,15 @@
-import pygit2
-
-from unicore_gitmodels import models
-from cms import utils
+from cms.utils import CmsRepo
 
 
 class ApiBase(object):
 
     def __init__(self, request):
         self.request = request
+        self.repo_path = self.request.registry.settings['git.path']
+        self.repo = CmsRepo.read(self.repo_path)
 
     def get_registered_ws(self):
-        repo_path = self.request.registry.settings['git.path']
-        repo = pygit2.Repository(repo_path)
-        ws = utils.get_workspace(repo)
-        ws.register_model(models.GitPageModel)
-        ws.register_model(models.GitCategoryModel)
-        return ws
+        return self.repo.get_workspace()
 
     def get_repo_models(self):
-        ws = self.get_registered_ws()
-        return ws.import_models(models)
+        return self.repo.get_models()

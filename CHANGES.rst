@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+0.6.2
+-----
+
+- Better wrapper around repos & workspaces to make moving away from
+  pygit2 easier.
+
 0.6.1
 -----
 

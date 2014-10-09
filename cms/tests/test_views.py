@@ -15,7 +15,8 @@ class TestViews(BaseTestCase):
 
     def setUp(self):
         super(TestViews, self).setUp()
-        self.repo = RepoHelper.create(os.path.join(os.getcwd(), '.test_repo'))
+        self.repo = RepoHelper.create(
+            os.path.join(os.getcwd(), '.test_repos', self.id()))
         languages = "[('eng_UK', 'English'), ('swh_KE', 'Swahili (Kenya)')]"
         settings = {
             'git.path': self.repo.path,
