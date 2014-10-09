@@ -1,4 +1,4 @@
-from cms.utils import CmsRepo
+from cms.utils import CmsRepo, CmsRepoException
 
 from pyramid_beaker import set_cache_regions_from_settings
 from pyramid.config import Configurator
@@ -37,7 +37,7 @@ def init_repository(config):
     try:
         repo = CmsRepo.read(repo_path)
         log.info('Using repository found in: %s' % (repo_path,))
-    except KeyError:
+    except CmsRepoException:
         repo = CmsRepo.init(
             repo_path, 'Unicore CMS', 'support@unicore.io')
         log.info('Initialising repository in: %s' % (repo_path,))
