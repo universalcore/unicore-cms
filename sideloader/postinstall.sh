@@ -1,4 +1,4 @@
 pip="${VENV}/bin/pip"
-cd /var/praekelt/unicore-cms/ && echo `pwd` && ./utils/install_libgit2.sh && cd ~/
+curl https://raw.githubusercontent.com/praekelt/unicore-cms/develop/utils/install_libgit2.sh | sh
 
-$pip install cffi "praekelt-python-gitmodel>=0.1.2" /var/praekelt/unicore-cms/
+$pip install -r "${INSTALLDIR}/${REPO}/requirements.txt"
