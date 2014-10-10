@@ -1,6 +1,21 @@
 CHANGELOG
 =========
 
+0.6.3
+-----
+- Redirect to homepage after changing language
+
+0.6.2
+-----
+
+- Better wrapper around repos & workspaces to make moving away from
+  pygit2 easier.
+
+0.6.1
+-----
+
+- Fix for workspace caching
+
 0.6.0
 -----
 

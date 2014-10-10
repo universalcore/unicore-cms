@@ -1,5 +1,3 @@
-import pygit2
-
 from ast import literal_eval
 
 from beaker.cache import cache_region
@@ -14,8 +12,7 @@ from pyramid.decorator import reify
 from pyramid.response import Response
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 
-from unicore_gitmodels import models
-from cms import utils
+from cms.utils import CmsRepo
 
 CACHE_TIME = 'default_term'
 
@@ -26,11 +23,7 @@ class CmsViews(object):
         self.request = request
         self.repo_path = self.request.registry.settings['git.path']
         self.locale = request.locale_name
-
-    def get_repo_models(self):
-        repo = pygit2.Repository(self.repo_path)
-        ws = utils.get_workspace(repo)
-        return ws.import_models(models)
+        self.repo = CmsRepo.read(self.repo_path)
 
     @reify
     def get_available_languages(self):
@@ -48,12 +41,12 @@ class CmsViews(object):
 
     @cache_region(CACHE_TIME)
     def _get_categories(self, locale):
-        models = self.get_repo_models()
+        models = self.repo.get_models()
         return models.GitCategoryModel().filter(language=locale)
 
     @cache_region(CACHE_TIME)
     def get_category(self, uuid):
-        models = self.get_repo_models()
+        models = self.repo.get_models()
         return models.GitCategoryModel().get(uuid)
 
     def get_pages(self, limit=5, order_by=('modified_at',), reverse=False):
@@ -67,7 +60,7 @@ class CmsViews(object):
         :param bool reverse:
             Return the results in reverse order or not, defaults to False
         """
-        models = self.get_repo_models()
+        models = self.repo.get_models()
         sort_key = lambda page: [getattr(page, field) for field in order_by]
         latest_pages = sorted(
             models.GitPageModel().filter(language=self.locale),
@@ -76,7 +69,7 @@ class CmsViews(object):
 
     @cache_region(CACHE_TIME)
     def _get_featured_pages(self, locale, limit, order_by, reverse):
-        models = self.get_repo_models()
+        models = self.repo.get_models()
         sort_key = lambda page: [getattr(page, field) for field in order_by]
         featured_pages = sorted(
             models.GitPageModel().filter(language=locale,
@@ -102,7 +95,7 @@ class CmsViews(object):
 
     @cache_region(CACHE_TIME)
     def get_pages_for_category(self, category_id, locale):
-        models = self.get_repo_models()
+        models = self.repo.get_models()
         category = models.GitCategoryModel().get(category_id)
         return models.GitPageModel().filter(
             primary_category=category, language=locale)
@@ -112,7 +105,7 @@ class CmsViews(object):
 
     @cache_region(CACHE_TIME)
     def _get_featured_category_pages(self, category_id, locale):
-        models = self.get_repo_models()
+        models = self.repo.get_models()
         category = models.GitCategoryModel().get(category_id)
         return models.GitPageModel().filter(
             primary_category=category,
@@ -121,7 +114,7 @@ class CmsViews(object):
 
     @cache_region(CACHE_TIME)
     def get_page(self, uuid=None, slug=None, locale=None):
-        models = self.get_repo_models()
+        models = self.repo.get_models()
         if uuid:
             return models.GitPageModel().get(uuid)
         if slug and locale:
@@ -136,7 +129,7 @@ class CmsViews(object):
 
     @cache_region(CACHE_TIME)
     def _get_top_nav(self, locale):
-        models = self.get_repo_models()
+        models = self.repo.get_models()
         return models.GitCategoryModel().filter(
             language=locale, featured_in_navbar=True)
 
@@ -192,6 +185,4 @@ class CmsViews(object):
             response.set_cookie('_LOCALE_',
                                 value=language,
                                 max_age=31536000)  # max_age = year
-        return HTTPFound(
-            location=self.request.environ.get('HTTP_REFERER', '/'),
-            headers=response.headers)
+        return HTTPFound(location='/', headers=response.headers)

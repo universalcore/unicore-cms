@@ -8,9 +8,11 @@ from cms.tests.utils import BaseTestCase, RepoHelper
 class NotifyTestCase(BaseTestCase):
 
     def setUp(self):
-        self.repo_path = os.path.join(os.getcwd(), '.test_repo')
+        self.repo_path = os.path.join(
+            os.getcwd(), '.test_repos', self.id())
 
-        self.repo_path_remote = os.path.join(os.getcwd(), '.test_remote_repo')
+        self.repo_path_remote = os.path.join(
+            os.getcwd(), '.test_remote_repos', self.id())
         self.remote_repo = RepoHelper.create(self.repo_path_remote)
 
         self.config = testing.setUp()
@@ -23,11 +25,7 @@ class NotifyTestCase(BaseTestCase):
 
     def tearDown(self):
         self.remote_repo.destroy()
-        try:
-            repo = RepoHelper(self.repo_path)
-            repo.destroy()
-        except:
-            pass
+        RepoHelper.read(self.repo_path).destroy()
         testing.tearDown()
 
     def test_fastforward(self):
