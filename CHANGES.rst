@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+0.6.3
+-----
+- Redirect to homepage after changing language
+
 0.6.2
 -----
 
