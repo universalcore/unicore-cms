@@ -1,0 +1,14 @@
+<div metal:use-macro="view.global_template">
+    <div metal:fill-slot="content">
+
+        <div class="page section_news object-detail">
+            <div class="h2">
+                Credits
+                <div class="clear"></div>
+            </div>
+            <div class="intro">Thanks to our partners</div>
+            <div class="detail">Images go here</div>
+        </div>
+
+    </div>
+</div>
