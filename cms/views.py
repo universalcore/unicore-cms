@@ -133,9 +133,10 @@ class CmsViews(object):
         return models.GitCategoryModel().filter(
             language=locale, featured_in_navbar=True)
 
+    @view_config(route_name='credits', renderer='templates/credits.pt')
     @view_config(route_name='home', renderer='templates/home.pt')
     @view_config(route_name='categories', renderer='templates/categories.pt')
-    def categories(self):
+    def basic_template(self):
         return {}
 
     @view_config(route_name='category', renderer='cms:templates/category.pt')

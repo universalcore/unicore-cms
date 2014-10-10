@@ -50,6 +50,7 @@ def includeme(config):
     config.include("pyramid_celery")
     config.add_static_view('static', 'cms:static', cache_max_age=3600)
     config.add_route('home', '/')
+    config.add_route('credits', '/credits/')
     config.add_route('categories', '/content/list/')
     config.add_route('category', '/content/list/{category}/')
     config.add_route('content', '/content/detail/{uuid}/')
