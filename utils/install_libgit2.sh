@@ -6,6 +6,7 @@ export LIBGIT2=$VIRTUAL_ENV
 export LDFLAGS="-Wl,-rpath='$LIBGIT2/lib',--enable-new-dtags $LDFLAGS"
 
 LIBGIT2_VERSION='0.21.1'
+PYGIT2_VERSION='0.21.3'
 
 # only download if version doesn't exist locally
 if [ ! -d "libgit2-$LIBGIT2_VERSION" ]; then
@@ -20,7 +21,7 @@ cmake --build .
 make
 make install
 pip install cffi
-pip install pygit2==$LIBGIT2_VERSION
+pip install pygit2==$PYGIT2_VERSION
 cd ..
 
 # cleaning up
