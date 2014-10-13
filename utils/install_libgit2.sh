@@ -6,7 +6,10 @@ export LIBGIT2=$VIRTUAL_ENV
 export LDFLAGS="-Wl,-rpath='$LIBGIT2/lib',--enable-new-dtags $LDFLAGS"
 
 LIBGIT2_VERSION='0.21.1'
-PYGIT2_VERSION='0.21.3'
+
+# pygit version has an issue with pushing remotes via ssh (#431)
+# downgrading back to 0.21.2
+PYGIT2_VERSION='0.21.2'
 
 # only download if version doesn't exist locally
 if [ ! -d "libgit2-$LIBGIT2_VERSION" ]; then
