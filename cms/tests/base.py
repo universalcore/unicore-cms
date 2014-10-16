@@ -37,18 +37,22 @@ class UnicoreTestCase(TestCase):
         return workspace
 
     def create_categories(
-            self, workspace, names=[u'Diarrhoea', u'Hygiene'], locale='eng_UK',
-            featured_in_navbar=False):
+            self, workspace, count=2, locale='eng_UK', **kwargs):
         categories = []
-        for name in names:
-            category = Category({
-                'title': name,
-                'language': locale,
-                'featured': featured_in_navbar,
-                'slug': slugify(name)})
+        for i in range(count):
+            data = {}
+            data.update({
+                'title': u'Test Category %s' % (i,),
+                'language': locale
+            })
+            data.update(kwargs)
+            data.update({
+                'slug': slugify(data['title'])
+            })
 
+            category = Category(data)
             workspace.save(
-                category, u'Added %s Category' % (name,))
+                category, u'Added category %s.' % (i,))
             categories.append(category)
 
         workspace.refresh_index()
@@ -62,15 +66,18 @@ class UnicoreTestCase(TestCase):
         pages = []
         for i in range(count):
             data = {}
-            data.update(kwargs)
             data.update({
                 'title': u'Test Page %s' % (i,),
                 'content': u'this is sample content for pg %s' % (i,),
                 'modified_at': timestamp_cb(i),
                 'language': locale
             })
+            data.update(kwargs)
+            data.update({
+                'slug': slugify(data['title'])
+            })
             page = Page(data)
-            workspace.save(page, message=u'added page %s' % (i,))
+            workspace.save(page, message=u'Added page %s.' % (i,))
             pages.append(page)
 
         workspace.refresh_index()

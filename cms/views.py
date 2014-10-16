@@ -90,7 +90,7 @@ class CmsViews(object):
     @cache_region(CACHE_TIME)
     def _get_featured_category_pages(self, category_id, locale):
         return self.workspace.S(Page).filter(
-            primary_category=category_id, locale=locale.lower(),
+            primary_category=category_id, language=locale.lower(),
             featured_in_category=True)
 
     @cache_region(CACHE_TIME)
@@ -111,7 +111,7 @@ class CmsViews(object):
 
     @cache_region(CACHE_TIME)
     def _get_top_nav(self, locale):
-        return self.workspace(Category).filter(
+        return self.workspace.S(Category).filter(
             language=locale.lower(), featured_in_navbar=True)
 
     @view_config(route_name='home', renderer='templates/home.pt')
