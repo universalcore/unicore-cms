@@ -2,8 +2,6 @@ from ast import literal_eval
 
 from beaker.cache import cache_region
 
-from gitmodel import exceptions
-
 from markdown import markdown
 
 from pyramid.view import view_config
@@ -12,7 +10,9 @@ from pyramid.decorator import reify
 from pyramid.response import Response
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 
-from cms.utils import CmsRepo
+from elasticgit import EG, F
+
+from unicore.content.models import Category, Page
 
 CACHE_TIME = 'default_term'
 
@@ -21,15 +21,15 @@ class CmsViews(object):
 
     def __init__(self, request):
         self.request = request
-        self.repo_path = self.request.registry.settings['git.path']
         self.locale = request.locale_name
-        self.repo = CmsRepo.read(self.repo_path)
+        self.settings = request.registry.settings
+        self.workspace = EG.workspace(
+            workdir=self.settings['git.path'])
 
     @reify
     def get_available_languages(self):
-        langs = self.request.registry.settings.get(
-            'available_languages', '[]')
-        return literal_eval(langs)
+        return literal_eval(
+            self.settings.get('available_languages', '[]'))
 
     @reify
     def global_template(self):
@@ -41,15 +41,14 @@ class CmsViews(object):
 
     @cache_region(CACHE_TIME)
     def _get_categories(self, locale):
-        models = self.repo.get_models()
-        return models.GitCategoryModel().filter(language=locale)
+        return self.workspace.S(Category).filter(language=locale.lower())
 
     @cache_region(CACHE_TIME)
     def get_category(self, uuid):
-        models = self.repo.get_models()
-        return models.GitCategoryModel().get(uuid)
+        [category] = self.workspace.S(Category).filter(uuid=uuid.lower())
+        return category
 
-    def get_pages(self, limit=5, order_by=('modified_at',), reverse=False):
+    def get_pages(self, limit=5, order_by=('modified_at',)):
         """
         Return pages the GitModel knows about.
 
@@ -57,28 +56,16 @@ class CmsViews(object):
             The number of pages to return, defaults to 5.
         :param tuple order_by:
             The attributes to order on, defaults to modified_at
-        :param bool reverse:
-            Return the results in reverse order or not, defaults to False
         """
-        models = self.repo.get_models()
-        sort_key = lambda page: [getattr(page, field) for field in order_by]
-        latest_pages = sorted(
-            models.GitPageModel().filter(language=self.locale),
-            key=sort_key, reverse=reverse)[:limit]
-        return latest_pages
+        return self.workspace.S(Page).filter(
+            language=self.locale.lower()).order_by(*order_by)[:limit]
 
     @cache_region(CACHE_TIME)
-    def _get_featured_pages(self, locale, limit, order_by, reverse):
-        models = self.repo.get_models()
-        sort_key = lambda page: [getattr(page, field) for field in order_by]
-        featured_pages = sorted(
-            models.GitPageModel().filter(language=locale,
-                                         featured=True),
-            key=sort_key, reverse=reverse)[:limit]
-        return featured_pages
+    def _get_featured_pages(self, locale, limit, order_by):
+        return self.workspace.S(Page).filter(
+            language=locale.lower(), featured=True).order_by(*order_by)[:limit]
 
-    def get_featured_pages(self, limit=5, order_by=('modified_at',),
-                           reverse=False):
+    def get_featured_pages(self, limit=5, order_by=('modified_at',)):
         """
         Return featured pages the GitModel knows about.
 
@@ -88,40 +75,34 @@ class CmsViews(object):
             The number of pages to return, defaults to 5.
         :param tuple order_by:
             The attributes to order on, defaults to ('modified_at',).
-        :param bool reverse:
-            Return the results in reverse order or not, defaults to False.
         """
-        return self._get_featured_pages(self.locale, limit, order_by, reverse)
+        return self._get_featured_pages(self.locale, limit, order_by)
 
     @cache_region(CACHE_TIME)
     def get_pages_for_category(self, category_id, locale):
-        models = self.repo.get_models()
-        category = models.GitCategoryModel().get(category_id)
-        return models.GitPageModel().filter(
-            primary_category=category, language=locale)
+        return self.workspace.S(Page).filter(
+            primary_category=category_id, language=locale.lower())
 
     def get_featured_category_pages(self, category_id):
         return self._get_featured_category_pages(category_id, self.locale)
 
     @cache_region(CACHE_TIME)
     def _get_featured_category_pages(self, category_id, locale):
-        models = self.repo.get_models()
-        category = models.GitCategoryModel().get(category_id)
-        return models.GitPageModel().filter(
-            primary_category=category,
-            featured_in_category=True,
-            language=locale)
+        return self.workspace.S(Page).filter(
+            primary_category=category_id, locale=locale.lower(),
+            featured_in_category=True)
 
     @cache_region(CACHE_TIME)
     def get_page(self, uuid=None, slug=None, locale=None):
-        models = self.repo.get_models()
-        if uuid:
-            return models.GitPageModel().get(uuid)
-        if slug and locale:
-            pages = models.GitPageModel().filter(slug=slug, language=locale)
-            if any(pages):
-                return pages[0]
-        raise exceptions.DoesNotExist()
+        try:
+            query = self.workspace.S(Page).filter(
+                F(uuid=uuid) | F(slug=slug))
+            if locale is not None:
+                query = results.filter(language=locale.lower())
+            [page] = query[:1]
+            return page
+        except IndexError:
+            raise HTTPNotFound()
 
     @reify
     def get_top_nav(self):
@@ -129,9 +110,8 @@ class CmsViews(object):
 
     @cache_region(CACHE_TIME)
     def _get_top_nav(self, locale):
-        models = self.repo.get_models()
-        return models.GitCategoryModel().filter(
-            language=locale, featured_in_navbar=True)
+        return self.workspace(Category).filter(
+            language=locale.lower(), featured_in_navbar=True)
 
     @view_config(route_name='home', renderer='templates/home.pt')
     @view_config(route_name='categories', renderer='templates/categories.pt')
@@ -152,30 +132,29 @@ class CmsViews(object):
     @view_config(route_name='content', renderer='cms:templates/content.pt')
     def content(self):
         page = self.get_page(self.request.matchdict['uuid'])
+        category = self.get_category(page.primary_category)
         if page.language != self.locale:
             raise HTTPNotFound()
         return {
             'page': page,
+            'primary_category': category,
             'content': markdown(page.content),
             'description': markdown(page.description),
         }
 
     @view_config(route_name='flatpage', renderer='cms:templates/flatpage.pt')
     def flatpage(self):
-        try:
-            page = self.get_page(
-                None, self.request.matchdict['slug'], self.locale)
+        page = self.get_page(
+            None, self.request.matchdict['slug'], self.locale)
 
-            if page.language != self.locale:
-                raise exceptions.DoesNotExist()
-
-            return {
-                'page': page,
-                'content': markdown(page.content),
-                'description': markdown(page.description),
-            }
-        except exceptions.DoesNotExist:
+        if page.language != self.locale:
             raise HTTPNotFound()
+
+        return {
+            'page': page,
+            'content': markdown(page.content),
+            'description': markdown(page.description),
+        }
 
     @view_config(route_name='locale')
     def set_locale_cookie(self):
