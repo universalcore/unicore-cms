@@ -19,3 +19,4 @@ Markdown==2.5.1
 raven==5.0.0
 unicore-cms==0.6.3
 elastic-git==0.1.5
+python-slugify

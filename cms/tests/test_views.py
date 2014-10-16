@@ -1,26 +1,24 @@
 import arrow
 from datetime import timedelta
-import os
 
 from gitmodel import exceptions
 
 from pyramid import testing
 from pyramid_beaker import set_cache_regions_from_settings
 
+from cms.tests.base import UnicoreTestCase
 from cms.views import CmsViews
-from cms.tests.utils import BaseTestCase, RepoHelper
 
 
-class TestViews(BaseTestCase):
+class TestViews(UnicoreTestCase):
 
     def setUp(self):
-        super(TestViews, self).setUp()
-        self.repo = RepoHelper.create(
-            os.path.join(os.getcwd(), '.test_repos', self.id()))
+        self.workspace = self.mk_workspace()
         languages = "[('eng_UK', 'English'), ('swh_KE', 'Swahili (Kenya)')]"
         settings = {
-            'git.path': self.repo.path,
+            'git.path': self.workspace.repo.working_dir,
             'git.content_repo_url': '',
+            'es.index_prefix': self.workspace.index_prefix,
             'cache.enabled': 'false',
             'cache.regions': 'long_term, default_term',
             'cache.long_term.expire': '1',
@@ -33,22 +31,16 @@ class TestViews(BaseTestCase):
         self.views = CmsViews(testing.DummyRequest())
 
     def tearDown(self):
-        self.repo.destroy()
         testing.tearDown()
 
     def test_get_featured_pages(self):
-        pages = self.repo.create_pages(
-            count=10,
-            timestamp_cb=lambda i: (
-                arrow.utcnow() - timedelta(days=i)).isoformat())
-
-        for page in pages[8:]:
-            page.featured = True
-            page.save(True, message='Make featured')
-
+        featured_pages = self.create_pages(
+            self.workspace, count=2, featured=True)
+        normal_pages = self.create_pages(
+            self.workspace, count=2)
         featured_pages = self.views.get_featured_pages(limit=10)
         self.assertEqual(
-            ['Test Page 9', 'Test Page 8'],
+            ['Test Page 1', 'Test Page 0'],
             [p.title for p in featured_pages])
 
     def test_get_pages_count(self):

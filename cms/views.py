@@ -24,7 +24,8 @@ class CmsViews(object):
         self.locale = request.locale_name
         self.settings = request.registry.settings
         self.workspace = EG.workspace(
-            workdir=self.settings['git.path'])
+            workdir=self.settings['git.path'],
+            index_prefix=self.settings['es.index_prefix'])
 
     @reify
     def get_available_languages(self):
@@ -65,7 +66,7 @@ class CmsViews(object):
         return self.workspace.S(Page).filter(
             language=locale.lower(), featured=True).order_by(*order_by)[:limit]
 
-    def get_featured_pages(self, limit=5, order_by=('modified_at',)):
+    def get_featured_pages(self, limit=5, order_by=('-modified_at',)):
         """
         Return featured pages the GitModel knows about.
 
@@ -98,7 +99,7 @@ class CmsViews(object):
             query = self.workspace.S(Page).filter(
                 F(uuid=uuid) | F(slug=slug))
             if locale is not None:
-                query = results.filter(language=locale.lower())
+                query = query.filter(language=locale.lower())
             [page] = query[:1]
             return page
         except IndexError:
