@@ -21,5 +21,3 @@ python -m elasticgit.tools \
                 > ./unicore/content/models.py
 
 mv repo/unicore.content.models/*.avro.json ./unicore/
-
-python -c 'from unicore.content import models; print models.Page; print models.Category;'
