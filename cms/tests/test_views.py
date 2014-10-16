@@ -73,7 +73,7 @@ class TestViews(UnicoreTestCase):
 
     def test_get_featured_category_pages(self):
         category1, category2 = self.create_categories(self.workspace)
-        pages = self.create_pages(
+        self.create_pages(
             self.workspace, count=10, primary_category=category1.uuid)
         featured_pages = self.create_pages(
             self.workspace, count=2, primary_category=category1.uuid,
@@ -96,17 +96,17 @@ class TestViews(UnicoreTestCase):
 
         [category_eng] = self.create_categories(
             self.workspace, language='eng_UK', count=1)
-        pages_eng = self.create_pages(
+        self.create_pages(
             self.workspace, count=10, language='eng_UK',
             primary_category=category_eng.uuid)
-        pages_eng_featured = self.create_pages(
+        self.create_pages(
             self.workspace, count=2, language='eng_UK',
             featured_in_category=True,
             primary_category=category_eng.uuid)
 
         [category_swh] = self.create_categories(
             self.workspace, language='swh_KE', count=1)
-        pages_swh = self.create_pages(
+        self.create_pages(
             self.workspace, count=10, language='swh_KE',
             primary_category=category_swh.uuid)
         pages_swh_featured = self.create_pages(
