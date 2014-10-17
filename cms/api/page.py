@@ -8,7 +8,7 @@ from unicore.content.models import Page, Category
 
 
 @resource(
-    collection_path='/api/pages.jsion',
+    collection_path='/api/pages.json',
     path='/api/pages/{uuid}.json'
 )
 class PageApi(ApiBase):
