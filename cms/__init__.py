@@ -1,4 +1,5 @@
-from cms.utils import CmsRepo, CmsRepoException
+import git
+from elasticgit import EG
 
 from pyramid_beaker import set_cache_regions_from_settings
 from pyramid.config import Configurator
@@ -28,18 +29,17 @@ def init_repository(config):
 
     if 'git.content_repo_url' in settings \
             and settings['git.content_repo_url'] \
-            and not CmsRepo.exists(repo_path):
+            and not EG.is_repo(repo_path):
         content_repo_url = settings['git.content_repo_url'].strip()
         log.info('Cloning repository: %s' % (content_repo_url,))
-        CmsRepo.clone(content_repo_url, repo_path)
+        Repo.clone(content_repo_url, repo_path)
         log.info('Cloned repository into: %s' % (repo_path,))
 
     try:
-        CmsRepo.read(repo_path)
+        EG.read_repo(repo_path)
         log.info('Using repository found in: %s' % (repo_path,))
-    except CmsRepoException:
-        CmsRepo.init(
-            repo_path, 'Unicore CMS', 'support@unicore.io')
+    except git.InvalidGitRepositoryError:
+        EG.init_repo(repo_path)
         log.info('Initialising repository in: %s' % (repo_path,))
 
 

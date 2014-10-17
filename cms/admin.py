@@ -1,8 +1,8 @@
-import pygit2
 import shutil
 
 from beaker.cache import cache_managers
 from cms import utils
+from cms.views.base import BaseCmsView
 
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPFound
@@ -10,36 +10,20 @@ from pyramid.httpexceptions import HTTPFound
 CACHE_TIME = 'long_term'
 
 
-class AdminViews(object):
-
-    def __init__(self, request):
-        self.request = request
+class AdminViews(BaseCmsView):
 
     @view_config(route_name='admin_home', renderer='templates/admin/home.pt')
     def home(self):
         return {}
 
-    def get_ws(self):
-        repo_path = self.request.registry.settings['git.path']
-        repo = pygit2.Repository(repo_path)
-        return utils.get_workspace(repo)
-
     @view_config(route_name='commit_log', renderer='json')
     def get_commit_log(self):
         b = self.request.GET.get('branch')
-        if not b:
-            return {}
-
-        r = self.get_ws().repo
-        branch = r.lookup_branch(b)
-        last = r[branch.target]
-        commits = []
-        for commit in r.walk(last.id, pygit2.GIT_SORT_TIME):
-            commits.append(commit)
-        return [
-            {'message': c.message, 'author': c.author.name}
-            for c in commits
-        ][:10]
+        commits = self.workspace.repo.iter_commits(b, max_count=10)
+        return [{
+            'message': commit.message,
+            'author': commit.author.name,
+        } for commit in commits]
 
     def get_updates(self, branch=None):
         commits = utils.get_remote_updates_log(self.get_ws().repo, branch)

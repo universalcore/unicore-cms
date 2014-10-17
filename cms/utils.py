@@ -1,9 +1,4 @@
-import pygit2
 import os
-
-from gitmodel.workspace import Workspace
-
-from unicore_gitmodels import models
 
 
 def get_remote_branch(repo, branch_name=None):
@@ -23,35 +18,9 @@ def fetch(repo):
 
 
 def get_remote_updates_log(repo, branch_name=None):
-    remote_name = get_remote_branch(repo, branch_name)
-    if remote_name is None:
-        return []
-
-    if branch_name is not None:
-        local_branch = repo.lookup_branch(branch_name)
-    else:
-        local_branch = repo.head
-
-    branch = repo.lookup_branch(remote_name, pygit2.GIT_BRANCH_REMOTE)
-
-    analysis, pref = repo.merge_analysis(branch.target)
-    if analysis & pygit2.GIT_MERGE_ANALYSIS_UP_TO_DATE:
-        return []
-
-    if not analysis & pygit2.GIT_MERGE_ANALYSIS_FASTFORWARD:
-        raise Exception('Unable to fastforward')
-
-    num_commits = len(repo.diff(local_branch.name, branch.name))
-
-    commits = []
-    if num_commits > 0:
-        for commit in repo.walk(branch.target, pygit2.GIT_SORT_TIME):
-            commits.append(commit)
-
-            if len(commits) == num_commits:
-                break
-
-    return commits
+    remote = repo.remote()
+    [remote_head] = remote.refs
+    return repo.iter_commits(rev=remote_head, max_count=100)
 
 
 def fast_forward(repo):
@@ -99,9 +68,9 @@ def checkout_all_upstream(repo):
             checkout_upstream(repo, branch)
 
 
-def getall_branches(repo, mode=pygit2.GIT_BRANCH_LOCAL):
-    branches = repo.listall_branches(mode)
-    return [repo.lookup_branch(b, mode) for b in branches]
+# def getall_branches(repo, mode=pygit2.GIT_BRANCH_LOCAL):
+#     branches = repo.listall_branches(mode)
+#     return [repo.lookup_branch(b, mode) for b in branches]
 
 
 def get_workspace(repo):
@@ -205,8 +174,8 @@ class CmsRepo(object):
     def checkout_all_upstream(self):
         return checkout_all_upstream(self.repo)
 
-    def getall_branches(self, mode=pygit2.GIT_BRANCH_LOCAL):
-        return getall_branches(self.repo, mode=mode)
+    # def getall_branches(self, mode=pygit2.GIT_BRANCH_LOCAL):
+    #     return getall_branches(self.repo, mode=mode)
 
     def get_workspace(self):
         return self._workspace

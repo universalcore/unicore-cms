@@ -2,13 +2,12 @@ import arrow
 import unittest
 from datetime import timedelta
 
-from gitmodel import exceptions
-
 from pyramid import testing
+from pyramid.httpexceptions import HTTPNotFound
 from pyramid_beaker import set_cache_regions_from_settings
 
 from cms.tests.base import UnicoreTestCase
-from cms.views import CmsViews
+from cms.views.cms_views import CmsViews
 
 
 class TestViews(UnicoreTestCase):
@@ -141,7 +140,7 @@ class TestViews(UnicoreTestCase):
         p = self.views.get_page(None, 'test-page-1', 'swh_KE')
         self.assertEqual(p.language, 'swh_KE')
 
-        with self.assertRaises(exceptions.DoesNotExist):
+        with self.assertRaises(HTTPNotFound):
             p = self.views.get_page(None, 'invalid-slug')
 
     def test_content_markdown_rendering(self):

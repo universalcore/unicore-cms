@@ -1,11 +1,12 @@
 import os
-from unittest import TestCase
+from unittest import TestCase, skip
 
 from cms.tests.utils import RepoHelper
 
 
 class TestUtils(TestCase):
 
+    @skip('This is going to go away with EG')
     def test_get_worspace_caching(self):
 
         repo_helper = RepoHelper.create(

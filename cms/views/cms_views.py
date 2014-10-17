@@ -10,22 +10,16 @@ from pyramid.decorator import reify
 from pyramid.response import Response
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 
-from elasticgit import EG, F
+from elasticgit import F
+
+from cms.views.base import BaseCmsView
 
 from unicore.content.models import Category, Page
 
 CACHE_TIME = 'default_term'
 
 
-class CmsViews(object):
-
-    def __init__(self, request):
-        self.request = request
-        self.locale = request.locale_name
-        self.settings = request.registry.settings
-        self.workspace = EG.workspace(
-            workdir=self.settings['git.path'],
-            index_prefix=self.settings['es.index_prefix'])
+class CmsViews(BaseCmsView):
 
     @reify
     def get_available_languages(self):
