@@ -127,7 +127,7 @@ class TestViews(UnicoreTestCase):
                      category_swh.uuid)]))
 
     @unittest.skip("retrieving by slug requires a custom ES analyzer")
-    def test_get_page_by_slug(self):
+    def test_get_page_by_slug(self):  # pragma: no cover
         for p in self.create_pages(self.workspace, count=5, language='eng_UK'):
             print p.title, p.slug
 
@@ -162,7 +162,7 @@ class TestViews(UnicoreTestCase):
             response['description'], '<p><em>emphasised</em></p>')
 
     @unittest.skip('needs a custom analyzer')
-    def test_flatpage_markdown_rendering(self):
+    def test_flatpage_markdown_rendering(self):  # pragma: no cover
         [category] = self.create_categories(self.workspace, count=1)
         [page] = self.create_pages(
             self.workspace, count=1, content='**strong**',
