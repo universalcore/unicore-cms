@@ -96,7 +96,7 @@ class CmsViews(BaseCmsView):
                 query = query.filter(language=locale.lower())
             [page] = query[:1]
             return page
-        except IndexError:
+        except ValueError:
             raise HTTPNotFound()
 
     @reify

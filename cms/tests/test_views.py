@@ -9,6 +9,8 @@ from pyramid_beaker import set_cache_regions_from_settings
 from cms.tests.base import UnicoreTestCase
 from cms.views.cms_views import CmsViews
 
+from unicore.content.models import Page
+
 
 class TestViews(UnicoreTestCase):
 
@@ -126,11 +128,20 @@ class TestViews(UnicoreTestCase):
                  self.views.get_featured_category_pages(
                      category_swh.uuid)]))
 
-    @unittest.skip("retrieving by slug requires a custom ES analyzer")
-    def test_get_page_by_slug(self):  # pragma: no cover
-        for p in self.create_pages(self.workspace, count=5, language='eng_UK'):
-            print p.title, p.slug
+    def test_get_page_by_slug(self):
+        self.workspace.setup_custom_mapping(Page, {
+            'properties': {
+                'slug': {
+                    'type': 'string',
+                    'index': 'not_analyzed',
+                },
+                'language': {
+                    'type': 'string',
+                }
+            }
+        })
 
+        self.create_pages(self.workspace, count=5, language='eng_UK')
         self.create_pages(self.workspace, count=5, language='swh_KE')
 
         p = self.views.get_page(None, 'test-page-1', 'eng_UK')
@@ -161,8 +172,19 @@ class TestViews(UnicoreTestCase):
         self.assertEqual(
             response['description'], '<p><em>emphasised</em></p>')
 
-    @unittest.skip('needs a custom analyzer')
-    def test_flatpage_markdown_rendering(self):  # pragma: no cover
+    def test_flatpage_markdown_rendering(self):
+        self.workspace.setup_custom_mapping(Page, {
+            'properties': {
+                'slug': {
+                    'type': 'string',
+                    'index': 'not_analyzed',
+                },
+                'language': {
+                    'type': 'string',
+                }
+            }
+        })
+
         [category] = self.create_categories(self.workspace, count=1)
         [page] = self.create_pages(
             self.workspace, count=1, content='**strong**',
