@@ -1,5 +1,4 @@
 import arrow
-import unittest
 from datetime import timedelta
 
 from pyramid import testing
