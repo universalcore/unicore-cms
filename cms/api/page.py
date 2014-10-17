@@ -1,5 +1,6 @@
 from cornice.resource import resource, view
-from cms.api import validators, utils
+from cms.api import validators
+from cms.api.base import ApiBase
 
 from elasticgit import Q
 
@@ -7,10 +8,10 @@ from unicore.content.models import Page, Category
 
 
 @resource(
-    collection_path='/api/pages.json',
+    collection_path='/api/pages.jsion',
     path='/api/pages/{uuid}.json'
 )
-class PageApi(utils.ApiBase):
+class PageApi(ApiBase):
 
     def validate_primary_category(self, request):
         primary_category_uuid = self.request.validated.get('primary_category')

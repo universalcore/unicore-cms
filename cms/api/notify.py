@@ -1,5 +1,5 @@
 from cornice.resource import resource
-from cms.api.utils import ApiBase
+from cms.api.base import ApiBase
 from cms.tasks import fastforward
 
 
