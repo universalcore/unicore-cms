@@ -11,6 +11,6 @@ install:
 script:
   - find ./cms -name '*.py' | xargs pep8
   - find ./cms -name '*.py' | xargs pyflakes
-  - py.test cms/tests/
+  - py.test cms
 after_success:
   - coveralls

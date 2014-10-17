@@ -32,7 +32,7 @@ def init_repository(config):
             and not EG.is_repo(repo_path):
         content_repo_url = settings['git.content_repo_url'].strip()
         log.info('Cloning repository: %s' % (content_repo_url,))
-        Repo.clone(content_repo_url, repo_path)
+        git.Repo.clone(content_repo_url, repo_path)
         log.info('Cloned repository into: %s' % (repo_path,))
 
     try:

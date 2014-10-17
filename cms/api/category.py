@@ -2,8 +2,6 @@ from cornice.resource import resource, view
 from cms.api import validators
 from cms.api.base import ApiBase
 
-import git
-
 from unicore.content.models import Category
 
 

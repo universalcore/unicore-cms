@@ -9,6 +9,10 @@ from pyramid.httpexceptions import HTTPFound
 
 CACHE_TIME = 'long_term'
 
+import warnings
+
+warnings.warn('AdminViews seems to be completely missing test coverage.')
+
 
 class AdminViews(BaseCmsView):
 
@@ -68,7 +72,8 @@ class AdminViews(BaseCmsView):
             if url:
                 if ws.repo.is_empty:
                     shutil.rmtree(repo_path)
-                    pygit2.clone_repository(url, repo_path)
+                    # NOTE: pygit no longer being used
+                    # pygit2.clone_repository(url, repo_path)
                     self.get_ws().sync_repo_index()
             else:
                 errors.append('Url is required')
