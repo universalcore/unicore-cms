@@ -109,7 +109,8 @@ class CmsViews(BaseCmsView):
             language=locale.lower(), featured_in_navbar=True)
 
     @view_config(route_name='home', renderer='cms:templates/home.pt')
-    @view_config(route_name='categories', renderer='cms:templates/categories.pt')
+    @view_config(route_name='categories',
+                 renderer='cms:templates/categories.pt')
     def categories(self):
         return {}
 
