@@ -1,6 +1,5 @@
 from cornice.resource import resource, view
 from cms.api import validators, utils
-from gitmodel.exceptions import DoesNotExist
 
 from elasticgit import Q
 
