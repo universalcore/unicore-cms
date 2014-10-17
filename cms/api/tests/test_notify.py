@@ -1,31 +1,26 @@
-import os
 from pyramid import testing
 from webtest import TestApp
 from cms import main
-from cms.tests.utils import BaseTestCase, RepoHelper
+from cms.tests.base import UnicoreTestCase
 
 
-class NotifyTestCase(BaseTestCase):
+class NotifyTestCase(UnicoreTestCase):
 
     def setUp(self):
-        self.repo_path = os.path.join(
-            os.getcwd(), '.test_repos', self.id())
-
-        self.repo_path_remote = os.path.join(
-            os.getcwd(), '.test_remote_repos', self.id())
-        self.remote_repo = RepoHelper.create(self.repo_path_remote)
+        self.local_workspace = self.mk_workspace(name=self.id().lower())
+        self.remote_workspace = self.mk_workspace(
+            name='%s_remote' % (self.id().lower(),))
 
         self.config = testing.setUp()
         settings = {
-            'git.path': self.repo_path,
-            'git.content_repo_url': self.remote_repo.workdir,
+            'git.path': self.local_workspace.working_dir,
+            'git.content_repo_url': self.remote_workspace.working_dir,
+            'es.index_prefix': self.local_workspace.index_prefix,
             'CELERY_ALWAYS_EAGER': True
         }
         self.app = TestApp(main({}, **settings))
 
     def tearDown(self):
-        self.remote_repo.destroy()
-        RepoHelper.read(self.repo_path).destroy()
         testing.tearDown()
 
     def test_fastforward(self):
@@ -35,8 +30,11 @@ class NotifyTestCase(BaseTestCase):
         self.assertEquals(len(resp.json), 0)
 
         # the remote grows some categories
-        self.remote_repo.create_categories()
-        self.remote_repo.create_pages()
+        self.create_categories(self.remote_workspace)
+        self.create_pages(self.remote_workspace)
+
+        local_repo = self.local_workspace.repo
+        local_repo.create_remote('origin', self.remote_workspace.working_dir)
 
         # this should trigger a fastforward
         self.app.post('/api/notify/', status=200)

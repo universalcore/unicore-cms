@@ -2,6 +2,10 @@ from cornice.resource import resource, view
 from cms.api import validators, utils
 from gitmodel.exceptions import DoesNotExist
 
+from elasticgit import Q
+
+from unicore.content.models import Page, Category
+
 
 @resource(
     collection_path='/api/pages.json',
@@ -10,50 +14,36 @@ from gitmodel.exceptions import DoesNotExist
 class PageApi(utils.ApiBase):
 
     def validate_primary_category(self, request):
-        models = self.get_repo_models()
         primary_category_uuid = self.request.validated.get('primary_category')
 
         if primary_category_uuid is not None:
             if primary_category_uuid:
                 try:
-                    category = models.GitCategoryModel.get(
-                        primary_category_uuid)
+                    [category] = self.workspace.S(Category).filter(
+                        uuid=primary_category_uuid)
                     self.request.validated['primary_category'] = category
-                except DoesNotExist:
+                except ValueError:
                     self.request.errors.add(
                         'api', 'DoesNotExist', 'Category not found.')
             else:
                 self.request.validated['primary_category'] = None
 
     def collection_get(self):
-        models = self.get_repo_models()
-
+        query = Q()
         primary_category_uuid = self.request.GET.get('primary_category', None)
-        if primary_category_uuid:
-            try:
-                category = models.GitCategoryModel.get(primary_category_uuid)
-                return [
-                    p.to_dict()
-                    for p in models.GitPageModel.filter(
-                        primary_category=category)
-                ]
-            except DoesNotExist:
-                self.request.errors.add(
-                    'api', 'DoesNotExist', 'Category not found.')
-                return
-
-        return [p.to_dict() for p in models.GitPageModel.all()]
+        if primary_category_uuid is not None:
+            query += Q(primary_category=primary_category_uuid)
+        return [dict(result.get_object())
+                for result in self.workspace.S(Page).query(query)]
 
     @view(renderer='json')
     def get(self):
-        models = self.get_repo_models()
-
         uuid = self.request.matchdict['uuid']
 
         try:
-            page = models.GitPageModel.get(uuid)
-            return page.to_dict()
-        except DoesNotExist:
+            [page] = self.workspace.S(Page).filter(uuid=uuid)
+            return dict(page.get_object())
+        except ValueError:
             self.request.errors.add('api', 'DoesNotExist', 'Page not found.')
             return
 
@@ -66,16 +56,21 @@ class PageApi(utils.ApiBase):
         content = self.request.validated['content']
         primary_category = self.request.validated.get('primary_category')
 
-        models = self.get_repo_models()
         try:
-            page = models.GitPageModel.get(uuid)
-            page.title = title
-            page.content = content
-            page.primary_category = primary_category
-            page.save(True, message='Page updated: %s' % title)
-            self.get_registered_ws().sync_repo_index()
-            return page.to_dict()
-        except DoesNotExist:
+            [page] = self.workspace.S(Page).filter(uuid=uuid)
+            original = page.get_object()
+            updated = original.update({
+                'title': title,
+                'content': content,
+                'primary_category': (
+                    None
+                    if primary_category is None
+                    else primary_category.uuid),
+            })
+            self.workspace.save(updated, 'Page updated: %s' % (title,))
+            self.workspace.refresh_index()
+            return dict(updated)
+        except ValueError:
             self.request.errors.add(
                 'api', 'DoesNotExist', 'Page not found.')
 
@@ -87,28 +82,30 @@ class PageApi(utils.ApiBase):
         content = self.request.validated['content']
         primary_category = self.request.validated.get('primary_category')
 
-        models = self.get_repo_models()
-
-        page = models.GitPageModel(
-            title=title,
-            content=content,
-            primary_category=primary_category
-        )
-        page.save(True, message='Page added: %s' % title)
-        self.get_registered_ws().sync_repo_index()
+        page = Page({
+            'title': title,
+            'content': content,
+            'primary_category': (
+                None
+                if primary_category is None
+                else primary_category.uuid)
+        })
+        self.workspace.save(page, 'Page added: %s' % title)
+        self.workspace.refresh_index()
 
         self.request.response.status = 201
-        self.request.response.location = '/api/pages/%s.json' % page.id
-        return page.to_dict()
+        self.request.response.location = '/api/pages/%s.json' % (page.uuid,)
+        return dict(page)
 
     @view()
     def delete(self):
         uuid = self.request.matchdict['uuid']
-        models = self.get_repo_models()
         try:
-            page = models.GitPageModel().get(uuid)
-            models.GitPageModel.delete(
-                uuid, True, message='Page delete: %s' % page.title)
-        except DoesNotExist:
+            [page] = self.workspace.S(Page).filter(uuid=uuid)
+            data = page.get_object()
+            self.workspace.delete(data, 'Page delete: %s' % (page.title,))
+            self.workspace.refresh_index()
+            return dict(data)
+        except ValueError:
             self.request.errors.add(
                 'api', 'DoesNotExist', 'Page not found.')
