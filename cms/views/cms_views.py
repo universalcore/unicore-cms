@@ -28,7 +28,7 @@ class CmsViews(BaseCmsView):
 
     @reify
     def global_template(self):
-        renderer = get_renderer("templates/base.pt")
+        renderer = get_renderer("cms:templates/base.pt")
         return renderer.implementation().macros['layout']
 
     def get_categories(self):
@@ -108,8 +108,8 @@ class CmsViews(BaseCmsView):
         return self.workspace.S(Category).filter(
             language=locale.lower(), featured_in_navbar=True)
 
-    @view_config(route_name='home', renderer='templates/home.pt')
-    @view_config(route_name='categories', renderer='templates/categories.pt')
+    @view_config(route_name='home', renderer='cms:templates/home.pt')
+    @view_config(route_name='categories', renderer='cms:templates/categories.pt')
     def categories(self):
         return {}
 
