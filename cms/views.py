@@ -185,6 +185,4 @@ class CmsViews(object):
             response.set_cookie('_LOCALE_',
                                 value=language,
                                 max_age=31536000)  # max_age = year
-        return HTTPFound(
-            location=self.request.environ.get('HTTP_REFERER', '/'),
-            headers=response.headers)
+        return HTTPFound(location='/', headers=response.headers)
