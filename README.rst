@@ -29,6 +29,7 @@ Running Unicore CMS tests
 
 .. code-block:: bash
 
+    (ve)$ pip install -r requirements-dev.txt
     (ve)$ py.test cms
 
 
