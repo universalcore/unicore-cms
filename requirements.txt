@@ -8,13 +8,10 @@ webtest
 cornice
 praekelt_pyramid_celery
 pyramid_redis
-unicore-gitmodels
-cffi
-pygit2
-praekelt-python-gitmodel>=0.1.2
 babel
 lingua
 arrow
 Markdown==2.5.1
 raven==5.0.0
-unicore-cms==0.6.3
+elastic-git==0.2.2
+python-slugify

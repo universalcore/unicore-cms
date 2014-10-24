@@ -1,8 +1,12 @@
 from celery.task import task
-from cms import utils
+
+from elasticgit import EG
+from unicore.content.models import Page, Category
 
 
 @task(ignore_result=True, serializer='json')
-def fastforward(repo_path):
-    repo = utils.CmsRepo.read(repo_path)
-    repo.fast_forward()
+def fastforward(repo_path, index_prefix):
+    workspace = EG.workspace(repo_path, index_prefix=index_prefix)
+    workspace.fast_forward()
+    workspace.reindex(Page)
+    workspace.reindex(Category)
