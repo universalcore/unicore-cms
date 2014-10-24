@@ -33,4 +33,4 @@ Running Unicore CMS tests
     (ve)$ py.test cms
 
 
-.. _Pyramid:: http://docs.pylonsproject.org/en/latest/docs/pyramid.html
+.. _Pyramid: http://docs.pylonsproject.org/en/latest/docs/pyramid.html
