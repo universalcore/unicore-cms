@@ -1,26 +1,27 @@
 from cornice.resource import resource, view
-from cms.api import validators, utils
-from gitmodel.exceptions import DoesNotExist
+from cms.api import validators
+from cms.api.base import ApiBase
+
+from unicore.content.models import Category
 
 
 @resource(
     collection_path='/api/categories.json',
     path='/api/categories/{uuid}.json'
 )
-class CategoryApi(utils.ApiBase):
+class CategoryApi(ApiBase):
 
     def collection_get(self):
-        models = self.get_repo_models()
-        return [c.to_dict() for c in models.GitCategoryModel().all()]
+        return [dict(result.get_object())
+                for result in self.workspace.S(Category)]
 
     @view(renderer='json')
     def get(self):
-        models = self.get_repo_models()
         uuid = self.request.matchdict['uuid']
         try:
-            category = models.GitCategoryModel().get(uuid)
-            return category.to_dict()
-        except DoesNotExist:
+            [category] = self.workspace.S(Category).filter(uuid=uuid)
+            return dict(category.get_object())
+        except ValueError:
             self.request.errors.add(
                 'api', 'DoesNotExist', 'Category not found.')
 
@@ -28,15 +29,13 @@ class CategoryApi(utils.ApiBase):
     def put(self):
         uuid = self.request.matchdict['uuid']
         title = self.request.validated['title']
-
-        models = self.get_repo_models()
         try:
-            category = models.GitCategoryModel().get(uuid)
-            category.title = title
-            category.save(True, message='Category updated: %s' % title)
-            self.get_registered_ws().sync_repo_index()
-            return category.to_dict()
-        except DoesNotExist:
+            [category] = self.workspace.S(Category).filter(uuid=uuid)
+            original = category.get_object()
+            updated = original.update({'title': title})
+            self.workspace.save(updated, 'Category updated: %s' % (title,))
+            return dict(updated)
+        except ValueError:
             self.request.errors.add(
                 'api', 'DoesNotExist', 'Category not found.')
 
@@ -44,25 +43,22 @@ class CategoryApi(utils.ApiBase):
     def collection_post(self):
         title = self.request.validated['title']
 
-        models = self.get_repo_models()
+        category = Category({'title': title})
+        self.workspace.save(category, 'Category added: %s' % (title,))
+        self.workspace.refresh_index()
 
-        category = models.GitCategoryModel(title=title)
-        category.save(True, message='Category added: %s' % title)
-        self.get_registered_ws().sync_repo_index()
-
-        next = '/api/categories/%s.json' % category.id
+        next = '/api/categories/%s.json' % category.uuid
         self.request.response.status = 201
         self.request.response.location = next
-        return category.to_dict()
+        return dict(category)
 
     @view()
     def delete(self):
         uuid = self.request.matchdict['uuid']
-        models = self.get_repo_models()
         try:
-            category = models.GitCategoryModel().get(uuid)
-            models.GitCategoryModel.delete(
-                uuid, True, message='Category delete: %s' % category.title)
-        except DoesNotExist:
+            [category] = self.workspace.S(Category).filter(uuid=uuid)
+            self.workspace.delete(category.get_object(), "Removed via API")
+            self.workspace.refresh_index()
+        except ValueError:
             self.request.errors.add(
                 'api', 'DoesNotExist', 'Category not found.')

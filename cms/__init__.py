@@ -1,4 +1,5 @@
-from cms.utils import CmsRepo, CmsRepoException
+import git
+from elasticgit import EG
 
 from pyramid_beaker import set_cache_regions_from_settings
 from pyramid.config import Configurator
@@ -28,18 +29,17 @@ def init_repository(config):
 
     if 'git.content_repo_url' in settings \
             and settings['git.content_repo_url'] \
-            and not CmsRepo.exists(repo_path):
+            and not EG.is_repo(repo_path):
         content_repo_url = settings['git.content_repo_url'].strip()
         log.info('Cloning repository: %s' % (content_repo_url,))
-        CmsRepo.clone(content_repo_url, repo_path)
+        git.Repo.clone(content_repo_url, repo_path)
         log.info('Cloned repository into: %s' % (repo_path,))
 
     try:
-        CmsRepo.read(repo_path)
+        EG.read_repo(repo_path)
         log.info('Using repository found in: %s' % (repo_path,))
-    except CmsRepoException:
-        CmsRepo.init(
-            repo_path, 'Unicore CMS', 'support@unicore.io')
+    except git.InvalidGitRepositoryError:
+        EG.init_repo(repo_path)
         log.info('Initialising repository in: %s' % (repo_path,))
 
 
@@ -53,13 +53,6 @@ def includeme(config):
     config.add_route('categories', '/content/list/')
     config.add_route('category', '/content/list/{category}/')
     config.add_route('content', '/content/detail/{uuid}/')
-    config.add_route('admin_home', '/admin/')
-    config.add_route('configure', '/admin/configure/')
-    config.add_route('configure_switch', '/admin/configure/switch/')
-    config.add_route('check_updates', '/admin/configure/update/')
-    config.add_route('configure_fast_forward', '/admin/configure/fastforward/')
-    config.add_route('commit_log', '/admin/configure/log.json')
-    config.add_route('get_updates', '/admin/configure/updates.json')
     config.add_route('locale', '/locale/')
     config.add_route('flatpage', '/{slug}/')
     config.scan()
