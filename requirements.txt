@@ -13,5 +13,5 @@ lingua
 arrow
 Markdown==2.5.1
 raven==5.0.0
-elastic-git==0.2.2
+elastic-git
 python-slugify
