@@ -153,6 +153,25 @@ class TestViews(UnicoreTestCase):
         with self.assertRaises(HTTPNotFound):
             p = self.views.get_page(None, 'invalid-slug')
 
+    def test_content_linked_pages(self):
+        [category] = self.create_categories(self.workspace, count=1)
+        [page1] = self.create_pages(
+            self.workspace,
+            count=1, content='', description='',
+            primary_category=category.uuid)
+        [page2] = self.create_pages(
+            self.workspace,
+            count=1, content='', description='',
+            linked_pages=[page1.uuid],
+            primary_category=category.uuid)
+
+        request = testing.DummyRequest()
+        request.matchdict['uuid'] = page2.uuid
+        self.views = CmsViews(request)
+        response = self.views.content()
+        [linked_page] = response['linked_pages']
+        self.assertEqual(linked_page.get_object(), page1)
+
     def test_content_markdown_rendering(self):
         [category] = self.create_categories(self.workspace, count=1)
         [page] = self.create_pages(
