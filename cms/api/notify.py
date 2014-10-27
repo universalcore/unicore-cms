@@ -7,7 +7,8 @@ from cms.tasks import fastforward
 class NotifyApi(ApiBase):
 
     def post(self):
-        fastforward.delay(
-            self.settings['git.path'],
-            self.settings['es.index_prefix'])
+        cb = (fastforward
+              if 'sync' in self.request.GET
+              else fastforward.delay)
+        cb(self.settings['git.path'], self.settings['es.index_prefix'])
         return {}
