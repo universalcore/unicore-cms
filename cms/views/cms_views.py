@@ -128,8 +128,12 @@ class CmsViews(BaseCmsView):
     @view_config(route_name='content', renderer='cms:templates/content.pt')
     def content(self):
         page = self.get_page(self.request.matchdict['uuid'])
-        linked_pages = self.workspace.S(Page).filter(
-            uuid__in=page.linked_pages)
+        if page.linked_pages:
+            linked_pages = self.workspace.S(Page).filter(
+                uuid__in=page.linked_pages)
+        else:
+            linked_pages = []
+
         category = self.get_category(page.primary_category)
         if page.language != self.locale:
             raise HTTPNotFound()
