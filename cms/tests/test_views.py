@@ -278,3 +278,17 @@ class TestViews(UnicoreTestCase):
         self.assertEqual(
             set([cat1.language, cat2.language]),
             set(['swh_KE', 'swh_KE']))
+
+    def test_format_date_helper(self):
+        views = CmsViews(testing.DummyRequest({}))
+        self.assertEqual(
+            views.format_date('2014-10-10T09:10:17+00:00'),
+            '10 October 2014')
+
+        self.assertEqual(
+            views.format_date('2014-10-10T09:10:17+00:00', '%d-%b-%y'),
+            '10-Oct-14')
+
+        self.assertEqual(
+            views.format_date('some invalid date'),
+            'some invalid date')
