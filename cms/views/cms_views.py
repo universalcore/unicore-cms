@@ -105,13 +105,14 @@ class CmsViews(BaseCmsView):
             raise HTTPNotFound()
 
     @reify
-    def get_top_nav(self):
-        return self._get_top_nav(self.locale)
+    def get_top_nav(self, order_by=('position',)):
+        return self._get_top_nav(self.locale, order_by)
 
     @cache_region(CACHE_TIME)
-    def _get_top_nav(self, locale):
+    def _get_top_nav(self, locale, order_by):
         return self.workspace.S(Category).filter(
-            language=locale.lower(), featured_in_navbar=True)
+            language=locale.lower(),
+            featured_in_navbar=True).order_by(*order_by)
 
     @view_config(route_name='home', renderer='cms:templates/home.pt')
     @view_config(route_name='categories',
