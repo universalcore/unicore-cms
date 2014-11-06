@@ -1,6 +1,5 @@
-import os
 from cornice.resource import resource
-from cms.api.utils import ApiBase
+from cms.api.base import ApiBase
 from cms.tasks import fastforward
 
 
@@ -8,7 +7,7 @@ from cms.tasks import fastforward
 class NotifyApi(ApiBase):
 
     def post(self):
-        repo_path = os.path.join(
-            self.request.registry.settings['git.path'], '.git')
-        fastforward.delay(repo_path)
+        fastforward.delay(
+            self.settings['git.path'],
+            self.settings['es.index_prefix'])
         return {}

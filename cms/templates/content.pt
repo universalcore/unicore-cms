@@ -1,10 +1,10 @@
 <div metal:use-macro="view.global_template">
     <div metal:fill-slot="content">
 
-        <div class="page section_news object-detail ${page.primary_category.slug}-detail">
+        <div class="page section_news object-detail ${primary_category.slug}-detail">
             <div class="h1">
-                <img src="/static/img/icon-${page.primary_category.slug}.jpg"/>
-                <a href="/content/list/${page.primary_category.slug}/">${page.primary_category.title}</a>
+                <img src="/static/img/icon-${primary_category.slug}.jpg"/>
+                <a href="/content/list/${primary_category.uuid}/">${primary_category.title}</a>
                 <div class="clear"></div>
             </div>
             <div class="object-header">
