@@ -81,14 +81,16 @@ class CmsViews(BaseCmsView):
             primary_category=category_id, language=locale.lower()).order_by(
                 *order_by)
 
-    def get_featured_category_pages(self, category_id):
-        return self._get_featured_category_pages(category_id, self.locale)
+    def get_featured_category_pages(
+            self, category_id, order_by=('-modified_at',)):
+        return self._get_featured_category_pages(
+            category_id, self.locale, order_by)
 
     @cache_region(CACHE_TIME)
-    def _get_featured_category_pages(self, category_id, locale):
+    def _get_featured_category_pages(self, category_id, locale, order_by):
         return self.workspace.S(Page).filter(
             primary_category=category_id, language=locale.lower(),
-            featured_in_category=True)
+            featured_in_category=True).order_by(*order_by)
 
     @cache_region(CACHE_TIME)
     def get_page(self, uuid=None, slug=None, locale=None):
