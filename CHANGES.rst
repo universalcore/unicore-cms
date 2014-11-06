@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+1.0.9
+-----
+- Ensure featured pages in category on homepage are ordered by position
+
 1.0.8
 -----
 - Autodeployment with travis - attempt 2
