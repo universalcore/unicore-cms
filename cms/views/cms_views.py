@@ -31,12 +31,13 @@ class CmsViews(BaseCmsView):
         renderer = get_renderer("cms:templates/base.pt")
         return renderer.implementation().macros['layout']
 
-    def get_categories(self):
-        return self._get_categories(self.locale)
+    def get_categories(self, order_by=('position',)):
+        return self._get_categories(self.locale, order_by)
 
     @cache_region(CACHE_TIME)
-    def _get_categories(self, locale):
-        return self.workspace.S(Category).filter(language=locale.lower())
+    def _get_categories(self, locale, order_by):
+        return self.workspace.S(Category).filter(
+            language=locale.lower()).order_by(*order_by)
 
     @cache_region(CACHE_TIME)
     def get_category(self, uuid):
@@ -74,18 +75,22 @@ class CmsViews(BaseCmsView):
         return self._get_featured_pages(self.locale, limit, order_by)
 
     @cache_region(CACHE_TIME)
-    def get_pages_for_category(self, category_id, locale):
+    def get_pages_for_category(
+            self, category_id, locale, order_by=('position',)):
         return self.workspace.S(Page).filter(
-            primary_category=category_id, language=locale.lower())
+            primary_category=category_id, language=locale.lower()).order_by(
+                *order_by)
 
-    def get_featured_category_pages(self, category_id):
-        return self._get_featured_category_pages(category_id, self.locale)
+    def get_featured_category_pages(
+            self, category_id, order_by=('-modified_at',)):
+        return self._get_featured_category_pages(
+            category_id, self.locale, order_by)
 
     @cache_region(CACHE_TIME)
-    def _get_featured_category_pages(self, category_id, locale):
+    def _get_featured_category_pages(self, category_id, locale, order_by):
         return self.workspace.S(Page).filter(
             primary_category=category_id, language=locale.lower(),
-            featured_in_category=True)
+            featured_in_category=True).order_by(*order_by)
 
     @cache_region(CACHE_TIME)
     def get_page(self, uuid=None, slug=None, locale=None):
@@ -100,13 +105,14 @@ class CmsViews(BaseCmsView):
             raise HTTPNotFound()
 
     @reify
-    def get_top_nav(self):
-        return self._get_top_nav(self.locale)
+    def get_top_nav(self, order_by=('position',)):
+        return self._get_top_nav(self.locale, order_by)
 
     @cache_region(CACHE_TIME)
-    def _get_top_nav(self, locale):
+    def _get_top_nav(self, locale, order_by):
         return self.workspace.S(Category).filter(
-            language=locale.lower(), featured_in_navbar=True)
+            language=locale.lower(),
+            featured_in_navbar=True).order_by(*order_by)
 
     @view_config(route_name='home', renderer='cms:templates/home.pt')
     @view_config(route_name='categories',

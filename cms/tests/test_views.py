@@ -8,7 +8,7 @@ from pyramid_beaker import set_cache_regions_from_settings
 from cms.tests.base import UnicoreTestCase
 from cms.views.cms_views import CmsViews
 
-from unicore.content.models import Page
+from unicore.content.models import Page, Category
 
 
 class TestViews(UnicoreTestCase):
@@ -250,6 +250,28 @@ class TestViews(UnicoreTestCase):
             set([cat1.language, cat2.language]),
             set(['swh_KE', 'swh_KE']))
 
+    def test_categories_ordering(self):
+        category1 = Category(
+            {'title': 'title 1', 'language': 'eng_UK', 'position': 3})
+        category2 = Category(
+            {'title': 'title 2', 'language': 'eng_UK', 'position': 0})
+        category3 = Category(
+            {'title': 'title 3', 'language': 'eng_UK', 'position': 1})
+        category4 = Category(
+            {'title': 'title 4', 'language': 'eng_UK', 'position': 2})
+        self.workspace.save(category1, 'Update position')
+        self.workspace.save(category2, 'Update position')
+        self.workspace.save(category3, 'Update position')
+        self.workspace.save(category4, 'Update position')
+        self.workspace.refresh_index()
+
+        cat1, cat2, cat3, cat4 = self.views.get_categories()
+
+        self.assertEqual(cat1.uuid, category2.uuid)
+        self.assertEqual(cat2.uuid, category3.uuid)
+        self.assertEqual(cat3.uuid, category4.uuid)
+        self.assertEqual(cat4.uuid, category1.uuid)
+
     def test_get_category(self):
         [category] = self.create_categories(
             self.workspace, count=1, language='swh_KE')
@@ -264,6 +286,37 @@ class TestViews(UnicoreTestCase):
         self.assertEqual(response['category'].uuid, category.uuid)
         self.assertEqual(
             [p.uuid for p in response['pages']], [page.uuid])
+
+    def test_pages_ordering(self):
+        [category] = self.create_categories(self.workspace, count=1)
+        page1 = Page({
+            'title': 'title 1', 'language': 'eng_UK', 'position': 3,
+            'primary_category': category.uuid})
+        page2 = Page({
+            'title': 'title 2', 'language': 'eng_UK', 'position': 0,
+            'primary_category': category.uuid})
+        page3 = Page({
+            'title': 'title 3', 'language': 'eng_UK', 'position': 1,
+            'primary_category': category.uuid})
+        page4 = Page({
+            'title': 'title 4', 'language': 'eng_UK', 'position': 2,
+            'primary_category': category.uuid})
+        self.workspace.save(page1, 'Update position')
+        self.workspace.save(page2, 'Update position')
+        self.workspace.save(page3, 'Update position')
+        self.workspace.save(page4, 'Update position')
+        self.workspace.refresh_index()
+
+        request = testing.DummyRequest({})
+        request.matchdict['category'] = category.uuid
+        views = CmsViews(request)
+        cat = views.category()
+        p1, p2, p3, p4 = cat['pages']
+
+        self.assertEqual(p1.uuid, page2.uuid)
+        self.assertEqual(p2.uuid, page3.uuid)
+        self.assertEqual(p3.uuid, page4.uuid)
+        self.assertEqual(p4.uuid, page1.uuid)
 
     def test_get_top_nav(self):
         category1, category2 = self.create_categories(self.workspace)
