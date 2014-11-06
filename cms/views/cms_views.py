@@ -82,7 +82,7 @@ class CmsViews(BaseCmsView):
                 *order_by)
 
     def get_featured_category_pages(
-            self, category_id, order_by=('-modified_at',)):
+            self, category_id, order_by=('-position',)):
         return self._get_featured_category_pages(
             category_id, self.locale, order_by)
 
