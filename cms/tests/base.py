@@ -43,7 +43,8 @@ class UnicoreTestCase(TestCase):
             data = {}
             data.update({
                 'title': u'Test Category %s' % (i,),
-                'language': locale
+                'language': locale,
+                'position': i
             })
             data.update(kwargs)
             data.update({
@@ -70,7 +71,8 @@ class UnicoreTestCase(TestCase):
                 'title': u'Test Page %s' % (i,),
                 'content': u'this is sample content for pg %s' % (i,),
                 'modified_at': timestamp_cb(i),
-                'language': locale
+                'language': locale,
+                'position': i
             })
             data.update(kwargs)
             data.update({
