@@ -31,12 +31,13 @@ class CmsViews(BaseCmsView):
         renderer = get_renderer("cms:templates/base.pt")
         return renderer.implementation().macros['layout']
 
-    def get_categories(self):
-        return self._get_categories(self.locale)
+    def get_categories(self, order_by=('position',)):
+        return self._get_categories(self.locale, order_by)
 
     @cache_region(CACHE_TIME)
-    def _get_categories(self, locale):
-        return self.workspace.S(Category).filter(language=locale.lower())
+    def _get_categories(self, locale, order_by):
+        return self.workspace.S(Category).filter(
+            language=locale.lower()).order_by(*order_by)
 
     @cache_region(CACHE_TIME)
     def get_category(self, uuid):
