@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+1.0.5
+-----
+- Added date formatting helper
+
 0.6.3
 -----
 - Redirect to homepage after changing language
