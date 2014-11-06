@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+1.0.7
+-----
+- Autodeployment with travis - attempt 1
+
 1.0.6
 -----
 - Enforce ordering for pages and categories using `position`
