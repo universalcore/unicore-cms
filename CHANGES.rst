@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+1.0.8
+-----
+- Autodeployment with travis - attempt 2
+
 1.0.7
 -----
 - Autodeployment with travis - attempt 1
