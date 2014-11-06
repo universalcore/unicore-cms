@@ -17,7 +17,7 @@ deploy:
   provider: pypi
   user: Praekelt
   password:
-    secure: EA5FqGREb4eAPa+lf7/qtAFQW8eCvvQA6RTbnpwvPhYRxvFtudi0v/r668dX08LEwsIlqJ4X02XjMJNBU2rn3VGvsgStJPBnhkf5BptbbiCdVM+T9FhNN2jLMUk4fmFjrniHt/4a/biKgTMDgWek7xhbaI3gBMQkKY1MFhZRnjI=
+    secure: ImBeoAGBekGH2+7bSTkbPiE7aN4ZkA7KuELK4TrD+CHNDZLmInTi/S7T+PSEbMLt3wC1qvhLaZhnCKeuRQKjhu3C5tjZY0ekDPYWsv2dB5vFsXAsBcB9YCS3nY8MCdT1uACZdGrOB1ze+dD/CtYLoaiXKY7yJix9pbexR+1nF2Y=
   on:
     tags: true
     all_branches: true
