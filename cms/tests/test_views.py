@@ -8,7 +8,7 @@ from pyramid_beaker import set_cache_regions_from_settings
 from cms.tests.base import UnicoreTestCase
 from cms.views.cms_views import CmsViews
 
-from unicore.content.models import Page
+from unicore.content.models import Page, Category
 
 
 class TestViews(UnicoreTestCase):
@@ -249,6 +249,28 @@ class TestViews(UnicoreTestCase):
         self.assertEqual(
             set([cat1.language, cat2.language]),
             set(['swh_KE', 'swh_KE']))
+
+    def test_categories_ordering(self):
+        category1 = Category(
+            {'title': 'title 1', 'language': 'eng_UK', 'position': 3})
+        category2 = Category(
+            {'title': 'title 2', 'language': 'eng_UK', 'position': 0})
+        category3 = Category(
+            {'title': 'title 3', 'language': 'eng_UK', 'position': 1})
+        category4 = Category(
+            {'title': 'title 4', 'language': 'eng_UK', 'position': 2})
+        self.workspace.save(category1, 'Update position')
+        self.workspace.save(category2, 'Update position')
+        self.workspace.save(category3, 'Update position')
+        self.workspace.save(category4, 'Update position')
+        self.workspace.refresh_index()
+
+        cat1, cat2, cat3, cat4 = self.views.get_categories()
+
+        self.assertEqual(cat1.uuid, category2.uuid)
+        self.assertEqual(cat2.uuid, category3.uuid)
+        self.assertEqual(cat3.uuid, category4.uuid)
+        self.assertEqual(cat4.uuid, category1.uuid)
 
     def test_get_category(self):
         [category] = self.create_categories(
