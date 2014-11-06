@@ -75,9 +75,11 @@ class CmsViews(BaseCmsView):
         return self._get_featured_pages(self.locale, limit, order_by)
 
     @cache_region(CACHE_TIME)
-    def get_pages_for_category(self, category_id, locale):
+    def get_pages_for_category(
+            self, category_id, locale, order_by=('position',)):
         return self.workspace.S(Page).filter(
-            primary_category=category_id, language=locale.lower())
+            primary_category=category_id, language=locale.lower()).order_by(
+                *order_by)
 
     def get_featured_category_pages(self, category_id):
         return self._get_featured_category_pages(category_id, self.locale)
