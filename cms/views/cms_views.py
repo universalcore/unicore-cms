@@ -104,7 +104,7 @@ class CmsViews(BaseCmsView):
                 query = query.filter(language=locale.lower())
             [page] = query[:1]
             return page
-        except:
+        except ValueError:
             return None
 
     @reify
