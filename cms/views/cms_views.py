@@ -44,14 +44,15 @@ class CmsViews(BaseCmsView):
         [category] = self.workspace.S(Category).filter(uuid=uuid.lower())
         return category
 
-    def get_pages(self, limit=5, order_by=('modified_at',)):
+    def get_pages(self, limit=5, order_by=('position', '-modified_at')):
         """
         Return pages the GitModel knows about.
 
         :param int limit:
             The number of pages to return, defaults to 5.
         :param tuple order_by:
-            The attributes to order on, defaults to modified_at
+            The attributes to order on,
+            defaults to ('position', '-modified_at')
         """
         return self.workspace.S(Page).filter(
             language=self.locale.lower()).order_by(*order_by)[:limit]
@@ -61,7 +62,8 @@ class CmsViews(BaseCmsView):
         return self.workspace.S(Page).filter(
             language=locale.lower(), featured=True).order_by(*order_by)[:limit]
 
-    def get_featured_pages(self, limit=5, order_by=('-modified_at',)):
+    def get_featured_pages(
+            self, limit=5, order_by=('position', '-modified_at')):
         """
         Return featured pages the GitModel knows about.
 
@@ -70,7 +72,8 @@ class CmsViews(BaseCmsView):
         :param int limit:
             The number of pages to return, defaults to 5.
         :param tuple order_by:
-            The attributes to order on, defaults to ('modified_at',).
+            The attributes to order on,
+            defaults to ('position', '-modified_at').
         """
         return self._get_featured_pages(self.locale, limit, order_by)
 

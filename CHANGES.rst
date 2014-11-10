@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+1.0.11
+-----
+- Ensure sensible default for ordering pages (default: position)
+
 1.0.10
 -----
 - Ensure featured pages in category on homepage are ordered by position (ascending)
