@@ -11,8 +11,11 @@ with open(os.path.join(here, 'CHANGES.rst')) as f:
 with open(os.path.join(here, 'requirements.txt')) as f:
     requires = filter(None, f.readlines())
 
+with open(os.path.join(here, 'VERSION')) as f:
+    version = f.read().strip()
+
 setup(name='unicore-cms',
-      version='1.0.11',
+      version=version,
       description='JSON based CMS for Universal Core',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[

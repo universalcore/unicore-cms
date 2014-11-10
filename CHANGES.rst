@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+1.0.12
+-----
+- Ensure `get_page` returns None instead of 404
+
 1.0.11
 -----
 - Ensure sensible default for ordering pages (default: position)
