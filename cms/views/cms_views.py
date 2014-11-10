@@ -104,8 +104,8 @@ class CmsViews(BaseCmsView):
                 query = query.filter(language=locale.lower())
             [page] = query[:1]
             return page
-        except ValueError:
-            raise HTTPNotFound()
+        except:
+            return None
 
     @reify
     def get_top_nav(self, order_by=('position',)):
@@ -137,6 +137,10 @@ class CmsViews(BaseCmsView):
     @view_config(route_name='content', renderer='cms:templates/content.pt')
     def content(self):
         page = self.get_page(self.request.matchdict['uuid'])
+
+        if not page:
+            raise HTTPNotFound()
+
         if page.linked_pages:
             linked_pages = self.workspace.S(Page).filter(
                 uuid__in=page.linked_pages)
@@ -158,6 +162,9 @@ class CmsViews(BaseCmsView):
     def flatpage(self):
         page = self.get_page(
             None, self.request.matchdict['slug'], self.locale)
+
+        if not page:
+            raise HTTPNotFound()
 
         if page.language != self.locale:
             raise HTTPNotFound()
