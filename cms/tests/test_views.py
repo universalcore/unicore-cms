@@ -2,7 +2,6 @@ import arrow
 from datetime import timedelta
 
 from pyramid import testing
-from pyramid.httpexceptions import HTTPNotFound
 from pyramid_beaker import set_cache_regions_from_settings
 
 from cms.tests.base import UnicoreTestCase
