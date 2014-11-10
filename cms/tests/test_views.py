@@ -2,7 +2,6 @@ import arrow
 from datetime import timedelta
 
 from pyramid import testing
-from pyramid.httpexceptions import HTTPNotFound
 from pyramid_beaker import set_cache_regions_from_settings
 
 from cms.tests.base import UnicoreTestCase
@@ -149,9 +148,7 @@ class TestViews(UnicoreTestCase):
 
         p = self.views.get_page(None, 'test-page-1', 'swh_KE')
         self.assertEqual(p.language, 'swh_KE')
-
-        with self.assertRaises(HTTPNotFound):
-            p = self.views.get_page(None, 'invalid-slug')
+        self.assertEqual(self.views.get_page(None, 'invalid-slug'), None)
 
     def test_content_linked_pages(self):
         [category] = self.create_categories(self.workspace, count=1)
