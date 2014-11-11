@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+1.0.13
+-----
+- Use not_analyzed for language field
+
 1.0.12
 -----
 - Ensure `get_page` returns None instead of 404
