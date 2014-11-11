@@ -14,6 +14,31 @@ class TestViews(UnicoreTestCase):
 
     def setUp(self):
         self.workspace = self.mk_workspace()
+        self.workspace.setup_custom_mapping(Page, {
+            'properties': {
+                'slug': {
+                    'type': 'string',
+                    'index': 'not_analyzed',
+                },
+                'language': {
+                    'type': 'string',
+                    'index': 'not_analyzed',
+                }
+            }
+        })
+        self.workspace.setup_custom_mapping(Category, {
+            'properties': {
+                'slug': {
+                    'type': 'string',
+                    'index': 'not_analyzed',
+                },
+                'language': {
+                    'type': 'string',
+                    'index': 'not_analyzed',
+                }
+            }
+        })
+
         languages = "[('eng_UK', 'English'), ('swh_KE', 'Swahili (Kenya)')]"
         settings = {
             'git.path': self.workspace.repo.working_dir,
@@ -127,18 +152,6 @@ class TestViews(UnicoreTestCase):
                      category_swh.uuid)]))
 
     def test_get_page_by_slug(self):
-        self.workspace.setup_custom_mapping(Page, {
-            'properties': {
-                'slug': {
-                    'type': 'string',
-                    'index': 'not_analyzed',
-                },
-                'language': {
-                    'type': 'string',
-                }
-            }
-        })
-
         self.create_pages(self.workspace, count=5, language='eng_UK')
         self.create_pages(self.workspace, count=5, language='swh_KE')
 
@@ -201,18 +214,6 @@ class TestViews(UnicoreTestCase):
             response['description'], '<p><em>emphasised</em></p>')
 
     def test_flatpage_markdown_rendering(self):
-        self.workspace.setup_custom_mapping(Page, {
-            'properties': {
-                'slug': {
-                    'type': 'string',
-                    'index': 'not_analyzed',
-                },
-                'language': {
-                    'type': 'string',
-                }
-            }
-        })
-
         [category] = self.create_categories(self.workspace, count=1)
         [page] = self.create_pages(
             self.workspace, count=1, content='**strong**',
