@@ -9,7 +9,7 @@
 # VERSION INFO:
 #
 #   package:          elastic-git
-#   package_version:  0.1.5
+#   package_version:  0.2.9
 #   language_version: 2.7.6
 #
 
@@ -17,7 +17,7 @@ from elasticgit import models
 
 
 class Page(models.Model):
-    
+
     subtitle = models.TextField("""subtitle""")
     description = models.TextField("""description""")
     language = models.TextField("""language""")
@@ -34,12 +34,14 @@ class Page(models.Model):
     id = models.TextField("""id""")
     position = models.IntegerField("""position""")
     primary_category = models.TextField("""primary_category""")
+    image = models.TextField("""image""")
+    image_host = models.TextField("""image_host""")
     uuid = models.UUIDField("""uuid""", fallbacks=[models.SingleFieldFallback('id'),])
 
 
 
 class Category(models.Model):
-    
+
     subtitle = models.TextField("""subtitle""")
     language = models.TextField("""language""")
     title = models.TextField("""title""")
@@ -48,4 +50,6 @@ class Category(models.Model):
     position = models.IntegerField("""position""")
     featured_in_navbar = models.BooleanField("""featured_in_navbar""")
     slug = models.TextField("""slug""")
+    image = models.TextField("""image""")
+    image_host = models.TextField("""image_host""")
     uuid = models.UUIDField("""uuid""", fallbacks=[models.SingleFieldFallback('id'),])

@@ -1,43 +1,51 @@
 {
-  "type": "record", 
-  "namespace": "unicore.content.models", 
-  "name": "GitCategoryModel", 
+  "type": "record",
+  "namespace": "unicore.content.models",
+  "name": "GitCategoryModel",
   "fields": [
     {
-      "type": "string", 
+      "type": "string",
       "name": "subtitle"
-    }, 
+    },
     {
-      "type": "string", 
+      "type": "string",
       "name": "language"
-    }, 
+    },
     {
-      "type": "string", 
+      "type": "string",
       "name": "title"
-    }, 
+    },
     {
-      "type": "string", 
+      "type": "string",
       "name": "id"
-    }, 
+    },
     {
-      "type": "string", 
+      "type": "string",
       "name": "source"
-    }, 
+    },
     {
-      "type": "int", 
+      "type": "int",
       "name": "position"
-    }, 
+    },
     {
-      "type": "boolean", 
+      "type": "boolean",
       "name": "featured_in_navbar"
-    }, 
+    },
     {
-      "type": "string", 
+      "type": "string",
       "name": "slug"
-    }, 
+    },
     {
-      "type": "string", 
-      "name": "uuid", 
+      "type": "string",
+      "name": "image"
+    },
+    {
+      "type": "string",
+      "name": "image_host"
+    },
+    {
+      "type": "string",
+      "name": "uuid",
       "aliases": [
         "id"
       ]
