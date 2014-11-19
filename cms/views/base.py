@@ -1,5 +1,7 @@
 from elasticgit import EG
 from dateutil import parser
+import logging
+log = logging.getLogger(__name__)
 
 
 class BaseCmsView(object):
@@ -37,4 +39,15 @@ class BaseCmsView(object):
         language_code, _, country_code = locale_name.partition('_')
         lang = self.LANGUAGE_FALLBACKS.get(language_code, language_code)
         country = self.COUNTRY_FALLBACKS.get(country_code, country_code)
+
+        if lang != language_code:
+            log.warning(
+                'Invalid language_code used: %s' % language_code,
+                extra={'stack': True})
+
+        if country != country_code:
+            log.warning(
+                'Invalid country_code used: %s' % country_code,
+                extra={'stack': True})
+
         return u'%s_%s' % (lang, country)
