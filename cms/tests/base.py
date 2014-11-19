@@ -37,7 +37,7 @@ class UnicoreTestCase(TestCase):
         return workspace
 
     def create_categories(
-            self, workspace, count=2, locale='eng_UK', **kwargs):
+            self, workspace, count=2, locale='eng_GB', **kwargs):
         categories = []
         for i in range(count):
             data = {}
@@ -60,7 +60,7 @@ class UnicoreTestCase(TestCase):
         return categories
 
     def create_pages(
-            self, workspace, count=2, timestamp_cb=None, locale='eng_UK',
+            self, workspace, count=2, timestamp_cb=None, locale='eng_GB',
             **kwargs):
         timestamp_cb = (
             timestamp_cb or (lambda i: datetime.utcnow().isoformat()))

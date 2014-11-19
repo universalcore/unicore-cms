@@ -1,75 +1,83 @@
 {
-  "namespace": "unicore.content.models", 
-  "type": "record", 
-  "name": "GitPageModel", 
+  "namespace": "unicore.content.models",
+  "type": "record",
+  "name": "GitPageModel",
   "fields": [
     {
-      "type": "string", 
+      "type": "string",
       "name": "subtitle"
-    }, 
+    },
     {
-      "type": "string", 
+      "type": "string",
       "name": "description"
-    }, 
+    },
     {
-      "type": "string", 
+      "type": "string",
       "name": "language"
-    }, 
+    },
     {
-      "type": "string", 
+      "type": "string",
       "name": "title"
-    }, 
+    },
     {
-      "type": "string", 
+      "type": "string",
       "name": "created_at"
-    }, 
+    },
     {
-      "type": "boolean", 
+      "type": "boolean",
       "name": "published"
-    }, 
+    },
     {
-      "type": "string", 
+      "type": "string",
       "name": "modified_at"
-    }, 
+    },
     {
-      "type": "array", 
+      "type": "array",
       "name": "linked_pages"
-    }, 
+    },
     {
-      "type": "string", 
+      "type": "string",
       "name": "slug"
-    }, 
+    },
     {
-      "type": "string", 
+      "type": "string",
       "name": "content"
-    }, 
+    },
     {
-      "type": "string", 
+      "type": "string",
       "name": "source"
-    }, 
+    },
     {
-      "type": "boolean", 
+      "type": "boolean",
       "name": "featured"
-    }, 
+    },
     {
-      "type": "boolean", 
+      "type": "boolean",
       "name": "featured_in_category"
-    }, 
+    },
     {
-      "type": "string", 
+      "type": "string",
       "name": "id"
-    }, 
+    },
     {
-      "type": "int", 
+      "type": "int",
       "name": "position"
-    }, 
+    },
     {
-      "type": "string", 
+      "type": "string",
       "name": "primary_category"
-    }, 
+    },
     {
-      "type": "string", 
-      "name": "uuid", 
+      "type": "string",
+      "name": "image"
+    },
+    {
+      "type": "string",
+      "name": "image_host"
+    },
+    {
+      "type": "string",
+      "name": "uuid",
       "aliases": [
         "id"
       ]
