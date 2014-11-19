@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+1.1.0
+-----
+- Added image field to model
+- Add fallback for Swahili and English UK
+
 1.0.13
 -----
 - Use not_analyzed for language field
