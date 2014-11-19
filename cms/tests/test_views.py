@@ -39,7 +39,7 @@ class TestViews(UnicoreTestCase):
             }
         })
 
-        languages = "[('eng_UK', 'English'), ('swa_KE', 'Swahili (Kenya)')]"
+        languages = "[('eng_GB', 'English'), ('swa_KE', 'Swahili (Kenya)')]"
         settings = {
             'git.path': self.workspace.repo.working_dir,
             'git.content_repo_url': '',
@@ -49,7 +49,7 @@ class TestViews(UnicoreTestCase):
             'cache.long_term.expire': '1',
             'cache.default_term.expire': '1',
             'available_languages': languages,
-            'pyramid.default_locale_name': 'eng_UK',
+            'pyramid.default_locale_name': 'eng_GB',
         }
         self.config = testing.setUp(settings=settings)
         set_cache_regions_from_settings(settings)
@@ -91,7 +91,7 @@ class TestViews(UnicoreTestCase):
 
     def test_get_available_languages(self):
         languages = self.views.get_available_languages
-        self.assertEqual(languages[0][0], 'eng_UK')
+        self.assertEqual(languages[0][0], 'eng_GB')
         self.assertEqual(languages[1][0], 'swa_KE')
         self.assertEqual(languages[1][1], 'Swahili (Kenya)')
 
@@ -110,7 +110,7 @@ class TestViews(UnicoreTestCase):
 
         self.assertEqual(
             set([page1.language, page2.language]),
-            set(['eng_UK', 'eng_UK']))
+            set(['eng_GB', 'eng_GB']))
 
         self.assertEqual(
             [], list(self.views.get_featured_category_pages(category2.uuid)))
@@ -119,12 +119,12 @@ class TestViews(UnicoreTestCase):
         self.views = CmsViews(testing.DummyRequest({'_LOCALE_': 'swa_KE'}))
 
         [category_eng] = self.create_categories(
-            self.workspace, language='eng_UK', count=1)
+            self.workspace, language='eng_GB', count=1)
         self.create_pages(
-            self.workspace, count=10, language='eng_UK',
+            self.workspace, count=10, language='eng_GB',
             primary_category=category_eng.uuid)
         self.create_pages(
-            self.workspace, count=2, language='eng_UK',
+            self.workspace, count=2, language='eng_GB',
             featured_in_category=True,
             primary_category=category_eng.uuid)
 
@@ -152,12 +152,12 @@ class TestViews(UnicoreTestCase):
                      category_swh.uuid)]))
 
     def test_get_page_by_slug(self):
-        self.create_pages(self.workspace, count=5, language='eng_UK')
+        self.create_pages(self.workspace, count=5, language='eng_GB')
         self.create_pages(self.workspace, count=5, language='swa_KE')
 
-        p = self.views.get_page(None, 'test-page-1', 'eng_UK')
+        p = self.views.get_page(None, 'test-page-1', 'eng_GB')
         self.assertEqual(p.title, 'Test Page 1')
-        self.assertEqual(p.language, 'eng_UK')
+        self.assertEqual(p.language, 'eng_GB')
 
         p = self.views.get_page(None, 'test-page-1', 'swa_KE')
         self.assertEqual(p.language, 'swa_KE')
@@ -230,7 +230,7 @@ class TestViews(UnicoreTestCase):
 
     def test_get_categories(self):
         category1, category2 = self.create_categories(
-            self.workspace, language='eng_UK')
+            self.workspace, language='eng_GB')
         category3, category4 = self.create_categories(
             self.workspace, language='swa_KE')
 
@@ -250,13 +250,13 @@ class TestViews(UnicoreTestCase):
 
     def test_categories_ordering(self):
         category1 = Category(
-            {'title': 'title 1', 'language': 'eng_UK', 'position': 3})
+            {'title': 'title 1', 'language': 'eng_GB', 'position': 3})
         category2 = Category(
-            {'title': 'title 2', 'language': 'eng_UK', 'position': 0})
+            {'title': 'title 2', 'language': 'eng_GB', 'position': 0})
         category3 = Category(
-            {'title': 'title 3', 'language': 'eng_UK', 'position': 1})
+            {'title': 'title 3', 'language': 'eng_GB', 'position': 1})
         category4 = Category(
-            {'title': 'title 4', 'language': 'eng_UK', 'position': 2})
+            {'title': 'title 4', 'language': 'eng_GB', 'position': 2})
         self.workspace.save(category1, 'Update position')
         self.workspace.save(category2, 'Update position')
         self.workspace.save(category3, 'Update position')
@@ -288,16 +288,16 @@ class TestViews(UnicoreTestCase):
     def test_pages_ordering(self):
         [category] = self.create_categories(self.workspace, count=1)
         page1 = Page({
-            'title': 'title 1', 'language': 'eng_UK', 'position': 3,
+            'title': 'title 1', 'language': 'eng_GB', 'position': 3,
             'primary_category': category.uuid})
         page2 = Page({
-            'title': 'title 2', 'language': 'eng_UK', 'position': 0,
+            'title': 'title 2', 'language': 'eng_GB', 'position': 0,
             'primary_category': category.uuid})
         page3 = Page({
-            'title': 'title 3', 'language': 'eng_UK', 'position': 1,
+            'title': 'title 3', 'language': 'eng_GB', 'position': 1,
             'primary_category': category.uuid})
         page4 = Page({
-            'title': 'title 4', 'language': 'eng_UK', 'position': 2,
+            'title': 'title 4', 'language': 'eng_GB', 'position': 2,
             'primary_category': category.uuid})
         self.workspace.save(page1, 'Update position')
         self.workspace.save(page2, 'Update position')
@@ -343,3 +343,29 @@ class TestViews(UnicoreTestCase):
         self.assertEqual(
             views.format_date('some invalid date'),
             'some invalid date')
+
+    def test_get_flatpage_using_old_swahili_code(self):
+        [category] = self.create_categories(self.workspace, count=1)
+        [page] = self.create_pages(
+            self.workspace, count=1, content='Sample page in swahili',
+            description='_emphasised_', language='swa_KE')
+
+        request = testing.DummyRequest({'_LOCALE_': 'swh_KE'})
+        request.matchdict['slug'] = page.slug
+        self.views = CmsViews(request)
+        response = self.views.flatpage()
+        self.assertEqual(
+            response['content'], '<p>Sample page in swahili</p>')
+
+    def test_get_flatpage_using_old_english_code(self):
+        [category] = self.create_categories(self.workspace, count=1)
+        [page] = self.create_pages(
+            self.workspace, count=1, content='Sample page in english',
+            description='_emphasised_', language='eng_GB')
+
+        request = testing.DummyRequest({'_LOCALE_': 'eng_UK'})
+        request.matchdict['slug'] = page.slug
+        self.views = CmsViews(request)
+        response = self.views.flatpage()
+        self.assertEqual(
+            response['content'], '<p>Sample page in english</p>')
