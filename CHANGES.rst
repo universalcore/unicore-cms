@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+1.1.1
+-----
+- Use custom locale negotiator
+
 1.1.0
 -----
 - Added image field to model
