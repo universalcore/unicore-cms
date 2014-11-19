@@ -3,10 +3,17 @@ from dateutil import parser
 
 
 class BaseCmsView(object):
+
+    # NOTE
+    # Swahili code `swh` is not ISO639-2 so we need to correct this
+    # and use `swa` instead.
     LANGUAGE_FALLBACKS = {
         'swh': 'swa',
     }
 
+    # NOTE
+    # United Kingdom code `UK` is not ISO3166 so we need to correct this
+    # and use `GB` instead.
     COUNTRY_FALLBACKS = {
         'UK': 'GB',
     }
