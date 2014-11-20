@@ -20,7 +20,7 @@ class BaseCmsView(object):
         except TypeError:
             return date_str
 
-    def get_image_url(self, image_uuid, image_host, width=None, height=None):
+    def get_image_url(self, image_host, image_uuid, width=None, height=None):
         security_key = self.settings.get('thumbor.security_key')
         if not (security_key and image_host and image_uuid):
             return ''
