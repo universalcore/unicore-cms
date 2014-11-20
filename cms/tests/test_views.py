@@ -51,6 +51,8 @@ class TestViews(UnicoreTestCase):
             'cache.default_term.expire': '1',
             'available_languages': languages,
             'pyramid.default_locale_name': 'eng_GB',
+            'thumbor.security_key': 'sample-security-key',
+            'thumbor.server': 'http://some.site.com',
         }
         self.config = testing.setUp(settings=settings)
         set_cache_regions_from_settings(settings)
@@ -371,3 +373,28 @@ class TestViews(UnicoreTestCase):
         response = self.views.flatpage()
         self.assertEqual(
             response['content'], '<p>Sample page in english</p>')
+
+    def test_image_url(self):
+        self.views = CmsViews(testing.DummyRequest({}))
+
+        self.assertEqual(
+            self.views.get_image_url('sample-uuid-000000-0001'),
+            'http://some.site.com/'
+            '1bzRPrcuQPXBECF9mHxFVr11viY=/sample-uuid-000000-0001')
+
+        self.assertEqual(
+            self.views.get_image_url('sample-uuid-000000-0001', 300, 200),
+            'http://some.site.com/'
+            '8Ko7ZiKCwOv8zDovqScWL5Lgrc8=/300x200/sample-uuid-000000-0001')
+
+        self.assertEqual(
+            self.views.get_image_url('sample-uuid-000000-0001', 300),
+            'http://some.site.com/'
+            'LUyVe1umwB1caELC5m3LWu1HxvI=/300x0/sample-uuid-000000-0001')
+
+        self.assertEqual(
+            self.views.get_image_url('sample-uuid-000000-0001', height=150),
+            'http://some.site.com/'
+            '4kS9gT_mYqVhnheDCuQhsahI_dU=/0x150/sample-uuid-000000-0001')
+
+        self.assertEqual(self.views.get_image_url(''), '')
