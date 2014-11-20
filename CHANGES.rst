@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+1.2.2
+-----
+- Change order of get_image_url params
+
 1.2.1
 -----
 - Use `image_host` from json
