@@ -20,10 +20,9 @@ class BaseCmsView(object):
         except TypeError:
             return date_str
 
-    def get_image_url(self, image_uuid, width=None, height=None):
+    def get_image_url(self, image_uuid, image_host, width=None, height=None):
         security_key = self.settings.get('thumbor.security_key')
-        thumbor_server = self.settings.get('thumbor.server')
-        if not (security_key and thumbor_server and image_uuid):
+        if not (security_key and image_host and image_uuid):
             return ''
 
         crypto = CryptoURL(key=security_key)
@@ -40,4 +39,4 @@ class BaseCmsView(object):
             image_url = crypto.generate(
                 width=0, height=height, image_url=image_uuid)
 
-        return u'%s%s' % (thumbor_server, image_url)
+        return u'%s%s' % (image_host, image_url)

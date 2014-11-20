@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+1.2.1
+-----
+- Use `image_host` from json
+
 1.2.0
 -----
 - Add image support to view
