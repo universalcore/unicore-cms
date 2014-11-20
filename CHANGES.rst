@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+1.2.0
+-----
+- Add image support to view
+
 1.1.1
 -----
 - Use custom locale negotiator
