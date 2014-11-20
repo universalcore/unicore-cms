@@ -1,7 +1,7 @@
 {
   "namespace": "unicore.content.models",
   "type": "record",
-  "name": "GitPageModel",
+  "name": "Page",
   "fields": [
     {
       "type": "string",

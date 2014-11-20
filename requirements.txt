@@ -16,3 +16,4 @@ raven==5.0.0
 elastic-git
 python-slugify
 python-dateutil
+libthumbor
