@@ -1,7 +1,7 @@
 {
   "type": "record",
   "namespace": "unicore.content.models",
-  "name": "GitCategoryModel",
+  "name": "Category",
   "fields": [
     {
       "type": "string",
