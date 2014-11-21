@@ -49,11 +49,8 @@
 
 </div>
 
-<form action='/search/' method='GET'>
-    <label for='q'>Type to search:</label>
-    <input id="q" name='q' type="text" hint='enter search here..'>
-    <input type="submit" value='Search' />
-</form>
-
+<p>Type to search: </p>>
+<input id="searchField" type="text">
+<button type="button" onclick="myFunction()">Search</button>
 </body>
 </html>
