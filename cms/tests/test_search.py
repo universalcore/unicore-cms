@@ -22,12 +22,17 @@ class TestSearch(UnicoreTestCase):
         self.config = testing.setUp(settings=settings)
         self.app = TestApp(main({}, **settings))
 
-    def test_search(self):
-        self.create_categories(self.workspace)
+    def test_search_no_results(self):
         self.create_pages(self.workspace)
 
         resp = self.app.get('/search/', params={'q': 'some query'}, status=200)
-
-        # This will test that the results page shows this message when
-        # a search returns no results
         self.assertTrue('No results found!' in resp.body)
+
+    def test_search_2_results(self):
+        self.create_pages(self.workspace, count=2)
+
+        resp = self.app.get('/search/', params={'q': 'sample'}, status=200)
+
+        self.assertFalse('No results found!' in resp.body)
+        self.assertTrue('Test Page 1' in resp.body)
+        self.assertTrue('Test Page 2' in resp.body)
