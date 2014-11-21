@@ -189,5 +189,5 @@ class CmsViews(BaseCmsView):
     def search(self):
         query = self.request.GET.get('q')
         # use the query to submit search to ES
-        results = [] # results from ES search
-        return {'results': results}
+        results = []  # results from ES search
+        return {'results': results, 'query': query}
