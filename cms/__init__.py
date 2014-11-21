@@ -96,7 +96,6 @@ def includeme(config):
     config.add_route('content', '/content/detail/{uuid}/')
     config.add_route('locale', '/locale/')
     config.add_route('flatpage', '/{slug}/')
-    config.add_route('search', '/search/')
     config.scan()
     config.set_locale_negotiator(locale_negotiator_with_fallbacks)
 

@@ -184,10 +184,3 @@ class CmsViews(BaseCmsView):
                                 value=language,
                                 max_age=31536000)  # max_age = year
         return HTTPFound(location='/', headers=response.headers)
-
-    @view_config(route_name='search', renderer='cms:templates/search.pt')
-    def search(self):
-        query = self.request.GET.get('q')
-        # use the query to submit search to ES
-        results = []  # results from ES search
-        return {'results': results, 'query': query}
