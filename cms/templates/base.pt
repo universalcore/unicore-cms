@@ -48,8 +48,12 @@
     </div>
 
 </div>
-<p>Type to search:</p>>
-    <input id="searchInput" type="text">
-    <button type="button" onclick="myFunction()">Search</button>
+
+<form action='/search/' method='POST'>
+    <label for='search_input'>Type to search:</label>
+    <input id="search_input" type="text" hint='enter search here..'>
+    <input type="submi" value='Search' />
+</form>
+
 </body>
 </html>
