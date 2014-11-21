@@ -11,6 +11,9 @@
                         ${result.title}
                     </div>
                 </div>
+
+                <div tal:condition="not results">No results found!</div>
+
             </div>
         </div>
         </div>
