@@ -8,7 +8,7 @@
             <div class="box">
                 <div class="item" tal:repeat="result results">
                     <div class="text">
-                        ${result.title}
+                        <a href="/content/detail/${result.uuid}/">${result.title}</a>
                     </div>
                 </div>
 

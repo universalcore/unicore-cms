@@ -10,7 +10,11 @@ from pyramid.decorator import reify
 from pyramid.response import Response
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 
-from elasticgit import F
+from elasticgit import EG, F
+
+#----------------------------
+workspace = EG.workspace('unicore-cms-content-ffl-tanzania')
+
 
 from cms.views.base import BaseCmsView
 
@@ -187,7 +191,11 @@ class CmsViews(BaseCmsView):
 
     @view_config(route_name='search', renderer='cms:templates/search.pt')
     def search(self):
-        query = self.request.GET.get('q')
-        # use the query to submit search to ES
-        results = []  # results from ES search
+        query =self.request.GET.get('q')
+        if(query is None):
+            query = ''
+        else:
+            query = str(query).lower()
+        results = workspace.S(Page).query(content__query_string=query)[:1000]
+            
         return {'results': results, 'query': query}
