@@ -37,8 +37,8 @@ class TestSearch(UnicoreTestCase):
         self.assertTrue('Test Page 1' in resp.body)
         self.assertTrue('Test Page 2' in resp.body)
 
-    # def test_search_correct_UUID(self):
-    #     self.create_pages(self.workspace, count=3)
-    #     resp = self.app.get('/search/', params={'q': 'mother'}, status=200)
+     # def test_search_correct_UUID(self):
+     #     self.create_pages(self.workspace, count=3)
+     #     resp = self.app.get('/search/', params={'q': 'mother'}, status=200)
 
-    #     self.assertFalse('UUID' not in resp.body)
+     #     self.assertFalse('UUID' not in resp.body)

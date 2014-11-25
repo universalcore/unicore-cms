@@ -197,5 +197,10 @@ class CmsViews(BaseCmsView):
         else:
             query = str(query).lower()
         results = workspace.S(Page).query(content__query_string=query)[:1000]
-            
-        return {'results': results, 'query': query}
+        refinedResults = {}
+        newResults = []
+        for x in results:
+            if x.uuid not in refinedResults:
+                refinedResults[x.uuid] = x
+                newResults.append(x)
+        return {'results': newResults, 'query': query}        
