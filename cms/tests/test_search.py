@@ -43,3 +43,14 @@ class TestSearch(UnicoreTestCase):
         self.assertTrue('a' in resp.body)
         self.assertFalse('kak' in resp.body)
      
+     #data specific
+    def test_search_3_results(self):
+
+        self.create_pages(self.workspace, count=2)
+        resp = self.app.get('/search/', params={'q': 'mother'}, status=200)
+        
+        #print resp.body
+
+        self.assertTrue('a' in resp.body)
+        self.assertFalse('No results found!' in resp.body)
+        
