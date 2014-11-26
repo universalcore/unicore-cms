@@ -3,7 +3,7 @@ from pyramid import testing
 from cms.tests.base import UnicoreTestCase
 from cms import main
 from webtest import TestApp
-
+from unicore.content.models import Category, Page
 
 class TestSearch(UnicoreTestCase):
 
@@ -23,7 +23,7 @@ class TestSearch(UnicoreTestCase):
         self.app = TestApp(main({}, **settings))
 
     def test_search_no_results(self):
-        #self.create_pages(self.workspace)
+        self.create_pages(self.workspace)
 
         resp = self.app.get('/search/', params={'q': ''}, status=200)
         self.assertTrue('No results found!' in resp.body)
@@ -37,20 +37,23 @@ class TestSearch(UnicoreTestCase):
         self.assertTrue('Test Page 1' in resp.body)
 
     def test_search_profanity(self):
+        self.create_pages(self.workspace, count=2)
 
         resp = self.app.get('/search/', params={'q':'kak'}, status=200)
 
-        self.assertTrue('a' in resp.body)
+        self.assertTrue('No results found!' in resp.body)
         self.assertFalse('kak' in resp.body)
      
-     #data specific
-    def test_search_3_results(self):
+    def test_search_added_page(self):
+        mother_page = Page({
+            'title': 'title for mother', 'language': 'eng_GB', 'position': 2,
+            'content': 'Page for mother test page'})
+        self.workspace.save(mother_page, 'Add mother page')
 
-        self.create_pages(self.workspace, count=2)
+        self.workspace.refresh_index()
+
         resp = self.app.get('/search/', params={'q': 'mother'}, status=200)
-        
-        #print resp.body
 
-        self.assertTrue('a' in resp.body)
+        self.assertTrue('mother' in resp.body)
         self.assertFalse('No results found!' in resp.body)
         
