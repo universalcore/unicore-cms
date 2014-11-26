@@ -23,22 +23,23 @@ class TestSearch(UnicoreTestCase):
         self.app = TestApp(main({}, **settings))
 
     def test_search_no_results(self):
-        self.create_pages(self.workspace)
+        #self.create_pages(self.workspace)
 
-        resp = self.app.get('/search/', params={'q': 'some query'}, status=200)
+        resp = self.app.get('/search/', params={'q': ''}, status=200)
         self.assertTrue('No results found!' in resp.body)
 
     def test_search_2_results(self):
         self.create_pages(self.workspace, count=2)
-
         resp = self.app.get('/search/', params={'q': 'sample'}, status=200)
 
         self.assertFalse('No results found!' in resp.body)
+        self.assertTrue('Test Page 0' in resp.body)
         self.assertTrue('Test Page 1' in resp.body)
-        self.assertTrue('Test Page 2' in resp.body)
 
-     # def test_search_correct_UUID(self):
-     #     self.create_pages(self.workspace, count=3)
-     #     resp = self.app.get('/search/', params={'q': 'mother'}, status=200)
+    def test_search_profanity(self):
 
-     #     self.assertFalse('UUID' not in resp.body)
+        resp = self.app.get('/search/', params={'q':'kak'}, status=200)
+
+        self.assertTrue('a' in resp.body)
+        self.assertFalse('kak' in resp.body)
+     

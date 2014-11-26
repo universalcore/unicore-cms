@@ -8,6 +8,7 @@
             <div class="box">
                 <div class="item" tal:repeat="result results">
                     <div class="text">
+
                         <p tal:condition="result.primary_category">${view.get_category(result.primary_category).title}</p>
                         <a href="/content/detail/${result.uuid}/">${result.title}</a>
                     </div>

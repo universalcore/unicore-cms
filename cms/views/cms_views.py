@@ -10,11 +10,7 @@ from pyramid.decorator import reify
 from pyramid.response import Response
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 
-from elasticgit import EG, F
-
-#----------------------------
-workspace = EG.workspace('unicore-cms-content-ffl-tanzania')
-
+from elasticgit import F
 
 from cms.views.base import BaseCmsView
 
@@ -51,7 +47,6 @@ class CmsViews(BaseCmsView):
     def get_pages(self, limit=5, order_by=('position', '-modified_at')):
         """
         Return pages the GitModel knows about.
-
         :param int limit:
             The number of pages to return, defaults to 5.
         :param tuple order_by:
@@ -70,7 +65,6 @@ class CmsViews(BaseCmsView):
             self, limit=5, order_by=('position', '-modified_at')):
         """
         Return featured pages the GitModel knows about.
-
         :param str locale:
             The locale string, like `eng_UK`.
         :param int limit:
@@ -196,11 +190,13 @@ class CmsViews(BaseCmsView):
             query = ''
         else:
             query = str(query).lower()
-        results = workspace.S(Page).query(content__query_string=query)[:1000]
+        results = self.workspace.S(Page).query(content__query_string=query)[:1000]
         refinedResults = {}
         newResults = []
+
         for x in results:
-            if x.uuid not in refinedResults:
-                refinedResults[x.uuid] = x
+            if x.content not in refinedResults:
+                refinedResults[x.content] = x
                 newResults.append(x)
-        return {'results': newResults, 'query': query}        
+
+        return {'results': newResults, 'query': query}
