@@ -5,6 +5,7 @@ from cms import main
 from webtest import TestApp
 from unicore.content.models import Page
 
+
 class TestSearch(UnicoreTestCase):
 
     def setUp(self):
@@ -43,7 +44,7 @@ class TestSearch(UnicoreTestCase):
 
         self.assertTrue('No results found!' in resp.body)
         self.assertFalse('kak' in resp.body)
-     
+
     def test_search_added_page(self):
         mother_page = Page({
             'title': 'title for mother', 'language': 'eng_GB', 'position': 2,
