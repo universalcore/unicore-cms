@@ -32,9 +32,12 @@ class CmsViews(BaseCmsView):
         return renderer.implementation().macros['layout']
 
     def get_localisation(self):
-        [localisation] = self.workspace.S(
-            Localisation).filter(locale=self.locale)
-        return localisation
+        try:
+            [localisation] = self.workspace.S(
+                Localisation).filter(locale=self.locale)
+            return localisation
+        except ValueError:
+            return None
 
     def get_categories(self, order_by=('position',)):
         return self._get_categories(self.locale, order_by)

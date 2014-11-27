@@ -432,3 +432,16 @@ class TestViews(UnicoreTestCase):
         self.assertEqual(localisation.locale, 'eng_GB')
         self.assertEqual(localisation.image, 'sample-uuid-000000-0001')
         self.assertEqual(localisation.image_host, 'http://some.site.com/')
+
+    def test_localisation_not_found(self):
+        loc = Localisation({
+            'locale': 'eng_GB',
+            'image': 'sample-uuid-000000-0001',
+            'image_host': 'http://some.site.com/'})
+        self.workspace.save(loc, 'Add localisation')
+        self.workspace.refresh_index()
+
+        request = testing.DummyRequest({'_LOCALE_': 'spa_ES'})
+        self.views = CmsViews(request)
+
+        self.assertIsNone(self.views.get_localisation())
