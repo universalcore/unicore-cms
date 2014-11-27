@@ -14,7 +14,7 @@ from elasticgit import F
 
 from cms.views.base import BaseCmsView
 
-from unicore.content.models import Category, Page
+from unicore.content.models import Category, Page, Localisation
 
 CACHE_TIME = 'default_term'
 
@@ -30,6 +30,14 @@ class CmsViews(BaseCmsView):
     def global_template(self):
         renderer = get_renderer("cms:templates/base.pt")
         return renderer.implementation().macros['layout']
+
+    def get_localisation(self):
+        try:
+            [localisation] = self.workspace.S(
+                Localisation).filter(locale=self.locale)
+            return localisation
+        except ValueError:
+            return None
 
     def get_categories(self, order_by=('position',)):
         return self._get_categories(self.locale, order_by)
