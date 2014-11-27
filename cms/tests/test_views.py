@@ -8,7 +8,7 @@ from cms import locale_negotiator_with_fallbacks
 from cms.tests.base import UnicoreTestCase
 from cms.views.cms_views import CmsViews
 
-from unicore.content.models import Page, Category
+from unicore.content.models import Page, Category, Localisation
 
 
 class TestViews(UnicoreTestCase):
@@ -34,6 +34,15 @@ class TestViews(UnicoreTestCase):
                     'index': 'not_analyzed',
                 },
                 'language': {
+                    'type': 'string',
+                    'index': 'not_analyzed',
+                }
+            }
+        })
+
+        self.workspace.setup_custom_mapping(Localisation, {
+            'properties': {
+                'locale': {
                     'type': 'string',
                     'index': 'not_analyzed',
                 }
@@ -398,3 +407,28 @@ class TestViews(UnicoreTestCase):
             '4kS9gT_mYqVhnheDCuQhsahI_dU=/0x150/sample-uuid-000000-0001')
 
         self.assertEqual(self.views.get_image_url('', ''), '')
+
+    def test_localisation(self):
+        loc = Localisation({
+            'locale': 'eng_GB',
+            'image': 'sample-uuid-000000-0001',
+            'image_host': 'http://some.site.com/'})
+        self.workspace.save(loc, 'Add localisation')
+        self.workspace.refresh_index()
+
+        request = testing.DummyRequest({'_LOCALE_': 'eng_GB'})
+        self.views = CmsViews(request)
+
+        localisation = self.views.get_localisation()
+        self.assertEqual(localisation.locale, 'eng_GB')
+        self.assertEqual(localisation.image, 'sample-uuid-000000-0001')
+        self.assertEqual(localisation.image_host, 'http://some.site.com/')
+
+        # Test fallbacks
+        request = testing.DummyRequest({'_LOCALE_': 'eng_UK'})
+        self.views = CmsViews(request)
+
+        localisation = self.views.get_localisation()
+        self.assertEqual(localisation.locale, 'eng_GB')
+        self.assertEqual(localisation.image, 'sample-uuid-000000-0001')
+        self.assertEqual(localisation.image_host, 'http://some.site.com/')
