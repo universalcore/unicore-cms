@@ -81,6 +81,12 @@
       "aliases": [
         "id"
       ]
+    },
+    {
+      "type": "array",
+      "name": "author_tags",
+      "items": "string",
+      "default": []
     }
   ]
 }

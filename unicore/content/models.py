@@ -17,7 +17,7 @@ from elasticgit import models
 
 
 class Page(models.Model):
-
+    
     subtitle = models.TextField("""subtitle""")
     description = models.TextField("""description""")
     language = models.TextField("""language""")
@@ -37,11 +37,12 @@ class Page(models.Model):
     image = models.TextField("""image""")
     image_host = models.TextField("""image_host""")
     uuid = models.UUIDField("""uuid""", fallbacks=[models.SingleFieldFallback('id'),])
+    author_tags = models.ListField("""author_tags""", default=[])
 
 
 
 class Category(models.Model):
-
+    
     subtitle = models.TextField("""subtitle""")
     language = models.TextField("""language""")
     title = models.TextField("""title""")
@@ -53,3 +54,10 @@ class Category(models.Model):
     image = models.TextField("""image""")
     image_host = models.TextField("""image_host""")
     uuid = models.UUIDField("""uuid""", fallbacks=[models.SingleFieldFallback('id'),])
+
+
+class Localisation(models.Model):
+    
+    locale = models.TextField("""locale""")
+    image = models.TextField("""image""")
+    image_host = models.TextField("""image_host""")
