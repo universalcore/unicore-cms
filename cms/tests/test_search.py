@@ -29,6 +29,12 @@ class TestSearch(UnicoreTestCase):
         resp = self.app.get('/search/', params={'q': ''}, status=200)
         self.assertTrue('No results found!' in resp.body)
 
+    def test_search_blank(self):
+        self.create_pages(self.workspace)
+
+        resp = self.app.get('/search/', params={'q': None}, status=200)
+        self.assertTrue('No results found!' in resp.body)
+
     def test_search_2_results(self):
         self.create_pages(self.workspace, count=2)
         resp = self.app.get('/search/', params={'q': 'sample'}, status=200)
@@ -43,7 +49,6 @@ class TestSearch(UnicoreTestCase):
         resp = self.app.get('/search/', params={'q': 'kak'}, status=200)
 
         self.assertTrue('No results found!' in resp.body)
-        self.assertFalse('kak' in resp.body)
 
     def test_search_added_page(self):
         mother_page = Page({

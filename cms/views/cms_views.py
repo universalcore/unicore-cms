@@ -186,17 +186,17 @@ class CmsViews(BaseCmsView):
     @view_config(route_name='search', renderer='cms:templates/search.pt')
     def search(self):
         query = self.request.GET.get('q')
-        if(query is None):
-            return []
+        if not query:
+            return {'results': [], 'query': query}
 
         results = self.workspace.S(Page).query(
             content__query_string=query)[:1000]
 
-        refinedResults = {}
-        newResults = []
+        # refinedResults = {}
+        # newResults = []
 
-        for x in results:
-            if x.content not in refinedResults:
-                refinedResults[x.content] = x
-                newResults.append(x)
-        return {'results': newResults, 'query': query}
+        # for x in results:
+        #     if x.content not in refinedResults:
+        #         refinedResults[x.content] = x
+        #         newResults.append(x)
+        return {'results': results, 'query': query}
