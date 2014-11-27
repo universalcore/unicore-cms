@@ -2,7 +2,7 @@
     <div metal:fill-slot="content">
 
         <div class="object-category-list modelbase-category-list">
-        <div class="h1">Search Results</div>
+        <div class="h1">Search Results for: ${query}</div>
 
         <div class="items">
             <div class="box">
