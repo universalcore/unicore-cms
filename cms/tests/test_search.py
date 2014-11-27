@@ -39,7 +39,7 @@ class TestSearch(UnicoreTestCase):
     def test_search_profanity(self):
         self.create_pages(self.workspace, count=2)
 
-        resp = self.app.get('/search/', params={'q':'kak'}, status=200)
+        resp = self.app.get('/search/', params={'q': 'kak'}, status=200)
 
         self.assertTrue('No results found!' in resp.body)
         self.assertFalse('kak' in resp.body)
@@ -56,4 +56,3 @@ class TestSearch(UnicoreTestCase):
 
         self.assertTrue('mother' in resp.body)
         self.assertFalse('No results found!' in resp.body)
-        
