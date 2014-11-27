@@ -187,9 +187,8 @@ class CmsViews(BaseCmsView):
     def search(self):
         query = self.request.GET.get('q')
         if(query is None):
-            query = ''
-        else:
-            query = str(query).lower()
+            return []
+
         results = self.workspace.S(Page).query(
             content__query_string=query)[:1000]
 
