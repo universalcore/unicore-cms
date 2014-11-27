@@ -3,7 +3,7 @@ from pyramid import testing
 from cms.tests.base import UnicoreTestCase
 from cms import main
 from webtest import TestApp
-from unicore.content.models import Category, Page
+from unicore.content.models import Page
 
 class TestSearch(UnicoreTestCase):
 
