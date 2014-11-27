@@ -192,7 +192,7 @@ class CmsViews(BaseCmsView):
             query = str(query).lower()
         results = self.workspace.S(Page).query(
             content__query_string=query)[:1000]
-        
+
         refinedResults = {}
         newResults = []
 
