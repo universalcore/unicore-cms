@@ -9,7 +9,7 @@
 # VERSION INFO:
 #
 #   package:          elastic-git
-#   package_version:  0.2.9
+#   package_version:  0.3.0
 #   language_version: 2.7.6
 #
 
@@ -17,7 +17,7 @@ from elasticgit import models
 
 
 class Page(models.Model):
-    
+
     subtitle = models.TextField("""subtitle""")
     description = models.TextField("""description""")
     language = models.TextField("""language""")
@@ -42,7 +42,7 @@ class Page(models.Model):
 
 
 class Category(models.Model):
-    
+
     subtitle = models.TextField("""subtitle""")
     language = models.TextField("""language""")
     title = models.TextField("""title""")
@@ -57,7 +57,7 @@ class Category(models.Model):
 
 
 class Localisation(models.Model):
-    
+
     locale = models.TextField("""locale""")
     image = models.TextField("""image""")
     image_host = models.TextField("""image_host""")
