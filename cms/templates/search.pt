@@ -3,6 +3,11 @@
 
         <div class="object-category-list modelbase-category-list">
         <div class="h1">Search Results for: ${query}</div>
+        <p>Total number of results ${total}</p>
+        
+        <a href="/search/?q=${query}&count=${count-10}" tal:condition="python:count>10">Previous</a>
+        <a>Page: ${count//10}</a>
+        <a href="/search/?q=${query}&count=${count+10}" tal:condition="python:count+10<=(total + (10 - (total % 10)))">Next</a>
 
         <div class="items">
             <div class="box">
@@ -18,6 +23,9 @@
 
             </div>
         </div>
+        <a href="/search/?q=${query}&count=${count-10}" tal:condition="python:count>10">Previous</a>
+        <a>Page: ${count//10}</a>
+        <a href="/search/?q=${query}&count=${count+10}" tal:condition="python:count+10<=(total + (10 - (total % 10)))">Next</a>        
         </div>
     </div>
 </div>

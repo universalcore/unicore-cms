@@ -186,10 +186,32 @@ class CmsViews(BaseCmsView):
     @view_config(route_name='search', renderer='cms:templates/search.pt')
     def search(self):
         query = self.request.GET.get('q')
+        count = self.request.GET.get('count')
+        total = self.request.GET.get('total')
+
+        # handle query exception
         if not query:
-            return {'results': [], 'query': query}
+            return {'results': [], 'query': query, 'count': count, 'total': total}
+
+        # case where search is typed directly into searchbar
+        if count is None:
+            count = 10
+        else:
+            count = int(self.request.GET.get('count'))
+
+        # case:
+        # search from URL bar
+        # search from searchbar
+        if (total is None) or (int(total) == -1):
+            total = self.workspace.S(Page).query(
+                content__query_string=query).order_by('_score').count()
+
+        else:
+            total = int(self.request.GET.get('total'))
+
+        # evaluate if a next button is needed
 
         results = self.workspace.S(Page).query(
-            content__query_string=query).order_by('_score')[:1000]
+            content__query_string=query).order_by('_score')[(count - 10):count]
 
-        return {'results': results, 'query': query}
+        return {'results': results, 'query': query, 'count': count, 'total': total}

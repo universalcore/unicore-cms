@@ -53,6 +53,8 @@
     <label for='q'>Type to search:</label>
     <input id="q" name='q' type="text" hint='enter search here..'>
     <input type="submit" value='Search' />
+    <input id="count" name='count' type="hidden" value='10' />
+    <input id="total" name='total' type="hidden" value='-1' />
 </form>
 
 </body>
