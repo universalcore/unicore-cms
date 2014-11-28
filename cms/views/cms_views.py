@@ -191,8 +191,12 @@ class CmsViews(BaseCmsView):
 
         # handle query exception
         if not query:
-            return {'results': [], 'query': query,
-                    'count': count, 'total': total}
+            return {'results': [],
+                    'query': query,
+                    'count': count,
+                    'total': total,
+                    'hasPreviousPage': False,
+                    'hasNextPage': False}
 
         # case where search is typed directly into searchbar
         if count is None:
@@ -215,5 +219,22 @@ class CmsViews(BaseCmsView):
         results = self.workspace.S(Page).query(
             content__query_string=query).order_by('_score')[(count - 10):count]
 
-        return {'results': results, 'query': query,
-                'count': count, 'total': total}
+        # determine whether there there is a previous page
+        if count > 10:
+            hasPreviousPage = True
+        else:
+            hasPreviousPage = False
+
+        # determine whether there is a next page
+        # compares count to upper ceiling of total results
+        if (count <= (total + (10 - (total % 10))) - 10):
+            hasNextPage = True
+        else:
+            hasNextPage = False
+
+        return {'results': results,
+                'query': query,
+                'count': count,
+                'total': total,
+                'hasPreviousPage': hasPreviousPage,
+                'hasNextPage': hasNextPage}
