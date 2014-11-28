@@ -192,11 +192,4 @@ class CmsViews(BaseCmsView):
         results = self.workspace.S(Page).query(
             content__query_string=query).order_by('_score')[:1000]
 
-        # refinedResults = {}
-        # newResults = []
-
-        # for x in results:
-        #     if x.content not in refinedResults:
-        #         refinedResults[x.content] = x
-        #         newResults.append(x)
         return {'results': results, 'query': query}
