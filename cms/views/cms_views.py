@@ -190,7 +190,7 @@ class CmsViews(BaseCmsView):
             return {'results': [], 'query': query}
 
         results = self.workspace.S(Page).query(
-            content__query_string=query)[:1000]
+            content__query_string=query).order_by('_score')[:1000]
 
         # refinedResults = {}
         # newResults = []
