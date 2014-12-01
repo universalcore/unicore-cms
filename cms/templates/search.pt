@@ -5,9 +5,10 @@
         <div class="h1">Search Results for: ${query}</div>
         <p tal:condition="total">Total number of results ${total}</p>
 
-        <a href="/search/?q=${query}&count=${count-10}&total=${total}" tal:condition=hasPreviousPage>Previous</a>
-        <a tal:condition="count">Page: ${count//10}</a>
-        <a href="/search/?q=${query}&count=${count+10}&total=${total}" tal:condition=hasNextPage>Next</a>
+        <a href="/search/?q=${query}&p=${previous_page}" tal:condition=previous_page>Previous</a>
+        <a tal:condition="p">Page: ${p}</a>
+        <a href="/search/?q=${query}&p=${next_page}" tal:condition=next_page>Next</a>
+
         <div class="items">
             <div class="box">
                 <div class="item" tal:repeat="result results">
@@ -22,9 +23,7 @@
 
             </div>
         </div>
-        <a href="/search/?q=${query}&count=${count-10}&total=${total}" tal:condition=hasPreviousPage>Previous</a>
-        <a tal:condition="count">Page: ${count//10}</a>
-        <a href="/search/?q=${query}&count=${count+10}&total=${total}" tal:condition=hasNextPage>Next</a>
+        
         </div>
     </div>
 </div>

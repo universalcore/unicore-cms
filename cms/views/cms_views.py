@@ -79,8 +79,8 @@ class CmsViews(BaseCmsView):
     def get_pages_for_category(
             self, category_id, locale, order_by=('position',)):
         return self.workspace.S(Page).filter(
-            primary_category=category_id, language=locale).order_by(
-                *order_by)
+            primary_category=category_id,
+            language=locale).order_by(*order_by)
 
     def get_featured_category_pages(
             self, category_id, order_by=('position',)):
@@ -186,55 +186,47 @@ class CmsViews(BaseCmsView):
     @view_config(route_name='search', renderer='cms:templates/search.pt')
     def search(self):
         query = self.request.GET.get('q')
-        count = self.request.GET.get('count')
-        total = self.request.GET.get('total')
+        p = self.request.GET.get('p')
 
         # handle query exception
         if not query:
             return {'results': [],
                     'query': query,
-                    'count': count,
-                    'total': total,
-                    'hasPreviousPage': False,
-                    'hasNextPage': False}
+                    'p': None,
+                    'total': None,
+                    'previous_page': None,
+                    'next_page': None}
 
         # case where search is typed directly into searchbar
-        if count is None:
-            count = 10
+        if p is None:
+            p = 1
         else:
-            count = int(self.request.GET.get('count'))
+            p = int(self.request.GET.get('p'))
 
-        # case:
-        # search from URL bar
-        # search from searchbar
-        if (total is None) or (int(total) == -1):
-            total = self.workspace.S(Page).query(
-                content__query_string=query).order_by('_score').count()
+        all_results = self.workspace.S(Page).query(content__query_string=query)
 
-        else:
-            total = int(self.request.GET.get('total'))
+        # get the total number of results
+        total = all_results.count()
 
-        # evaluate if a next button is needed
-
-        results = self.workspace.S(Page).query(
-            content__query_string=query).order_by('_score')[(count - 10):count]
+        # get 10 results
+        results = all_results.order_by('_score')[(p * 10 - 10):p * 10]
 
         # determine whether there there is a previous page
-        if count > 10:
-            hasPreviousPage = True
+        if (p * 10) > 10:
+            previous_page = p - 1
         else:
-            hasPreviousPage = False
+            previous_page = None
 
         # determine whether there is a next page
         # compares count to upper ceiling of total results
-        if (count <= (total + (10 - (total % 10))) - 10):
-            hasNextPage = True
+        if (p * 10 <= (total + (10 - (total % 10))) - 10):
+            next_page = p + 1
         else:
-            hasNextPage = False
+            next_page = None
 
         return {'results': results,
                 'query': query,
-                'count': count,
+                'p': p,
                 'total': total,
-                'hasPreviousPage': hasPreviousPage,
-                'hasNextPage': hasNextPage}
+                'previous_page': previous_page,
+                'next_page': next_page}
