@@ -28,10 +28,13 @@ class NotifyTestCase(UnicoreTestCase):
         self.assertEquals(len(resp.json), 0)
         resp = self.app.get('/api/categories.json', status=200)
         self.assertEquals(len(resp.json), 0)
+        resp = self.app.get('/api/localisations.json', status=200)
+        self.assertEquals(len(resp.json), 0)
 
         # the remote grows some categories
         self.create_categories(self.remote_workspace)
         self.create_pages(self.remote_workspace)
+        self.create_localisation(self.remote_workspace)
 
         local_repo = self.local_workspace.repo
         local_repo.create_remote('origin', self.remote_workspace.working_dir)
@@ -43,3 +46,5 @@ class NotifyTestCase(UnicoreTestCase):
         self.assertEquals(len(resp.json), 2)
         resp = self.app.get('/api/categories.json', status=200)
         self.assertEquals(len(resp.json), 2)
+        resp = self.app.get('/api/localisations.json', status=200)
+        self.assertEquals(len(resp.json), 1)

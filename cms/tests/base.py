@@ -7,7 +7,7 @@ from elasticgit import EG
 
 from slugify import slugify
 
-from unicore.content.models import Category, Page
+from unicore.content.models import Category, Page, Localisation
 
 
 class UnicoreTestCase(TestCase):
@@ -84,3 +84,12 @@ class UnicoreTestCase(TestCase):
 
         workspace.refresh_index()
         return pages
+
+    def create_localisation(self, workspace, locale='eng_GB', **kwargs):
+        data = {'locale': locale}
+        data.update(kwargs)
+        localisation = Localisation(data)
+        workspace.save(
+            localisation, message=u'Added localisation %s.' % locale)
+        workspace.refresh_index()
+        return localisation
