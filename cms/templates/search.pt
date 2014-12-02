@@ -2,7 +2,7 @@
     <div metal:fill-slot="content">
 
         <div class="object-category-list modelbase-category-list">
-        <div tal:condition="total">Search Results for: <b>${query}</b> (${total} results)</div>
+        <div tal:condition="total">${total} search sesults for: <b>${query}</b></div>
         
         <div class="pagenumbers" tal:condition="page_numbers">
             <a href="/search/?q=${query}&p=${previous_page}" tal:condition="previous_page">&nbsp;&lt;&nbsp;Previous</a>
