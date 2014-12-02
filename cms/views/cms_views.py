@@ -211,6 +211,17 @@ class CmsViews(BaseCmsView):
         # get the total number of results
         total = all_results.count()
 
+        # no results found
+        if total == 0:
+            return {'results': [],
+                    'query': query,
+                    'p': None,
+                    'page_numbers': None,
+                    'total_pages': None,
+                    'total': None,
+                    'previous_page': None,
+                    'next_page': None}
+
         # get the total number of pages
         remainder = total % results_per_page
         if(remainder == 0):
@@ -220,13 +231,53 @@ class CmsViews(BaseCmsView):
                 (total + (results_per_page - (remainder))) / results_per_page)
 
         # create sliding range of page numbers
-        count = 1
-        page_numbers = []
-        while (count <= total_pages):
-            page_numbers.append(count)
-            count += 1
+        # slider value should be odd and never less than 3
+        slider_value = 5
+        buffer_value = slider_value / 2
 
-        # get 10 results
+        page_numbers = []
+        # get buffered values either side of the current page number
+        if (p - buffer_value <= 1):
+            count = 1
+            while((count <= slider_value)and(count <= total_pages)):
+                page_numbers.append(count)
+                count += 1
+
+        elif (p + buffer_value >= total_pages):
+            count = total_pages
+            while((count >= total_pages - slider_value)and(count >= 1)):
+                page_numbers.insert(0, count)
+                count -= 1
+
+        else:
+            count = -buffer_value
+            while (count <= buffer_value):
+                buffer_page = p + count
+                if(buffer_page >= 1) and (buffer_page <= total_pages):
+                    page_numbers.append(p + count)
+                count += 1
+
+        # determine if first-page-number-link should be displayed
+        need_start = True
+        if page_numbers[0] == 1:
+            need_start = False
+
+        # determine if start ellipsis are needed
+        need_start_ellipsis = True
+        if page_numbers[0] <= 2:
+            need_start_ellipsis = False
+
+        # determine if end ellipsis are needed
+        need_end_ellipsis = True
+        if (page_numbers[-1]) >= (total_pages - 1):
+            need_end_ellipsis = False
+
+        # determine if last-page-number-link should be displayed
+        need_end = True
+        if page_numbers[-1] == total_pages:
+            need_end = False
+
+        # get specified number of results
         results = all_results.order_by(
             '_score')[(p * results_per_page - results_per_page):
                       p * results_per_page]
@@ -246,7 +297,11 @@ class CmsViews(BaseCmsView):
         return {'results': results,
                 'query': query,
                 'p': p,
+                'need_start': need_start,
+                'need_start_ellipsis': need_start_ellipsis,
                 'page_numbers': page_numbers,
+                'need_end_ellipsis': need_end_ellipsis,
+                'need_end': need_end,
                 'total_pages': total_pages,
                 'total': total,
                 'previous_page': previous_page,
