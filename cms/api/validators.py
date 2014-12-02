@@ -18,6 +18,13 @@ def validate_category(request):
     validate_required_field(request, data, 'title')
 
 
+def validate_localisation(request):
+    data = json.loads(request.body)
+    validate_required_field(request, data, 'locale')
+    validate_optional_field(request, data, 'image')
+    validate_optional_field(request, data, 'image_host')
+
+
 def validate_put_category(request):
     data = json.loads(request.body)
     validate_required_field(request, data, 'title')
