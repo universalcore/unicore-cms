@@ -7,7 +7,7 @@
 
         <a href="/search/?q=${query}&p=${previous_page}" tal:condition=previous_page>Previous</a>
         <a tal:condition="p">Page: ${p}</a>
-        <a href="/search/?q=${query}&p=${next_page}" tal:condition=next_page>Next</a>
+        <a href="/search/?q=${query}&p=${next_page}" tal:condition=next_page>&nbsp;Next</a>
 
         <div class="items">
             <div class="box">
@@ -15,7 +15,8 @@
                     <div class="text">
 
                         <p tal:condition="result.primary_category">${view.get_category(result.primary_category).title}</p>
-                        <a href="/content/detail/${result.uuid}/">${result.title}</a>
+                        <a href="/content/detail/${result.uuid}/">${result.title} ...</a>
+                        <a href="/content/detail/${result.uuid}/">Read More &gt;</a>
                     </div>
                 </div>
 
