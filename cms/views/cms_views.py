@@ -277,6 +277,10 @@ class CmsViews(BaseCmsView):
         if page_numbers[-1] == total_pages:
             need_end = False
 
+        # break page_numbers into two lists
+        left_pages = page_numbers[0:page_numbers.index(p)]
+        right_pages = page_numbers[page_numbers.index(p) + 1:]
+
         # get specified number of results
         results = all_results.order_by(
             '_score')[(p * results_per_page - results_per_page):
@@ -299,7 +303,8 @@ class CmsViews(BaseCmsView):
                 'p': p,
                 'need_start': need_start,
                 'need_start_ellipsis': need_start_ellipsis,
-                'page_numbers': page_numbers,
+                'left_pages': left_pages,
+                'right_pages': right_pages,
                 'need_end_ellipsis': need_end_ellipsis,
                 'need_end': need_end,
                 'total_pages': total_pages,

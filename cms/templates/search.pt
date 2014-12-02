@@ -2,13 +2,15 @@
     <div metal:fill-slot="content">
 
         <div class="object-category-list modelbase-category-list">
-        <div tal:condition="total">${total} search sesults for: <b>${query}</b></div>
+        <div tal:condition="total">${total} search results for: <b>${query}</b></div>
         
-        <div class="pagenumbers" tal:condition="page_numbers">
+        <div class="pagenumbers" tal:condition="p">
             <a href="/search/?q=${query}&p=${previous_page}" tal:condition="previous_page">&nbsp;&lt;&nbsp;Previous</a>
             <a href="/search/?q=${query}&p=1" tal:condition="need_start">&nbsp;1&nbsp;</a>
             <a tal:condition="need_start_ellipsis">...</a>
-            <a href="/search/?q=${query}&p=${number}" tal:repeat="number page_numbers" >&nbsp;${number}&nbsp;</a>
+            <a href="/search/?q=${query}&p=${number}" tal:repeat="number left_pages" tal:condition="left_pages">&nbsp;${number}&nbsp;</a>
+            &nbsp;&nbsp;<b>${p}</b>&nbsp;&nbsp;
+            <a href="/search/?q=${query}&p=${number}" tal:repeat="number right_pages" tal:condition="right_pages">&nbsp;${number}&nbsp;</a>
             <a tal:condition="need_end_ellipsis">...</a>
             <a href="/search/?q=${query}&p=${total_pages}" tal:condition="need_end">&nbsp;${total_pages}&nbsp;</a>
             <a href="/search/?q=${query}&p=${next_page}" tal:condition="next_page">&nbsp;Next&nbsp;&gt;</a>
