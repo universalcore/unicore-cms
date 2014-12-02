@@ -2,15 +2,17 @@
     <div metal:fill-slot="content">
 
         <div class="object-category-list modelbase-category-list">
-        <div class="h1">Search Results for: ${query}</div>
-        <p tal:condition="total">Total number of results ${total}</p>
-
-        <a href="/search/?q=${query}&p=${previous_page}" tal:condition=previous_page>Previous</a>
-        <a tal:condition="p">Page: ${p}</a>
-        <a href="/search/?q=${query}&p=${next_page}" tal:condition=next_page>&nbsp;Next</a>
+        <div tal:condition="total">Search Results for: <b>${query}</b> (${total} results)</div>
+        
+        <div class="pagenumbers" tal:condition="page_numbers">
+            <a href="/search/?q=${query}&p=${previous_page}" tal:condition=previous_page>&nbsp;&lt;&nbsp;Previous</a>
+            <a href="/search/?q=${query}&p=${number}" tal:repeat="number page_numbers" >&nbsp;${number}&nbsp;</a>
+            <a href="/search/?q=${query}&p=${next_page}" tal:condition=next_page>&nbsp;Next&nbsp;&gt;</a>
+        </div>
 
         <div class="items">
             <div class="box">
+
                 <div class="item" tal:repeat="result results">
                     <div class="text">
 
@@ -24,7 +26,7 @@
 
             </div>
         </div>
-        
+
         </div>
     </div>
 </div>

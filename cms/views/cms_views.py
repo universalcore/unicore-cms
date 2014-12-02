@@ -185,6 +185,7 @@ class CmsViews(BaseCmsView):
 
     @view_config(route_name='search', renderer='cms:templates/search.pt')
     def search(self):
+        results_per_page = 10
         query = self.request.GET.get('q')
         p = self.request.GET.get('p')
 
@@ -193,6 +194,8 @@ class CmsViews(BaseCmsView):
             return {'results': [],
                     'query': query,
                     'p': None,
+                    'page_numbers': None,
+                    'total_pages': None,
                     'total': None,
                     'previous_page': None,
                     'next_page': None}
@@ -208,18 +211,34 @@ class CmsViews(BaseCmsView):
         # get the total number of results
         total = all_results.count()
 
+        # get the total number of pages
+        remainder = total % results_per_page
+        if(remainder == 0):
+            total_pages = total / results_per_page
+        else:
+            total_pages = (
+                (total + (results_per_page - (remainder))) / results_per_page)
+
+        # create sliding range of page numbers
+        count = 1
+        page_numbers = []
+        while (count <= total_pages):
+            page_numbers.append(count)
+            count += 1
+
         # get 10 results
-        results = all_results.order_by('_score')[(p * 10 - 10):p * 10]
+        results = all_results.order_by(
+            '_score')[(p * results_per_page - results_per_page):
+                      p * results_per_page]
 
         # determine whether there there is a previous page
-        if (p * 10) > 10:
+        if (p * results_per_page) > results_per_page:
             previous_page = p - 1
         else:
             previous_page = None
 
         # determine whether there is a next page
-        # compares count to upper ceiling of total results
-        if (p * 10 <= (total + (10 - (total % 10))) - 10):
+        if (p + 1 <= total_pages):
             next_page = p + 1
         else:
             next_page = None
@@ -227,6 +246,8 @@ class CmsViews(BaseCmsView):
         return {'results': results,
                 'query': query,
                 'p': p,
+                'page_numbers': page_numbers,
+                'total_pages': total_pages,
                 'total': total,
                 'previous_page': previous_page,
                 'next_page': next_page}
