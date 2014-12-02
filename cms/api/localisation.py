@@ -28,8 +28,8 @@ class LocalisationApi(ApiBase):
     @view(validators=validators.validate_localisation, renderer='json')
     def put(self):
         locale = self.request.matchdict['locale']
-        image = self.request.validated['image']
-        image_host = self.request.validated['image_host']
+        image = self.request.validated.get('image')
+        image_host = self.request.validated.get('image_host')
         try:
             [loc] = self.workspace.S(Localisation).filter(locale=locale)
             original = loc.get_object()
@@ -44,8 +44,8 @@ class LocalisationApi(ApiBase):
     @view(validators=validators.validate_localisation, renderer='json')
     def collection_post(self):
         locale = self.request.validated['locale']
-        image = self.request.validated['image']
-        image_host = self.request.validated['image_host']
+        image = self.request.validated.get('image')
+        image_host = self.request.validated.get('image_host')
 
         loc = Localisation(
             {'locale': locale, 'image': image, 'image_host': image_host})
