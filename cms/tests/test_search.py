@@ -102,3 +102,26 @@ class TestSearch(UnicoreTestCase):
             '/search/', params={'q': 'baby', 'p': '2'}, status=200)
         self.assertTrue('Previous' in resp.body)
         self.assertTrue('Next' in resp.body)
+
+    def test_page_number_buffering_middle(self):
+        self.create_pages(self.workspace, count=90, content='baby')
+        resp = self.app.get(
+            '/search/', params={'q': 'baby', 'p': '5'}, status=200)
+        expected_anchors = [
+            '<a href="/search/?q=baby&p=1">',
+            '...',
+            '<a href="/search/?q=baby&p=3">',
+            '<a href="/search/?q=baby&p=4">',
+            '<a href="/search/?q=baby&p=6">',
+            '<a href="/search/?q=baby&p=7">',
+            '<a href="/search/?q=baby&p=9">'
+        ]
+        for anchor in expected_anchors:
+            self.assertTrue(anchor in resp.body)
+
+        not_expected_anchors = [
+            '<a href="/search/?q=baby&p=2">',
+            '<a href="/search/?q=baby&p=8">'
+        ]
+        for anchor in not_expected_anchors:
+            self.assertFalse(anchor in resp.body)
