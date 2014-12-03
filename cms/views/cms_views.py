@@ -195,64 +195,51 @@ class CmsViews(BaseCmsView):
     def search(self):
         results_per_page = 10
         query = self.request.GET.get('q')
-        p = self.request.GET.get('p')
+        p = int(self.request.GET.get('p', 0))
+
+        empty_defaults = {
+            'results': [],
+            'query': query,
+            'total': None,
+            'p': p,
+        }
 
         # handle query exception
         if not query:
-            return {'results': [],
-                    'query': query,
-                    'p': None,
-                    'page_numbers': None,
-                    'total_pages': None,
-                    'total': None,
-                    'previous_page': None,
-                    'next_page': None}
-
-        # case where search is typed directly into searchbar
-        if p is None:
-            p = 1
-        else:
-            p = int(self.request.GET.get('p'))
+            return empty_defaults
 
         all_results = self.workspace.S(Page).query(content__query_string=query)
+
+        # Continue here!
+        # paginator = EGPaginator(all_results, p)
 
         # get the total number of results
         total = all_results.count()
 
         # no results found
         if total == 0:
-            return {'results': [],
-                    'query': query,
-                    'p': None,
-                    'page_numbers': None,
-                    'total_pages': None,
-                    'total': None,
-                    'previous_page': None,
-                    'next_page': None}
+            return empty_defaults
 
         # get the total number of pages
         remainder = total % results_per_page
         if(remainder == 0):
-            total_pages = total / results_per_page
+            total_pages = (total / results_per_page)-1
         else:
             total_pages = (
-                (total + (results_per_page - (remainder))) / results_per_page)
+                (total + (results_per_page - (remainder))) / results_per_page)-1
 
         # get specified number of results
         results = all_results.order_by(
-            '_score')[(p * results_per_page - results_per_page):
-                      p * results_per_page]
+            '_score')[(p * results_per_page): (p + 1) * results_per_page]
 
         # if p==1 then no pagination needed
-        if total == 1:
-            return {'results': results,
-                    'query': query,
-                    'p': None,
-                    'page_numbers': None,
-                    'total_pages': None,
-                    'total': total,
-                    'previous_page': None,
-                    'next_page': None}
+        if total_pages == 1:
+            response = empty_defaults.copy()
+            response.update({
+                'results': results,
+                'total': total,
+            })
+            return response
 
         # create sliding range of page numbers
         # slider value should be odd and never less than 3
@@ -262,7 +249,7 @@ class CmsViews(BaseCmsView):
         page_numbers = []
         # get buffered values either side of the current page number
         if (p - buffer_value <= 1):
-            count = 1
+            count = 0
             while((count <= slider_value)and(count <= total_pages)):
                 page_numbers.append(count)
                 count += 1
@@ -283,12 +270,12 @@ class CmsViews(BaseCmsView):
 
         # determine if first-page-number-link should be displayed
         need_start = True
-        if page_numbers[0] == 1:
+        if page_numbers[0] == 0:
             need_start = False
 
         # determine if start ellipsis are needed
         need_start_ellipsis = True
-        if page_numbers[0] <= 2:
+        if page_numbers[0] <= 1:
             need_start_ellipsis = False
 
         # determine if end ellipsis are needed
@@ -306,7 +293,7 @@ class CmsViews(BaseCmsView):
         right_pages = page_numbers[page_numbers.index(p) + 1:]
 
         # determine whether there there is a previous page
-        if (p * results_per_page) > results_per_page:
+        if p:
             previous_page = p - 1
         else:
             previous_page = None
@@ -318,6 +305,7 @@ class CmsViews(BaseCmsView):
             next_page = None
 
         return {'results': results,
+                'paginator': paginator,
                 'query': query,
                 'p': p,
                 'need_start': need_start,
