@@ -19,6 +19,8 @@ class BaseCmsView(object):
             return dt.strftime(fmt)
         except TypeError:
             return date_str
+        except ValueError:
+            return date_str
 
     def get_image_url(self, image_host, image_uuid, width=None, height=None):
         security_key = self.settings.get('thumbor.security_key')

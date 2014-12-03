@@ -1,6 +1,14 @@
 CHANGELOG
 =========
 
+1.3.1
+-----
+- Ensure localisation is fastforwarded
+
+1.3.0
+-----
+- Add localisation support to schema
+
 1.2.2
 -----
 - Change order of get_image_url params
