@@ -1,0 +1,19 @@
+{
+  "type": "record",
+  "namespace": "unicore.content.models",
+  "name": "Localisation",
+  "fields": [
+    {
+      "type": "string",
+      "name": "locale"
+    },
+    {
+      "type": "string",
+      "name": "image"
+    },
+    {
+      "type": "string",
+      "name": "image_host"
+    }
+  ]
+}
