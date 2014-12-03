@@ -28,7 +28,10 @@
                     </div>
                 </div>
 
-                <div tal:condition="not results">No results found!</div>
+                <div tal:condition="not results">
+                    <p tal:condition="query">No results found for <b>${query}</b></p>
+                    <p tal:condition="not query">No results found!</p>
+                </div>
 
             </div>
         </div>
