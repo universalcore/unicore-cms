@@ -238,6 +238,22 @@ class CmsViews(BaseCmsView):
             total_pages = (
                 (total + (results_per_page - (remainder))) / results_per_page)
 
+        # get specified number of results
+        results = all_results.order_by(
+            '_score')[(p * results_per_page - results_per_page):
+                      p * results_per_page]
+
+        # if p==1 then no pagination needed
+        if total == 1:
+            return {'results': results,
+                    'query': query,
+                    'p': None,
+                    'page_numbers': None,
+                    'total_pages': None,
+                    'total': total,
+                    'previous_page': None,
+                    'next_page': None}
+
         # create sliding range of page numbers
         # slider value should be odd and never less than 3
         slider_value = 5
@@ -288,11 +304,6 @@ class CmsViews(BaseCmsView):
         # break page_numbers into two lists
         left_pages = page_numbers[0:page_numbers.index(p)]
         right_pages = page_numbers[page_numbers.index(p) + 1:]
-
-        # get specified number of results
-        results = all_results.order_by(
-            '_score')[(p * results_per_page - results_per_page):
-                      p * results_per_page]
 
         # determine whether there there is a previous page
         if (p * results_per_page) > results_per_page:
