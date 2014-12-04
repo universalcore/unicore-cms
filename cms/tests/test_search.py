@@ -2,7 +2,6 @@ from pyramid import testing
 
 from cms.tests.base import UnicoreTestCase
 from cms import main
-from cms.views.cms_views import CmsViews
 from webtest import TestApp
 from unicore.content.models import Page
 
