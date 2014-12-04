@@ -52,7 +52,6 @@
 <form action='/search/' method='GET' class='form-search'>
     <input id="q" name='q' type="text" hint='enter search here..'>
     <input type="submit" value='Search' />
-    <input id="p" name='p' type="hidden" value='1' />
 </form>
 
 </body>

@@ -2,27 +2,31 @@
     <div metal:fill-slot="content">
 
         <div class="object-category-list modelbase-category-list">
-        <div tal:condition="total">
-            <p tal:condition="total==1">1 search result for: <b>${query}</b></p>
-            <p tal:condition="total>1">${total} search results for: <b>${query}</b></p>
+        <div tal:condition="paginator">
+            <p tal:condition="paginator.total_count()==1">1 search result for: <b>${query}</b></p>
+            <p tal:condition="paginator.total_count() > 1">${paginator.total_count()} search results for: <b>${query}</b></p>
         </div>
         
-        <div class="pagenumbers" tal:condition="p">
-            <a href="/search/?q=${query}&p=${previous_page}" tal:condition="previous_page">&nbsp;&lt;&nbsp;Previous</a>
-            <a href="/search/?q=${query}&p=1" tal:condition="need_start">&nbsp;1&nbsp;</a>
-            <a tal:condition="need_start_ellipsis">...</a>
-            <a href="/search/?q=${query}&p=${number}" tal:repeat="number left_pages" tal:condition="left_pages">&nbsp;${number}&nbsp;</a>
-            &nbsp;&nbsp;<b>${p}</b>&nbsp;&nbsp;
-            <a href="/search/?q=${query}&p=${number}" tal:repeat="number right_pages" tal:condition="right_pages">&nbsp;${number}&nbsp;</a>
-            <a tal:condition="need_end_ellipsis">...</a>
-            <a href="/search/?q=${query}&p=${total_pages}" tal:condition="need_end">&nbsp;${total_pages}&nbsp;</a>
-            <a href="/search/?q=${query}&p=${next_page}" tal:condition="next_page">&nbsp;Next&nbsp;&gt;</a>
-        </div>
+        <div tal:condition="paginator">
+            <div class="pagenumbers" tal:condition="(paginator.total_pages() > 1)">
 
+            <a href="/search/?q=${query}&p=${p-1}" tal:condition="paginator.has_previous_page()">&nbsp;&lt;&nbsp;Previous</a>
+            <a href="/search/?q=${query}&p=0" tal:condition="paginator.show_start()">&nbsp;1&nbsp;</a>
+            <a tal:condition="paginator.needs_start_ellipsis()">...</a>
+            <a href="/search/?q=${query}&p=${number}" tal:repeat="number paginator.page_numbers_left()" tal:condition="paginator.page_numbers_left()">&nbsp;${number + 1}&nbsp;</a>
+            &nbsp;&nbsp;<b>${p + 1}</b>&nbsp;&nbsp;
+            <a href="/search/?q=${query}&p=${number}" tal:repeat="number paginator.page_numbers_right()" tal:condition="paginator.page_numbers_right()">&nbsp;${number + 1}&nbsp;</a>
+            <a tal:condition="paginator.needs_end_ellipsis()">...</a>
+            <a href="/search/?q=${query}&p=${paginator.total_pages()-1}" tal:condition="paginator.show_end()">&nbsp;${paginator.total_pages()}&nbsp;</a>
+            <a href="/search/?q=${query}&p=${p + 1}" tal:condition="paginator.has_next_page()">&nbsp;Next&nbsp;&gt;</a>
+
+
+            </div>
+        </div>
         <div class="items">
             <div class="box">
 
-                <div class="item" tal:repeat="result results">
+                <div class="item" tal:repeat="result paginator.get_page()" tal:condition="paginator">
                     <div class="text">
 
                         <p tal:condition="result.primary_category">${view.get_category(result.primary_category).title}</p>
@@ -31,7 +35,7 @@
                     </div>
                 </div>
 
-                <div tal:condition="not results">
+                <div tal:condition="not paginator">
                     <p tal:condition="query">No results found for <b>${query}</b></p>
                     <p tal:condition="not query">No results found!</p>
                 </div>
@@ -39,17 +43,7 @@
             </div>
         </div>
 
-        <div class="pagenumbers" tal:condition="p">
-            <a href="/search/?q=${query}&p=${previous_page}" tal:condition="previous_page">&nbsp;&lt;&nbsp;Previous</a>
-            <a href="/search/?q=${query}&p=1" tal:condition="need_start">&nbsp;1&nbsp;</a>
-            <a tal:condition="need_start_ellipsis">...</a>
-            <a href="/search/?q=${query}&p=${number}" tal:repeat="number left_pages" tal:condition="left_pages">&nbsp;${number}&nbsp;</a>
-            &nbsp;&nbsp;<b>${p}</b>&nbsp;&nbsp;
-            <a href="/search/?q=${query}&p=${number}" tal:repeat="number right_pages" tal:condition="right_pages">&nbsp;${number}&nbsp;</a>
-            <a tal:condition="need_end_ellipsis">...</a>
-            <a href="/search/?q=${query}&p=${total_pages}" tal:condition="need_end">&nbsp;${total_pages}&nbsp;</a>
-            <a href="/search/?q=${query}&p=${next_page}" tal:condition="next_page">&nbsp;Next&nbsp;&gt;</a>
-        </div>
+        
 
         </div>
     </div>

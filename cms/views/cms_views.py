@@ -15,6 +15,7 @@ from elasticgit import F
 from cms.views.base import BaseCmsView
 
 from unicore.content.models import Category, Page, Localisation
+from utils import EGPaginator
 
 CACHE_TIME = 'default_term'
 
@@ -193,14 +194,13 @@ class CmsViews(BaseCmsView):
 
     @view_config(route_name='search', renderer='cms:templates/search.pt')
     def search(self):
-        results_per_page = 10
+
         query = self.request.GET.get('q')
         p = int(self.request.GET.get('p', 0))
 
         empty_defaults = {
-            'results': [],
+            'paginator': [],
             'query': query,
-            'total': None,
             'p': p,
         }
 
@@ -210,111 +210,15 @@ class CmsViews(BaseCmsView):
 
         all_results = self.workspace.S(Page).query(content__query_string=query)
 
-        # Continue here!
-        # paginator = EGPaginator(all_results, p)
-
-        # get the total number of results
-        total = all_results.count()
-
         # no results found
-        if total == 0:
+        if all_results.count() == 0:
             return empty_defaults
 
-        # get the total number of pages
-        remainder = total % results_per_page
-        if(remainder == 0):
-            total_pages = (total / results_per_page)-1
-        else:
-            total_pages = (
-                (total + (results_per_page - (remainder))) / results_per_page)-1
+        paginator = EGPaginator(all_results, p)
 
-        # get specified number of results
-        results = all_results.order_by(
-            '_score')[(p * results_per_page): (p + 1) * results_per_page]
-
-        # if p==1 then no pagination needed
-        if total_pages == 1:
-            response = empty_defaults.copy()
-            response.update({
-                'results': results,
-                'total': total,
-            })
-            return response
-
-        # create sliding range of page numbers
-        # slider value should be odd and never less than 3
-        slider_value = 5
-        buffer_value = slider_value / 2
-
-        page_numbers = []
-        # get buffered values either side of the current page number
-        if (p - buffer_value <= 1):
-            count = 0
-            while((count <= slider_value)and(count <= total_pages)):
-                page_numbers.append(count)
-                count += 1
-
-        elif (p + buffer_value >= total_pages):
-            count = total_pages
-            while((count >= total_pages - slider_value)and(count >= 1)):
-                page_numbers.insert(0, count)
-                count -= 1
-
-        else:
-            count = -buffer_value
-            while (count <= buffer_value):
-                buffer_page = p + count
-                if(buffer_page >= 1) and (buffer_page <= total_pages):
-                    page_numbers.append(p + count)
-                count += 1
-
-        # determine if first-page-number-link should be displayed
-        need_start = True
-        if page_numbers[0] == 0:
-            need_start = False
-
-        # determine if start ellipsis are needed
-        need_start_ellipsis = True
-        if page_numbers[0] <= 1:
-            need_start_ellipsis = False
-
-        # determine if end ellipsis are needed
-        need_end_ellipsis = True
-        if (page_numbers[-1]) >= (total_pages - 1):
-            need_end_ellipsis = False
-
-        # determine if last-page-number-link should be displayed
-        need_end = True
-        if page_numbers[-1] == total_pages:
-            need_end = False
-
-        # break page_numbers into two lists
-        left_pages = page_numbers[0:page_numbers.index(p)]
-        right_pages = page_numbers[page_numbers.index(p) + 1:]
-
-        # determine whether there there is a previous page
-        if p:
-            previous_page = p - 1
-        else:
-            previous_page = None
-
-        # determine whether there is a next page
-        if (p + 1 <= total_pages):
-            next_page = p + 1
-        else:
-            next_page = None
-
-        return {'results': results,
-                'paginator': paginator,
-                'query': query,
-                'p': p,
-                'need_start': need_start,
-                'need_start_ellipsis': need_start_ellipsis,
-                'left_pages': left_pages,
-                'right_pages': right_pages,
-                'need_end_ellipsis': need_end_ellipsis,
-                'need_end': need_end,
-                'total_pages': total_pages,
-                'total': total,
-                'previous_page': previous_page,
-                'next_page': next_page}
+        return {
+            'results': paginator.get_page(),
+            'paginator': paginator,
+            'query': query,
+            'p': p,
+        }
