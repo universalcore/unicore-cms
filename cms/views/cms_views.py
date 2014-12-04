@@ -217,7 +217,6 @@ class CmsViews(BaseCmsView):
         paginator = EGPaginator(all_results, p)
 
         return {
-            'results': paginator.get_page(),
             'paginator': paginator,
             'query': query,
             'p': p,

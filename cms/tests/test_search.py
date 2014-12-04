@@ -64,19 +64,6 @@ class TestSearch(UnicoreTestCase):
         self.assertTrue('mother' in resp.body)
         self.assertFalse('No results found' in resp.body)
 
-    def test_for_multiple_results_returned(self):
-        pages = self.create_pages(
-            self.workspace, count=5, content='Random content sample for fun',
-            language='spa_ES')
-
-        request = testing.DummyRequest({'_LOCALE_': 'spa_ES', 'q': 'fun'})
-        self.views = CmsViews(request)
-        search_results = self.views.search()['results']
-        self.assertEqual(len(search_results), 5)
-        self.assertEqual(
-            set([p.title for p in pages]),
-            set([p.title for p in search_results]))
-
     def test_no_previous_next_page(self):
         self.create_pages(self.workspace, count=5, content='baby')
         resp = self.app.get('/search/', params={'q': 'baby'}, status=200)
