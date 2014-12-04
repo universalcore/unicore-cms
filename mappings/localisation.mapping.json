@@ -1,0 +1,8 @@
+{
+  "properties": {
+    "locale": {
+      "index": "not_analyzed",
+      "type": "string"
+    }
+  }
+}
