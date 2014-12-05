@@ -62,3 +62,10 @@ class TestSearch(UnicoreTestCase):
 
         self.assertTrue('mother' in resp.body)
         self.assertFalse('No results found' in resp.body)
+
+    def test_pagination(self):
+        self.create_pages(self.workspace, count=15, content='baby')
+        resp = self.app.get(
+            '/search/', params={'q': 'baby', 'p': '0'}, status=200)
+        self.assertFalse('Previous' in resp.body)
+        self.assertTrue('Next' in resp.body)
