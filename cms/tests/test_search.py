@@ -62,29 +62,3 @@ class TestSearch(UnicoreTestCase):
 
         self.assertTrue('mother' in resp.body)
         self.assertFalse('No results found' in resp.body)
-
-    def test_no_previous_next_page(self):
-        self.create_pages(self.workspace, count=5, content='baby')
-        resp = self.app.get('/search/', params={'q': 'baby'}, status=200)
-        self.assertFalse('Previous' in resp.body)
-        self.assertFalse('Next' in resp.body)
-
-    def test_next_page(self):
-        self.create_pages(self.workspace, count=15, content='baby')
-        resp = self.app.get('/search/', params={'q': 'baby'}, status=200)
-        self.assertFalse('Previous' in resp.body)
-        self.assertTrue('Next' in resp.body)
-
-    def test_previous_page(self):
-        self.create_pages(self.workspace, count=15, content='baby')
-        resp = self.app.get(
-            '/search/', params={'q': 'baby', 'p': '1'}, status=200)
-        self.assertTrue('Previous' in resp.body)
-        self.assertFalse('Next' in resp.body)
-
-    def test_previous_and_next_page(self):
-        self.create_pages(self.workspace, count=25, content='baby')
-        resp = self.app.get(
-            '/search/', params={'q': 'baby', 'p': '1'}, status=200)
-        self.assertTrue('Previous' in resp.body)
-        self.assertTrue('Next' in resp.body)
