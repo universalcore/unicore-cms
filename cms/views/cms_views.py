@@ -218,12 +218,11 @@ class CmsViews(BaseCmsView):
 
         # requested page number is out of range
         total_pages = paginator.total_pages()
-        if (p >= total_pages):
-            p = total_pages - 1
-            paginator = EGPaginator(all_results, p)
-        elif(p < 0):
-            p = 0
-            paginator = EGPaginator(all_results, p)
+        # sets the floor to 0
+        p = p if p >= 0 else 0
+        # sets the roof to `total_pages -1`
+        p = p if p < total_pages else total_pages - 1
+        paginator = EGPaginator(all_results, p)
 
         return {
             'paginator': paginator,
