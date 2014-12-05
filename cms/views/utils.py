@@ -46,22 +46,40 @@ class Paginator(object):
                          self.page + self.buffer_value + 1)
 
     def page_numbers_left(self):
-        return self.page_numbers()[:self.page_numbers().index(self.page)]
+        page_numbers = self.page_numbers()
+        if not any(page_numbers):
+            return False
+        return page_numbers[:page_numbers.index(self.page)]
 
     def page_numbers_right(self):
-        return self.page_numbers()[self.page_numbers().index(self.page) + 1:]
+        page_numbers = self.page_numbers()
+        if not any(page_numbers):
+            return False
+        return page_numbers[page_numbers.index(self.page) + 1:]
 
     def needs_start_ellipsis(self):
-        return self.page_numbers()[0] > 1
+        page_numbers = self.page_numbers()
+        if not any(page_numbers):
+            return False
+        return page_numbers[0] > 1
 
     def needs_end_ellipsis(self):
-        return self.page_numbers()[-1] < (self.total_pages() - 2)
+        page_numbers = self.page_numbers()
+        if not any(page_numbers):
+            return False
+        return page_numbers[-1] < (self.total_pages() - 2)
 
     def show_start(self):
-        return self.page_numbers()[0] > 0
+        page_numbers = self.page_numbers()
+        if not any(page_numbers):
+            return False
+        return page_numbers[0] > 0
 
     def show_end(self):
-        return self.page_numbers()[-1] < self.total_pages() - 1
+        page_numbers = self.page_numbers()
+        if not any(page_numbers):
+            return False
+        return page_numbers[-1] < self.total_pages() - 1
 
 
 class EGPaginator(Paginator):
