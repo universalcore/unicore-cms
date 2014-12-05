@@ -43,6 +43,13 @@ class TestSearch(UnicoreTestCase):
         self.assertTrue('Test Page 0' in resp.body)
         self.assertTrue('Test Page 1' in resp.body)
 
+    def test_search_multiple_results(self):
+        self.create_pages(self.workspace, count=50)
+        resp = self.app.get('/search/', params={'q': 'sample'}, status=200)
+        self.assertTrue(
+            '<a href="/search/?q=sample&p=1">&nbsp;Next&nbsp;&gt;</a>'
+            in resp.body)
+
     def test_search_profanity(self):
         self.create_pages(self.workspace, count=2)
 

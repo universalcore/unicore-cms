@@ -32,6 +32,11 @@ class CmsViews(BaseCmsView):
         renderer = get_renderer("cms:templates/base.pt")
         return renderer.implementation().macros['layout']
 
+    @reify
+    def paginator_template(self):
+        renderer = get_renderer("cms:templates/paginator.pt")
+        return renderer.implementation().macros['paginator']
+
     def get_localisation(self):
         try:
             [localisation] = self.workspace.S(
