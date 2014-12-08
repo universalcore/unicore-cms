@@ -1,5 +1,22 @@
 <div metal:use-macro="view.global_template">
     <div metal:fill-slot="content">
-    	<h1> We haven't found what you're looking for!</h1>
+    	<h1>Try searching for something else</h1>
+    				<h1>We haven't found what you're looking for</h1>
+                    <form action='/search/' method='GET' class='form-search'>
+                        <input id="q" name='q' type="text" hint='enter search here..'>
+                        <input type="submit" value='Search' />
+                        <input id="p" name='p' type="hidden" value='1' />
+                    </form>
+
+                    <h1>Try viewing our categories</h1>
+	                    <div class="h1" tal:repeat="cat view.get_categories()">
+	            		<a href="/content/list/${cat.uuid}/"><img src="${request.static_url('cms:static/img/icon-diarrhoea.jpg')}">
+	              ${cat.title}
+	            </a>
+	            <div class="clear"></div>
+	        </div>
+
+                    <h1>Think you might need to get in touch with us about our content?</h1>
+                    <a href="/contact/">Click here for our contact details</a>
 	</div>
 </div>
