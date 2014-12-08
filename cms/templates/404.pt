@@ -1,0 +1,5 @@
+<div metal:use-macro="view.global_template">
+    <div metal:fill-slot="content">
+    	<h1> We haven't found what you're looking for!</h1>
+	</div>
+</div>
