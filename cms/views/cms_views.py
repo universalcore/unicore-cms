@@ -15,6 +15,7 @@ from elasticgit import F
 from cms.views.base import BaseCmsView
 
 from unicore.content.models import Category, Page, Localisation
+from utils import EGPaginator
 
 CACHE_TIME = 'default_term'
 
@@ -30,6 +31,11 @@ class CmsViews(BaseCmsView):
     def global_template(self):
         renderer = get_renderer("cms:templates/base.pt")
         return renderer.implementation().macros['layout']
+
+    @reify
+    def paginator_template(self):
+        renderer = get_renderer("cms:templates/paginator.pt")
+        return renderer.implementation().macros['paginator']
 
     def get_localisation(self):
         try:
@@ -55,7 +61,6 @@ class CmsViews(BaseCmsView):
     def get_pages(self, limit=5, order_by=('position', '-modified_at')):
         """
         Return pages the GitModel knows about.
-
         :param int limit:
             The number of pages to return, defaults to 5.
         :param tuple order_by:
@@ -74,7 +79,6 @@ class CmsViews(BaseCmsView):
             self, limit=5, order_by=('position', '-modified_at')):
         """
         Return featured pages the GitModel knows about.
-
         :param str locale:
             The locale string, like `eng_UK`.
         :param int limit:
@@ -89,8 +93,8 @@ class CmsViews(BaseCmsView):
     def get_pages_for_category(
             self, category_id, locale, order_by=('position',)):
         return self.workspace.S(Page).filter(
-            primary_category=category_id, language=locale).order_by(
-                *order_by)
+            primary_category=category_id,
+            language=locale).order_by(*order_by)
 
     def get_featured_category_pages(
             self, category_id, order_by=('position',)):
@@ -192,3 +196,41 @@ class CmsViews(BaseCmsView):
                                 value=language,
                                 max_age=31536000)  # max_age = year
         return HTTPFound(location='/', headers=response.headers)
+
+    @view_config(route_name='search', renderer='cms:templates/search.pt')
+    def search(self):
+
+        query = self.request.GET.get('q')
+        p = int(self.request.GET.get('p', 0))
+
+        empty_defaults = {
+            'paginator': [],
+            'query': query,
+            'p': p,
+        }
+
+        # handle query exception
+        if not query:
+            return empty_defaults
+
+        all_results = self.workspace.S(Page).query(content__query_string=query)
+
+        # no results found
+        if all_results.count() == 0:
+            return empty_defaults
+
+        paginator = EGPaginator(all_results, p)
+
+        # requested page number is out of range
+        total_pages = paginator.total_pages()
+        # sets the floor to 0
+        p = p if p >= 0 else 0
+        # sets the roof to `total_pages -1`
+        p = p if p < total_pages else total_pages - 1
+        paginator = EGPaginator(all_results, p)
+
+        return {
+            'paginator': paginator,
+            'query': query,
+            'p': p,
+        }

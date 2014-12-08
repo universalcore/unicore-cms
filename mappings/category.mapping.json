@@ -1,0 +1,24 @@
+{
+  "properties": {
+    "source": {
+      "index": "not_analyzed",
+      "type": "string"
+    },
+    "slug": {
+      "index": "not_analyzed",
+      "type": "string"
+    },
+    "id": {
+      "index": "not_analyzed",
+      "type": "string"
+    },
+    "language": {
+      "index": "not_analyzed",
+      "type": "string"
+    },
+    "uuid": {
+      "index": "not_analyzed",
+      "type": "string"
+    }
+  }
+}
