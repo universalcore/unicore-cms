@@ -17,3 +17,4 @@ elastic-git
 python-slugify
 python-dateutil
 libthumbor
+universal-analytics-python==0.2.4
