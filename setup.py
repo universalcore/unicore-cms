@@ -11,8 +11,11 @@ with open(os.path.join(here, 'CHANGES.rst')) as f:
 with open(os.path.join(here, 'requirements.txt')) as f:
     requires = filter(None, f.readlines())
 
+with open(os.path.join(here, 'VERSION')) as f:
+    version = f.read().strip()
+
 setup(name='unicore-cms',
-      version='1.0.4',
+      version=version,
       description='JSON based CMS for Universal Core',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[
@@ -23,7 +26,7 @@ setup(name='unicore-cms',
       ],
       author='Praekelt Foundation',
       author_email='dev@praekelt.com',
-      url='http://github.com/praekelt/unicore-cms',
+      url='http://github.com/universalcore/unicore-cms',
       license='BSD',
       keywords='web pyramid pylons',
       packages=find_packages(),

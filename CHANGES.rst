@@ -1,6 +1,76 @@
 CHANGELOG
 =========
 
+1.4.0
+-----
+- Add support for Google Analytics tracking
+- Add backend support for search. 
+
+1.3.1
+-----
+- Ensure localisation is fastforwarded
+
+1.3.0
+-----
+- Add localisation support to schema
+
+1.2.2
+-----
+- Change order of get_image_url params
+
+1.2.1
+-----
+- Use `image_host` from json
+
+1.2.0
+-----
+- Add image support to view
+
+1.1.1
+-----
+- Use custom locale negotiator
+
+1.1.0
+-----
+- Added image field to model
+- Add fallback for Swahili and English UK
+
+1.0.13
+-----
+- Use not_analyzed for language field
+
+1.0.12
+-----
+- Ensure `get_page` returns None instead of 404
+
+1.0.11
+-----
+- Ensure sensible default for ordering pages (default: position)
+
+1.0.10
+-----
+- Ensure featured pages in category on homepage are ordered by position (ascending)
+
+1.0.9
+-----
+- Ensure featured pages in category on homepage are ordered by position
+
+1.0.8
+-----
+- Autodeployment with travis - attempt 2
+
+1.0.7
+-----
+- Autodeployment with travis - attempt 1
+
+1.0.6
+-----
+- Enforce ordering for pages and categories using `position`
+
+1.0.5
+-----
+- Added date formatting helper
+
 0.6.3
 -----
 - Redirect to homepage after changing language

@@ -7,7 +7,7 @@ from elasticgit import EG
 
 from slugify import slugify
 
-from unicore.content.models import Category, Page
+from unicore.content.models import Category, Page, Localisation
 
 
 class UnicoreTestCase(TestCase):
@@ -37,13 +37,14 @@ class UnicoreTestCase(TestCase):
         return workspace
 
     def create_categories(
-            self, workspace, count=2, locale='eng_UK', **kwargs):
+            self, workspace, count=2, locale='eng_GB', **kwargs):
         categories = []
         for i in range(count):
             data = {}
             data.update({
                 'title': u'Test Category %s' % (i,),
-                'language': locale
+                'language': locale,
+                'position': i
             })
             data.update(kwargs)
             data.update({
@@ -59,7 +60,7 @@ class UnicoreTestCase(TestCase):
         return categories
 
     def create_pages(
-            self, workspace, count=2, timestamp_cb=None, locale='eng_UK',
+            self, workspace, count=2, timestamp_cb=None, locale='eng_GB',
             **kwargs):
         timestamp_cb = (
             timestamp_cb or (lambda i: datetime.utcnow().isoformat()))
@@ -70,7 +71,8 @@ class UnicoreTestCase(TestCase):
                 'title': u'Test Page %s' % (i,),
                 'content': u'this is sample content for pg %s' % (i,),
                 'modified_at': timestamp_cb(i),
-                'language': locale
+                'language': locale,
+                'position': i
             })
             data.update(kwargs)
             data.update({
@@ -82,3 +84,12 @@ class UnicoreTestCase(TestCase):
 
         workspace.refresh_index()
         return pages
+
+    def create_localisation(self, workspace, locale='eng_GB', **kwargs):
+        data = {'locale': locale}
+        data.update(kwargs)
+        localisation = Localisation(data)
+        workspace.save(
+            localisation, message=u'Added localisation %s.' % locale)
+        workspace.refresh_index()
+        return localisation

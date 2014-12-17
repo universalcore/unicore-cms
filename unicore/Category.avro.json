@@ -1,0 +1,54 @@
+{
+  "type": "record",
+  "namespace": "unicore.content.models",
+  "name": "Category",
+  "fields": [
+    {
+      "type": "string",
+      "name": "subtitle"
+    },
+    {
+      "type": "string",
+      "name": "language"
+    },
+    {
+      "type": "string",
+      "name": "title"
+    },
+    {
+      "type": "string",
+      "name": "id"
+    },
+    {
+      "type": "string",
+      "name": "source"
+    },
+    {
+      "type": "int",
+      "name": "position"
+    },
+    {
+      "type": "boolean",
+      "name": "featured_in_navbar"
+    },
+    {
+      "type": "string",
+      "name": "slug"
+    },
+    {
+      "type": "string",
+      "name": "image"
+    },
+    {
+      "type": "string",
+      "name": "image_host"
+    },
+    {
+      "type": "string",
+      "name": "uuid",
+      "aliases": [
+        "id"
+      ]
+    }
+  ]
+}

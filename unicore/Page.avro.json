@@ -1,0 +1,92 @@
+{
+  "namespace": "unicore.content.models",
+  "type": "record",
+  "name": "Page",
+  "fields": [
+    {
+      "type": "string",
+      "name": "subtitle"
+    },
+    {
+      "type": "string",
+      "name": "description"
+    },
+    {
+      "type": "string",
+      "name": "language"
+    },
+    {
+      "type": "string",
+      "name": "title"
+    },
+    {
+      "type": "string",
+      "name": "created_at"
+    },
+    {
+      "type": "boolean",
+      "name": "published"
+    },
+    {
+      "type": "string",
+      "name": "modified_at"
+    },
+    {
+      "type": "array",
+      "name": "linked_pages"
+    },
+    {
+      "type": "string",
+      "name": "slug"
+    },
+    {
+      "type": "string",
+      "name": "content"
+    },
+    {
+      "type": "string",
+      "name": "source"
+    },
+    {
+      "type": "boolean",
+      "name": "featured"
+    },
+    {
+      "type": "boolean",
+      "name": "featured_in_category"
+    },
+    {
+      "type": "string",
+      "name": "id"
+    },
+    {
+      "type": "int",
+      "name": "position"
+    },
+    {
+      "type": "string",
+      "name": "primary_category"
+    },
+    {
+      "type": "string",
+      "name": "image"
+    },
+    {
+      "type": "string",
+      "name": "image_host"
+    },
+    {
+      "type": "string",
+      "name": "uuid",
+      "aliases": [
+        "id"
+      ]
+    },
+    {
+      "type": "array",
+      "name": "author_tags",
+      "items": "string",
+      "default": []
+    }
+  ]
+}
