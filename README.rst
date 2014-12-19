@@ -10,7 +10,15 @@ Installation of Unicore CMS
 Running Unicore CMS for local development
 -----------------------------------------
 
-This is a Pyramid_ application.
+This is a Pyramid_ application, that uses Elasticsearch.
+
+Start Elasticsearch:
+
+.. code-block:: bash
+
+    $ elasticsearch
+
+Then start the server:
 
 .. code-block:: bash
 
