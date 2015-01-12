@@ -10,7 +10,24 @@ Installation of Unicore CMS
 Running Unicore CMS for local development
 -----------------------------------------
 
-This is a Pyramid_ application.
+This is a Pyramid_ application, that uses Elasticsearch.
+
+For OS X we recommend you install Elasticsearch with Brew_:
+
+.. code-block:: bash
+
+    $ brew install elasticsearch
+
+And start Elasticsearch in a separate Terminal tab:
+
+.. code-block:: bash
+
+    $ elasticsearch
+
+For Linux install it with your package manager (apt, rpm, yum etc...)
+and make sure it's running as a service.
+
+Then start the server:
 
 .. code-block:: bash
 
@@ -34,3 +51,4 @@ Running Unicore CMS tests
 
 
 .. _Pyramid: http://docs.pylonsproject.org/en/latest/docs/pyramid.html
+.. _Brew: http://brew.sh

@@ -1,6 +1,9 @@
+import uuid
+
 from elasticgit import EG
 from dateutil import parser
 from libthumbor import CryptoURL
+from cms.tasks import send_ga_pageview
 
 
 class BaseCmsView(object):
@@ -12,6 +15,7 @@ class BaseCmsView(object):
         self.workspace = EG.workspace(
             workdir=self.settings['git.path'],
             index_prefix=self.settings['es.index_prefix'])
+        self.track_pageview()
 
     def format_date(self, date_str, fmt='%d %B %Y'):
         try:
@@ -42,3 +46,32 @@ class BaseCmsView(object):
                 width=0, height=height, image_url=image_uuid)
 
         return u'%s%s' % (image_host, image_url)
+
+    def get_or_create_ga_client_id(self):
+        '''
+        NOTE: client_id can be any unique identifier.
+              UniversalAnalytics converts any client_id to a
+              UUID4-format MD5 checksum. This means we can safely use
+              a UID provided by FB as a client_id and GA will track
+              accurately.
+        '''
+
+        client_id = self.request.cookies.get('ga_client_id')
+        if client_id:
+            return client_id
+        client_id = str(uuid.uuid4())
+        self.request.response.set_cookie(
+            'ga_client_id', value=client_id, max_age=31536000)
+        return client_id
+
+    def track_pageview(self):
+        profile_id = self.settings.get('ga.profile_id')
+        if profile_id:
+            send_ga_pageview.delay(
+                profile_id,
+                self.get_or_create_ga_client_id(),
+                self.request.path,
+                self.request.remote_addr,
+                self.request.referer or '',
+                self.request.domain,
+                self.request.user_agent)

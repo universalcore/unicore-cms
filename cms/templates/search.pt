@@ -1,0 +1,36 @@
+<div metal:use-macro="view.global_template">
+    <div metal:fill-slot="content">
+
+        <div class="object-category-list modelbase-category-list">
+        <div tal:condition="paginator">
+            <p tal:condition="paginator.total_count()==1">1 search result for: <b>${query}</b></p>
+            <p tal:condition="paginator.total_count() > 1">${paginator.total_count()} search results for: <b>${query}</b></p>
+        </div>
+
+        <div metal:use-macro="view.paginator_template"></div>
+
+        <div class="items">
+            <div class="box">
+
+                <div class="item" tal:repeat="result paginator.get_page()" tal:condition="paginator">
+                    <div class="text">
+
+                        <p tal:condition="result.primary_category">${view.get_category(result.primary_category).title}</p>
+                        <a href="/content/detail/${result.uuid}/">${result.title} ...</a>
+                        <a href="/content/detail/${result.uuid}/">Read More &gt;</a>
+                    </div>
+                </div>
+
+                <div tal:condition="not paginator">
+                    <p tal:condition="query">No results found for <b>${query}</b></p>
+                    <p tal:condition="not query">No results found!</p>
+                </div>
+
+            </div>
+        </div>
+
+
+
+        </div>
+    </div>
+</div>
