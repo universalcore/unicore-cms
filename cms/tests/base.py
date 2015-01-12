@@ -16,7 +16,7 @@ class UnicoreTestCase(TestCase):
 
     def mk_workspace(self, working_dir='.test_repos/',
                      name=None,
-                     url='https://localhost',
+                     url='http://localhost',
                      index_prefix=None,
                      auto_destroy=None,
                      author_name='Test Kees',
