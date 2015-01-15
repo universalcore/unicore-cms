@@ -4,7 +4,9 @@ from datetime import timedelta
 from pyramid import testing
 from pyramid_beaker import set_cache_regions_from_settings
 
-from cms import locale_negotiator_with_fallbacks
+from webtest import TestApp
+
+from cms import locale_negotiator_with_fallbacks, main
 from cms.tests.base import UnicoreTestCase
 from cms.views.cms_views import CmsViews
 
@@ -67,6 +69,7 @@ class TestViews(UnicoreTestCase):
         set_cache_regions_from_settings(settings)
         self.config.set_locale_negotiator(locale_negotiator_with_fallbacks)
         self.views = CmsViews(testing.DummyRequest())
+        self.app = TestApp(main({}, **settings))
 
     def tearDown(self):
         testing.tearDown()
@@ -445,3 +448,29 @@ class TestViews(UnicoreTestCase):
         self.views = CmsViews(request)
 
         self.assertIsNone(self.views.get_localisation())
+
+    def test_locale_cookie(self):
+        [category1] = self.create_categories(
+            self.workspace, count=1, locale='eng_GB', title='English Category')
+        [category2] = self.create_categories(
+            self.workspace, count=1, locale='spa_ES', title='Spanish Category')
+
+        self.app.get('/locale/?language=eng_GB', status=302)
+        resp = self.app.get('/', status=200)
+        self.assertTrue('English Category' in resp.body)
+        self.assertFalse('Spanish Category' in resp.body)
+
+        self.app.get('/locale/?language=spa_ES', status=302)
+        resp = self.app.get('/', status=200)
+        self.assertTrue('Spanish Category' in resp.body)
+        self.assertFalse('English Category' in resp.body)
+
+        self.app.get('/locale/eng_GB/', status=302)
+        resp = self.app.get('/', status=200)
+        self.assertTrue('English Category' in resp.body)
+        self.assertFalse('Spanish Category' in resp.body)
+
+        self.app.get('/locale/spa_ES/', status=302)
+        resp = self.app.get('/', status=200)
+        self.assertTrue('Spanish Category' in resp.body)
+        self.assertFalse('English Category' in resp.body)
