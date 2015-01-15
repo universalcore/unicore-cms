@@ -191,10 +191,8 @@ class CmsViews(BaseCmsView):
     @view_config(route_name='locale_matched')
     def set_locale_cookie(self):
         response = Response()
-        language = self.request.matchdict.get('language')
-
-        if not language and self.request.GET['language']:
-            language = self.request.GET['language']
+        language = self.request.matchdict.get('language') or \
+            self.request.GET.get('language')
 
         if language:
             response.set_cookie('_LOCALE_', value=language, max_age=31536000)
