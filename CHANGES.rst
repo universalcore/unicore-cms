@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+1.4.2
+-----
+- Allow querystring-less locale url
+
 1.4.1
 -----
 - Fix tests breaking because of latest elasticsearch
