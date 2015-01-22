@@ -1,7 +1,13 @@
 import os
+import tempfile
+from ConfigParser import ConfigParser
 from datetime import datetime
 
+
+from webtest import TestApp
 from unittest import TestCase
+
+from cms import main
 
 from elasticgit import EG
 
@@ -35,6 +41,46 @@ class UnicoreTestCase(TestCase):
             pass
 
         return workspace
+
+    def mk_app(self, workspace, ini_config={}, settings={}, main=main,
+               extra_environ={}):
+        ini_defaults = {
+            'celery': {
+                'CELERY_ALWAYS_EAGER': True,
+            }
+        }
+        ini_defaults.update(ini_config)
+
+        settings_defaults = {
+            'git.path': workspace.working_dir,
+            'es.index_prefix': workspace.index_prefix,
+        }
+        settings_defaults.update(settings)
+
+        config_file = self.mk_configfile(ini_defaults)
+        app = TestApp(main({
+            '__file__': config_file,
+            'here': os.path.dirname(workspace.working_dir),
+        }, **settings_defaults), extra_environ=extra_environ)
+        return app
+
+    def mk_tempfile(self):
+        fp, pathname = tempfile.mkstemp(text=True)
+        self.addCleanup(os.unlink, pathname)
+        return os.fdopen(fp, 'w'), pathname
+
+    def mk_configfile(self, data):
+        fp, pathname = self.mk_tempfile()
+        with fp:
+            cp = ConfigParser()
+            # Do not lower case every key
+            cp.optionxform = str
+            for section, section_items in data.items():
+                cp.add_section(section)
+                for key, value in section_items.items():
+                    cp.set(section, key, value)
+            cp.write(fp)
+        return pathname
 
     def create_categories(
             self, workspace, count=2, locale='eng_GB', **kwargs):

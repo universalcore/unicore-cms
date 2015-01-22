@@ -1,6 +1,5 @@
 from pyramid import testing
-from webtest import TestApp
-from cms import main
+
 from cms.tests.base import UnicoreTestCase
 
 
@@ -12,13 +11,12 @@ class NotifyTestCase(UnicoreTestCase):
             name='%s_remote' % (self.id().lower(),))
 
         self.config = testing.setUp()
-        settings = {
-            'git.path': self.local_workspace.working_dir,
-            'git.content_repo_url': self.remote_workspace.working_dir,
-            'es.index_prefix': self.local_workspace.index_prefix,
-            'CELERY_ALWAYS_EAGER': True
-        }
-        self.app = TestApp(main({}, **settings))
+
+        self.app = self.mk_app(
+            self.local_workspace,
+            settings={
+                'git.content_repo_url': self.remote_workspace.working_dir,
+            })
 
     def tearDown(self):
         testing.tearDown()
