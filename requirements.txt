@@ -6,7 +6,7 @@ python-memcached
 waitress
 webtest
 cornice
-pyramid_celery>=2.0.0.rc4,<3
+pyramid_celery>=2.0.0.rc4
 pyramid_redis
 babel
 lingua
