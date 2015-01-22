@@ -79,6 +79,9 @@ class BaseCmsView(object):
                 self.request.domain,
                 self.request.user_agent)
 
-    def is_rtl(self):
+    def get_language_direction(self):
         language_code, _, country_code = self.locale.partition('_')
-        return language_code in KNOWN_RTL
+        if(language_code in KNOWN_RTL):
+            return "rtl"
+        else:
+            return "ltr"
