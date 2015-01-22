@@ -1,12 +1,10 @@
-import os
 import urlparse
 import mock
 
 from pyramid import testing
 from pyramid_beaker import set_cache_regions_from_settings
-from webtest import TestApp
 
-from cms import locale_negotiator_with_fallbacks, main
+from cms import locale_negotiator_with_fallbacks
 from cms.tests.base import UnicoreTestCase
 
 from unicore.content.models import Page, Category, Localisation
