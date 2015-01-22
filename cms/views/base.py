@@ -5,6 +5,9 @@ from dateutil import parser
 from libthumbor import CryptoURL
 from cms.tasks import send_ga_pageview
 
+# known Right to Left language codes
+KNOWN_RTL = set(["urd", "ara", "arc", "per", "heb", "kur", "yid"])
+
 
 class BaseCmsView(object):
 
@@ -75,3 +78,7 @@ class BaseCmsView(object):
                 self.request.referer or '',
                 self.request.domain,
                 self.request.user_agent)
+
+    def is_rtl(self):
+        language_code, _, country_code = self.locale.partition('_')
+        return language_code in KNOWN_RTL
