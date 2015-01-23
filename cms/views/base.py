@@ -84,7 +84,7 @@ class BaseCmsView(object):
 
     def get_language_direction(self):
         language_code, _, country_code = self.locale.partition('_')
-        if(language_code in KNOWN_RTL):
+        if language_code in KNOWN_RTL:
             return "rtl"
         else:
             return "ltr"

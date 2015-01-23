@@ -66,7 +66,7 @@ class TestDirectionality(UnicoreTestCase):
         set_cache_regions_from_settings(settings)
         self.config.set_locale_negotiator(locale_negotiator_with_fallbacks)
         self.views = CmsViews(testing.DummyRequest())
-        self.app = TestApp(main({}, **settings))
+        self.app = self.mk_app(self.workspace, settings=settings)
 
     def test_ltr(self):
         [category1] = self.create_categories(
