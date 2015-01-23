@@ -3,9 +3,8 @@ import mock
 
 from pyramid import testing
 from pyramid_beaker import set_cache_regions_from_settings
-from webtest import TestApp
 
-from cms import locale_negotiator_with_fallbacks, main
+from cms import locale_negotiator_with_fallbacks
 from cms.tests.base import UnicoreTestCase
 
 from unicore.content.models import Page, Category, Localisation
@@ -63,13 +62,14 @@ class TestViews(UnicoreTestCase):
             'thumbor.security_key': 'sample-security-key',
             'thumbor.server': 'http://some.site.com',
             'ga.profile_id': 'UA-some-id',
-            'CELERY_ALWAYS_EAGER': True,
         }
         self.config = testing.setUp(settings=settings)
         set_cache_regions_from_settings(settings)
         self.config.set_locale_negotiator(locale_negotiator_with_fallbacks)
         env = {'REMOTE_ADDR': '192.0.0.1'}
-        self.app = TestApp(main({}, **settings), extra_environ=env)
+
+        self.app = self.mk_app(
+            self.workspace, settings=settings, extra_environ=env)
 
     def tearDown(self):
         testing.tearDown()

@@ -1,7 +1,5 @@
 from pyramid import testing
-from webtest import TestApp
 
-from cms import main
 from cms.tests.base import UnicoreTestCase
 
 
@@ -11,11 +9,7 @@ class CategoryTestCase(UnicoreTestCase):
         self.config = testing.setUp()
         self.workspace = self.mk_workspace()
         self.create_categories(self.workspace, count=2)
-        settings = {
-            'git.path': self.workspace.working_dir,
-            'es.index_prefix': self.workspace.index_prefix,
-        }
-        self.app = TestApp(main({}, **settings))
+        self.app = self.mk_app(self.workspace)
 
     def tearDown(self):
         testing.tearDown()
