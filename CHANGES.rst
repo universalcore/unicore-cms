@@ -1,6 +1,19 @@
 CHANGELOG
 =========
 
+1.4.2
+-----
+- Allow querystring-less locale url
+
+1.4.1
+-----
+- Fix tests breaking because of latest elasticsearch
+
+1.4.0
+-----
+- Add support for Google Analytics tracking
+- Add backend support for search.
+
 1.3.1
 -----
 - Ensure localisation is fastforwarded

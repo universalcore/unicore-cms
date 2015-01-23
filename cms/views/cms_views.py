@@ -190,13 +190,15 @@ class CmsViews(BaseCmsView):
         }
 
     @view_config(route_name='locale')
+    @view_config(route_name='locale_matched')
     def set_locale_cookie(self):
-        if self.request.GET['language']:
-            language = self.request.GET['language']
-            response = Response()
-            response.set_cookie('_LOCALE_',
-                                value=language,
-                                max_age=31536000)  # max_age = year
+        response = Response()
+        language = self.request.matchdict.get('language') or \
+            self.request.GET.get('language')
+
+        if language:
+            response.set_cookie('_LOCALE_', value=language, max_age=31536000)
+
         return HTTPFound(location='/', headers=response.headers)
 
     @view_config(route_name='search', renderer='cms:templates/search.pt')
