@@ -6,7 +6,7 @@ python-memcached
 waitress
 webtest
 cornice
-praekelt_pyramid_celery
+pyramid_celery>=2.0.0.rc4
 pyramid_redis
 babel
 lingua
@@ -17,5 +17,5 @@ elastic-git
 python-slugify
 python-dateutil
 libthumbor
-universal-analytics-python==0.2.4
 unicore.content
+unicore.google
