@@ -1,9 +1,7 @@
 from pyramid import testing
 from pyramid_beaker import set_cache_regions_from_settings
 
-from webtest import TestApp
-
-from cms import locale_negotiator_with_fallbacks, main
+from cms import locale_negotiator_with_fallbacks
 from cms.tests.base import UnicoreTestCase
 from cms.views.cms_views import CmsViews
 
