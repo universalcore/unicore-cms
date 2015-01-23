@@ -1,6 +1,5 @@
 from pyramid import testing
-from webtest import TestApp
-from cms import main
+
 from cms.tests.base import UnicoreTestCase
 
 
@@ -9,16 +8,12 @@ class PageTestCase(UnicoreTestCase):
     def setUp(self):
         self.config = testing.setUp()
         self.workspace = self.mk_workspace()
-
-        settings = {
-            'git.path': self.workspace.working_dir,
-            'es.index_prefix': self.workspace.index_prefix,
-            'git.content_repo_url': '',
-        }
-        self.app = TestApp(main({}, **settings))
-
         self.category1, self.category2 = self.create_categories(self.workspace)
         self.create_pages(self.workspace)
+
+        self.app = self.mk_app(self.workspace, settings={
+            'git.content_repo_url': '',
+        })
 
     def tearDown(self):
         testing.tearDown()

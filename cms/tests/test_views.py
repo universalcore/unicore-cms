@@ -4,9 +4,8 @@ from datetime import timedelta
 from pyramid import testing
 from pyramid_beaker import set_cache_regions_from_settings
 
-from webtest import TestApp
 
-from cms import locale_negotiator_with_fallbacks, main
+from cms import locale_negotiator_with_fallbacks
 from cms.tests.base import UnicoreTestCase
 from cms.views.cms_views import CmsViews
 
@@ -65,11 +64,13 @@ class TestViews(UnicoreTestCase):
             'thumbor.security_key': 'sample-security-key',
             'thumbor.server': 'http://some.site.com',
         }
+
         self.config = testing.setUp(settings=settings)
         set_cache_regions_from_settings(settings)
         self.config.set_locale_negotiator(locale_negotiator_with_fallbacks)
         self.views = CmsViews(testing.DummyRequest())
-        self.app = TestApp(main({}, **settings))
+
+        self.app = self.mk_app(self.workspace, settings=settings)
 
     def tearDown(self):
         testing.tearDown()

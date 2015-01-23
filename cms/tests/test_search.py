@@ -1,8 +1,6 @@
 from pyramid import testing
 
 from cms.tests.base import UnicoreTestCase
-from cms import main
-from webtest import TestApp
 from unicore.content.models import Page
 
 
@@ -20,8 +18,9 @@ class TestSearch(UnicoreTestCase):
             'cache.default_term.expire': '1',
             'pyramid.default_locale_name': 'eng_GB',
         }
+
         self.config = testing.setUp(settings=settings)
-        self.app = TestApp(main({}, **settings))
+        self.app = self.mk_app(self.workspace, settings=settings)
 
     def test_search_no_results(self):
         self.create_pages(self.workspace)
