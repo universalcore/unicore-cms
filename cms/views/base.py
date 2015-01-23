@@ -6,6 +6,9 @@ from libthumbor import CryptoURL
 
 from unicore.google.tasks import pageview
 
+# known Right to Left language codes
+KNOWN_RTL = set(["urd", "ara", "arc", "per", "heb", "kur", "yid"])
+
 
 class BaseCmsView(object):
 
@@ -78,3 +81,10 @@ class BaseCmsView(object):
             'user_agent': self.request.user_agent,
             'ul': self.request.accept_language,
         })
+
+    def get_language_direction(self):
+        language_code, _, country_code = self.locale.partition('_')
+        if language_code in KNOWN_RTL:
+            return "rtl"
+        else:
+            return "ltr"
