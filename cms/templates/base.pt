@@ -16,6 +16,13 @@
 </head>
 <body>
 <div id="wrap">
+    <div id="nav">
+      <span tal:repeat="item view.get_display_languages()">
+        <a href="/locale/?language=${item[0]}">${item[1]}</a>
+        <span tal:omit-tag="" tal:condition="not repeat.item.end"> |</span>
+      </span>
+      <span> | </span><a href="/locale/change/">&gt;&gt;</a>
+    </div>
     <div id="header">
         <a href="/"><img src="${request.static_url('cms:static/img/logo.png')}" border="0" /></a>
     </div>

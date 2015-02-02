@@ -498,7 +498,7 @@ class TestViews(UnicoreTestCase):
         self.views = CmsViews(request)
         langs = self.views.get_display_languages()
         self.assertEqual(
-            langs, [('eng_GB', 'English'), ('spa_ES', u'espa\xf1ol')])
+            langs, [('spa_ES', u'espa\xf1ol'), ('eng_GB', 'English')])
 
     def test_change_locale_page(self):
         resp = self.app.get('/locale/change/')
@@ -508,7 +508,6 @@ class TestViews(UnicoreTestCase):
         self.assertTrue(
             u'<a href="/locale/eng_GB/">English</a>'
             in resp.body.decode('utf-8'))
-        print resp
         self.assertTrue(
             u'<a href="/locale/swa_KE/">Kiswahili</a>'
             in resp.body.decode('utf-8'))

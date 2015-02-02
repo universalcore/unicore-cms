@@ -50,7 +50,9 @@ class CmsViews(BaseCmsView):
             code for code, name in
             self.get_featured_languages or self.get_available_languages[:2]]
 
-        featured_and_current = (list(set([self.locale]) | set(to_display)))
+        featured_and_current = [self.locale] + sorted(list(
+            set(to_display) - set([self.locale])),
+            key=lambda tup: tup[1].lower())
         return [
             (code, self.get_display_name(code))
             for code in featured_and_current]
@@ -220,10 +222,9 @@ class CmsViews(BaseCmsView):
         renderer='cms:templates/locale_change.pt')
     def locale_change(self):
         return {
-            'languages': sorted(list(
-                set(self.get_featured_languages) |
-                set(self.get_available_languages)),
-                key=lambda tup: tup[1].lower())
+            'languages': self.get_featured_languages +
+            list(set(self.get_available_languages) -
+                 set(self.get_featured_languages))
         }
 
     @view_config(route_name='locale')
