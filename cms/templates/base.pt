@@ -18,7 +18,7 @@
 <div id="wrap">
     <div id="nav">
       <span tal:repeat="item view.get_display_languages()">
-        <a href="/locale/?language=${item[0]}">${item[1]}</a>
+        <a href="/locale/${item[0]}/">${item[1]}</a>
         <span tal:omit-tag="" tal:condition="not repeat.item.end"> |</span>
       </span>
       <span> | </span><a href="/locale/change/">&gt;&gt;</a>
