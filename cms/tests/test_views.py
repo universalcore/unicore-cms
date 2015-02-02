@@ -114,8 +114,8 @@ class TestViews(UnicoreTestCase):
     def test_get_available_languages(self):
         languages = self.views.get_available_languages
         self.assertEqual(languages[0][0], 'eng_GB')
-        self.assertEqual(languages[1][0], 'swa_KE')
-        self.assertEqual(languages[1][1], 'Swahili')
+        self.assertEqual(languages[5][0], 'swa_KE')
+        self.assertEqual(languages[5][1], 'Kiswahili')
 
     def test_get_featured_category_pages(self):
         category1, category2 = self.create_categories(self.workspace)

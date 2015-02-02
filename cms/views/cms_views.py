@@ -26,18 +26,27 @@ class CmsViews(BaseCmsView):
 
     @reify
     def get_available_languages(self):
-        return sorted(literal_eval(
+        available_languages = sorted(literal_eval(
             (self.settings.get('available_languages', '[]'))))
+        return [
+            (code, self.get_display_name(code))
+            for code, name in available_languages]
+
+    @reify
+    def get_featured_languages(self):
+        featured_languages = sorted(literal_eval(
+            (self.settings.get('featured_languages', '[]'))))
+        return [
+            (code, self.get_display_name(code))
+            for code, name in featured_languages]
 
     def get_display_name(self, language_code):
         return Locale.parse(language_code).language_name
 
     def get_display_languages(self):
-        featured_languages = sorted(literal_eval(
-            (self.settings.get('featured_languages', '[]'))))
         to_display = [
             code for code, name in
-            featured_languages or self.get_available_languages[:2]]
+            self.get_featured_languages or self.get_available_languages[:2]]
 
         featured_and_current = (list(set([self.locale]) | set(to_display)))
         return [
