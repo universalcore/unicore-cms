@@ -51,7 +51,7 @@ class TestViews(UnicoreTestCase):
         })
 
         languages = ("[('eng_GB', 'English'), ('swa_KE', 'Swahili'),"
-                     "('spa_ES', 'Spanish'), ('fre_FR', 'French'),"
+                     "('spa_ES', 'Spanish'), ('fra_FR', 'French'),"
                      "('hin_IN', 'Hindi'), ('ind_ID', 'Bahasa')]")
         featured_langs = "[('spa_ES', 'Spanish'), ('eng_GB', 'English')]"
 
@@ -486,3 +486,10 @@ class TestViews(UnicoreTestCase):
         self.assertEqual(
             langs, [('eng_GB', 'English'), ('spa_ES', u'espa\xf1ol')])
 
+        request = testing.DummyRequest({'_LOCALE_': 'fra_FR'})
+        self.views = CmsViews(request)
+        langs = self.views.get_display_languages()
+        self.assertEqual(
+            langs,
+            [('fra_FR', u'fran\xe7ais'), ('eng_GB', 'English'),
+             ('spa_ES', u'espa\xf1ol')])

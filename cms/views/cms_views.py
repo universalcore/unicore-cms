@@ -35,9 +35,14 @@ class CmsViews(BaseCmsView):
     def get_display_languages(self):
         featured_languages = sorted(literal_eval(
             (self.settings.get('featured_languages', '[]'))))
-        to_display = featured_languages or self.get_available_languages[:2]
+        to_display = [
+            code for code, name in
+            featured_languages or self.get_available_languages[:2]]
+
+        featured_and_current = (list(set([self.locale]) | set(to_display)))
         return [
-            (code, self.get_display_name(code)) for code, name in to_display]
+            (code, self.get_display_name(code))
+            for code in featured_and_current]
 
     @reify
     def global_template(self):
