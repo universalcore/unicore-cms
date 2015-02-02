@@ -113,7 +113,7 @@ class TestViews(UnicoreTestCase):
 
     def test_get_available_languages(self):
         languages = self.views.get_available_languages
-        self.assertEqual(languages[0][0], 'eng_GB')
+        self.assertEqual(languages[1][0], 'eng_GB')
         self.assertEqual(languages[5][0], 'swa_KE')
         self.assertEqual(languages[5][1], 'Kiswahili')
 
@@ -508,6 +508,7 @@ class TestViews(UnicoreTestCase):
         self.assertTrue(
             u'<a href="/locale/eng_GB/">English</a>'
             in resp.body.decode('utf-8'))
+        print resp
         self.assertTrue(
             u'<a href="/locale/swa_KE/">Kiswahili</a>'
             in resp.body.decode('utf-8'))

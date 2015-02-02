@@ -27,7 +27,8 @@ class CmsViews(BaseCmsView):
     @reify
     def get_available_languages(self):
         available_languages = sorted(literal_eval(
-            (self.settings.get('available_languages', '[]'))))
+            (self.settings.get('available_languages', '[]'))),
+            key=lambda tup: tup[1].lower())
         return [
             (code, self.get_display_name(code))
             for code, name in available_languages]
@@ -35,7 +36,8 @@ class CmsViews(BaseCmsView):
     @reify
     def get_featured_languages(self):
         featured_languages = sorted(literal_eval(
-            (self.settings.get('featured_languages', '[]'))))
+            (self.settings.get('featured_languages', '[]'))),
+            key=lambda tup: tup[1].lower())
         return [
             (code, self.get_display_name(code))
             for code, name in featured_languages]
@@ -217,7 +219,12 @@ class CmsViews(BaseCmsView):
         route_name='locale_change',
         renderer='cms:templates/locale_change.pt')
     def locale_change(self):
-        return {}
+        return {
+            'languages': sorted(list(
+                set(self.get_featured_languages) |
+                set(self.get_available_languages)),
+                key=lambda tup: tup[1].lower())
+        }
 
     @view_config(route_name='locale')
     @view_config(route_name='locale_matched')
