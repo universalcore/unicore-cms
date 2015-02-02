@@ -1,0 +1,10 @@
+<div metal:use-macro="view.global_template">
+    <div metal:fill-slot="content">
+        <div class="h1" tal:repeat="lang view.get_featured_languages">
+            <a href="/locale/${lang[0]}/">${lang[1]}</a>
+        </div>
+        <div class="h1" tal:repeat="lang view.get_available_languages">
+            <a href="/locale/${lang[0]}/">${lang[1]}</a>
+        </div>
+    </div>
+</div>

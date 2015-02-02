@@ -499,3 +499,9 @@ class TestViews(UnicoreTestCase):
         langs = self.views.get_display_languages()
         self.assertEqual(
             langs, [('eng_GB', 'English'), ('spa_ES', u'espa\xf1ol')])
+
+    def test_change_locale_page(self):
+        resp = self.app.get('/locale/change/')
+        self.assertTrue(
+            u'<a href="/locale/spa_ES/">espa\xf1ol</a>'
+            in resp.body.decode('utf-8'))
