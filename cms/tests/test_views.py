@@ -493,3 +493,9 @@ class TestViews(UnicoreTestCase):
             langs,
             [('fra_FR', u'fran\xe7ais'), ('eng_GB', 'English'),
              ('spa_ES', u'espa\xf1ol')])
+
+        request = testing.DummyRequest({'_LOCALE_': 'spa_ES'})
+        self.views = CmsViews(request)
+        langs = self.views.get_display_languages()
+        self.assertEqual(
+            langs, [('eng_GB', 'English'), ('spa_ES', u'espa\xf1ol')])
