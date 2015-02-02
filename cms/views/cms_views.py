@@ -1,5 +1,7 @@
 from ast import literal_eval
 
+from babel import Locale
+
 from beaker.cache import cache_region
 
 from markdown import markdown
@@ -24,8 +26,18 @@ class CmsViews(BaseCmsView):
 
     @reify
     def get_available_languages(self):
-        return literal_eval(
-            self.settings.get('available_languages', '[]'))
+        return sorted(literal_eval(
+            (self.settings.get('available_languages', '[]'))))
+
+    def get_display_name(self, language_code):
+        return Locale.parse(language_code).language_name
+
+    def get_display_languages(self):
+        featured_languages = sorted(literal_eval(
+            (self.settings.get('featured_languages', '[]'))))
+        to_display = featured_languages or self.get_available_languages[:2]
+        return [
+            (code, self.get_display_name(code)) for code, name in to_display]
 
     @reify
     def global_template(self):
@@ -186,6 +198,12 @@ class CmsViews(BaseCmsView):
             'content': markdown(page.content),
             'description': markdown(page.description),
         }
+
+    @view_config(
+        route_name='locale_change',
+        renderer='cms:templates/locale_change.pt')
+    def locale_change(self):
+        return {}
 
     @view_config(route_name='locale')
     @view_config(route_name='locale_matched')

@@ -50,7 +50,11 @@ class TestViews(UnicoreTestCase):
             }
         })
 
-        languages = "[('eng_GB', 'English'), ('swa_KE', 'Swahili (Kenya)')]"
+        languages = ("[('eng_GB', 'English'), ('swa_KE', 'Swahili'),"
+                     "('spa_ES', 'Spanish'), ('fre_FR', 'French'),"
+                     "('hin_IN', 'Hindi'), ('ind_ID', 'Bahasa')]")
+        featured_langs = "[('spa_ES', 'Spanish'), ('eng_GB', 'English')]"
+
         settings = {
             'git.path': self.workspace.repo.working_dir,
             'git.content_repo_url': '',
@@ -60,6 +64,7 @@ class TestViews(UnicoreTestCase):
             'cache.long_term.expire': '1',
             'cache.default_term.expire': '1',
             'available_languages': languages,
+            'featured_languages': featured_langs,
             'pyramid.default_locale_name': 'eng_GB',
             'thumbor.security_key': 'sample-security-key',
             'thumbor.server': 'http://some.site.com',
@@ -110,7 +115,7 @@ class TestViews(UnicoreTestCase):
         languages = self.views.get_available_languages
         self.assertEqual(languages[0][0], 'eng_GB')
         self.assertEqual(languages[1][0], 'swa_KE')
-        self.assertEqual(languages[1][1], 'Swahili (Kenya)')
+        self.assertEqual(languages[1][1], 'Swahili')
 
     def test_get_featured_category_pages(self):
         category1, category2 = self.create_categories(self.workspace)
@@ -475,3 +480,9 @@ class TestViews(UnicoreTestCase):
         resp = self.app.get('/', status=200)
         self.assertTrue('Spanish Category' in resp.body)
         self.assertFalse('English Category' in resp.body)
+
+    def test_locales_displayed(self):
+        langs = self.views.get_display_languages()
+        self.assertEqual(
+            langs, [('eng_GB', 'English'), ('spa_ES', u'espa\xf1ol')])
+
