@@ -505,3 +505,9 @@ class TestViews(UnicoreTestCase):
         self.assertTrue(
             u'<a href="/locale/spa_ES/">espa\xf1ol</a>'
             in resp.body.decode('utf-8'))
+        self.assertTrue(
+            u'<a href="/locale/eng_GB/">English</a>'
+            in resp.body.decode('utf-8'))
+        self.assertTrue(
+            u'<a href="/locale/swa_KE/">Kiswahili</a>'
+            in resp.body.decode('utf-8'))
