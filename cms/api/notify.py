@@ -1,6 +1,6 @@
 from cornice.resource import resource
 from cms.api.base import ApiBase
-from cms.tasks import fastforward
+from unicore.distribute.tasks import fastforward
 
 
 @resource(path='/api/notify/')
