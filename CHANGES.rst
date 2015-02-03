@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+1.5.0
+-----
+- Change language selector to allow featured languages
+
 1.4.2
 -----
 - Allow querystring-less locale url
