@@ -3,7 +3,11 @@ import uuid
 from elasticgit import EG
 from dateutil import parser
 from libthumbor import CryptoURL
-from cms.tasks import send_ga_pageview
+
+from unicore.google.tasks import pageview
+
+# known Right to Left language codes
+KNOWN_RTL = set(["urd", "ara", "arc", "fas", "heb", "kur", "yid"])
 
 
 class BaseCmsView(object):
@@ -66,12 +70,21 @@ class BaseCmsView(object):
 
     def track_pageview(self):
         profile_id = self.settings.get('ga.profile_id')
-        if profile_id:
-            send_ga_pageview.delay(
-                profile_id,
-                self.get_or_create_ga_client_id(),
-                self.request.path,
-                self.request.remote_addr,
-                self.request.referer or '',
-                self.request.domain,
-                self.request.user_agent)
+        if not profile_id:
+            return
+
+        pageview.delay(profile_id, self.get_or_create_ga_client_id(), {
+            'path': self.request.path,
+            'uip': self.request.remote_addr,
+            'dr': self.request.referer or '',
+            'dh': self.request.domain,
+            'user_agent': self.request.user_agent,
+            'ul': self.request.accept_language,
+        })
+
+    def get_language_direction(self):
+        language_code, _, country_code = self.locale.partition('_')
+        if language_code in KNOWN_RTL:
+            return "rtl"
+        else:
+            return "ltr"

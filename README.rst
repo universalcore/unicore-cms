@@ -10,21 +10,28 @@ Installation of Unicore CMS
 Running Unicore CMS for local development
 -----------------------------------------
 
-This is a Pyramid_ application, that uses Elasticsearch.
+This is a Pyramid_ application, that uses Elasticsearch and Redis.
 
-For OS X we recommend you install Elasticsearch with Brew_:
+For OS X we recommend you install Elasticsearch and Redis with Brew_:
 
 .. code-block:: bash
 
     $ brew install elasticsearch
+    $ brew install redis
 
-And start Elasticsearch in a separate Terminal tab:
+Start Elasticsearch in a separate Terminal tab:
 
 .. code-block:: bash
 
     $ elasticsearch
 
-For Linux install it with your package manager (apt, rpm, yum etc...)
+Start Redis in a separate Terminal tab:
+
+.. code-block:: bash
+
+    $ redis-server
+
+For Linux install them with your package manager (apt, rpm, yum etc...)
 and make sure it's running as a service.
 
 Then start the server:

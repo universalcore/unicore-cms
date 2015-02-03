@@ -29,6 +29,7 @@ def main(global_config, **settings):
     set_cache_regions_from_settings(settings)
     config = Configurator(settings=settings)
     config.include('cms')
+    config.configure_celery(global_config['__file__'])
     return config.make_wsgi_app()
 
 
@@ -96,6 +97,7 @@ def includeme(config):
     config.add_route('category', '/content/list/{category}/')
     config.add_route('content', '/content/detail/{uuid}/')
     config.add_route('locale', '/locale/')
+    config.add_route('locale_change', '/locale/change/')
     config.add_route('locale_matched', '/locale/{language}/')
     config.add_route('flatpage', '/{slug}/')
     config.scan()
