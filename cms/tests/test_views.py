@@ -50,7 +50,11 @@ class TestViews(UnicoreTestCase):
             }
         })
 
-        languages = "[('eng_GB', 'English'), ('swa_KE', 'Swahili (Kenya)')]"
+        languages = ("[('eng_GB', 'English'), ('swa_KE', 'Swahili'),"
+                     "('spa_ES', 'Spanish'), ('fra_FR', 'French'),"
+                     "('hin_IN', 'Hindi'), ('ind_ID', 'Bahasa')]")
+        featured_langs = "[('spa_ES', 'Spanish'), ('eng_GB', 'English')]"
+
         settings = {
             'git.path': self.workspace.repo.working_dir,
             'git.content_repo_url': '',
@@ -60,6 +64,7 @@ class TestViews(UnicoreTestCase):
             'cache.long_term.expire': '1',
             'cache.default_term.expire': '1',
             'available_languages': languages,
+            'featured_languages': featured_langs,
             'pyramid.default_locale_name': 'eng_GB',
             'thumbor.security_key': 'sample-security-key',
             'thumbor.server': 'http://some.site.com',
@@ -108,9 +113,9 @@ class TestViews(UnicoreTestCase):
 
     def test_get_available_languages(self):
         languages = self.views.get_available_languages
-        self.assertEqual(languages[0][0], 'eng_GB')
-        self.assertEqual(languages[1][0], 'swa_KE')
-        self.assertEqual(languages[1][1], 'Swahili (Kenya)')
+        self.assertEqual(languages[1][0], 'eng_GB')
+        self.assertEqual(languages[5][0], 'swa_KE')
+        self.assertEqual(languages[5][1], 'Kiswahili')
 
     def test_get_featured_category_pages(self):
         category1, category2 = self.create_categories(self.workspace)
@@ -475,3 +480,34 @@ class TestViews(UnicoreTestCase):
         resp = self.app.get('/', status=200)
         self.assertTrue('Spanish Category' in resp.body)
         self.assertFalse('English Category' in resp.body)
+
+    def test_locales_displayed(self):
+        langs = self.views.get_display_languages()
+        self.assertEqual(
+            langs, [('eng_GB', 'English'), ('spa_ES', u'espa\xf1ol')])
+
+        request = testing.DummyRequest({'_LOCALE_': 'fra_FR'})
+        self.views = CmsViews(request)
+        langs = self.views.get_display_languages()
+        self.assertEqual(
+            langs,
+            [('fra_FR', u'fran\xe7ais'), ('eng_GB', 'English'),
+             ('spa_ES', u'espa\xf1ol')])
+
+        request = testing.DummyRequest({'_LOCALE_': 'spa_ES'})
+        self.views = CmsViews(request)
+        langs = self.views.get_display_languages()
+        self.assertEqual(
+            langs, [('spa_ES', u'espa\xf1ol'), ('eng_GB', 'English')])
+
+    def test_change_locale_page(self):
+        resp = self.app.get('/locale/change/')
+        self.assertTrue(
+            u'<a href="/locale/spa_ES/">espa\xf1ol</a>'
+            in resp.body.decode('utf-8'))
+        self.assertTrue(
+            u'<a href="/locale/eng_GB/">English</a>'
+            in resp.body.decode('utf-8'))
+        self.assertTrue(
+            u'<a href="/locale/swa_KE/">Kiswahili</a>'
+            in resp.body.decode('utf-8'))

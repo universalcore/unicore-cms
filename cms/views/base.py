@@ -7,7 +7,7 @@ from libthumbor import CryptoURL
 from unicore.google.tasks import pageview
 
 # known Right to Left language codes
-KNOWN_RTL = set(["urd", "ara", "arc", "per", "heb", "kur", "yid"])
+KNOWN_RTL = set(["urd", "ara", "arc", "fas", "heb", "kur", "yid"])
 
 
 class BaseCmsView(object):
