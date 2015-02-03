@@ -51,8 +51,9 @@ class TestViews(UnicoreTestCase):
         })
 
         languages = ("[('eng_GB', 'English'), ('swa_KE', 'Swahili'),"
-                     "('spa_ES', 'Spanish'), ('fra_FR', 'French'),"
-                     "('hin_IN', 'Hindi'), ('ind_ID', 'Bahasa')]")
+                     "('spa_ES', 'Spanish'), ('fre_FR', 'French'),"
+                     "('hin_IN', 'Hindi'), ('ind_ID', 'Bahasa'),"
+                     "('per_IR', 'Persian')]")
         featured_langs = "[('spa_ES', 'Spanish'), ('eng_GB', 'English')]"
 
         settings = {
@@ -114,8 +115,8 @@ class TestViews(UnicoreTestCase):
     def test_get_available_languages(self):
         languages = self.views.get_available_languages
         self.assertEqual(languages[1][0], 'eng_GB')
-        self.assertEqual(languages[5][0], 'swa_KE')
-        self.assertEqual(languages[5][1], 'Kiswahili')
+        self.assertEqual(languages[6][0], 'swa_KE')
+        self.assertEqual(languages[6][1], 'Kiswahili')
 
     def test_get_featured_category_pages(self):
         category1, category2 = self.create_categories(self.workspace)
@@ -486,12 +487,12 @@ class TestViews(UnicoreTestCase):
         self.assertEqual(
             langs, [('eng_GB', 'English'), ('spa_ES', u'espa\xf1ol')])
 
-        request = testing.DummyRequest({'_LOCALE_': 'fra_FR'})
+        request = testing.DummyRequest({'_LOCALE_': 'fre_FR'})
         self.views = CmsViews(request)
         langs = self.views.get_display_languages()
         self.assertEqual(
             langs,
-            [('fra_FR', u'fran\xe7ais'), ('eng_GB', 'English'),
+            [('fre_FR', u'fran\xe7ais'), ('eng_GB', 'English'),
              ('spa_ES', u'espa\xf1ol')])
 
         request = testing.DummyRequest({'_LOCALE_': 'spa_ES'})
@@ -510,4 +511,7 @@ class TestViews(UnicoreTestCase):
             in resp.body.decode('utf-8'))
         self.assertTrue(
             u'<a href="/locale/swa_KE/">Kiswahili</a>'
+            in resp.body.decode('utf-8'))
+        self.assertTrue(
+            u'<a href="/locale/per_IR/">\u0641\u0627\u0631\u0633\u06cc</a>'
             in resp.body.decode('utf-8'))

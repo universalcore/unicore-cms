@@ -1,6 +1,7 @@
 from ast import literal_eval
 
 from babel import Locale
+from pycountry import languages
 
 from beaker.cache import cache_region
 
@@ -42,8 +43,10 @@ class CmsViews(BaseCmsView):
             (code, self.get_display_name(code))
             for code, name in featured_languages]
 
-    def get_display_name(self, language_code):
-        return Locale.parse(language_code).language_name
+    def get_display_name(self, locale):
+        language_code, _, country_code = locale.partition('_')
+        term_code = languages.get(bibliographic=language_code).terminology
+        return Locale.parse(term_code).language_name
 
     def get_display_languages(self):
         to_display = [
