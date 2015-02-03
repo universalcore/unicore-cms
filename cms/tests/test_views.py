@@ -52,7 +52,8 @@ class TestViews(UnicoreTestCase):
 
         languages = ("[('eng_GB', 'English'), ('swa_KE', 'Swahili'),"
                      "('spa_ES', 'Spanish'), ('fra_FR', 'French'),"
-                     "('hin_IN', 'Hindi'), ('ind_ID', 'Bahasa')]")
+                     "('hin_IN', 'Hindi'), ('ind_ID', 'Bahasa'),"
+                     "('per_IR', 'Persian')]")
         featured_langs = "[('spa_ES', 'Spanish'), ('eng_GB', 'English')]"
 
         settings = {
