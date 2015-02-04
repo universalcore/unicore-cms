@@ -1,20 +1,14 @@
-<div metal:use-macro="view.global_template">
-    <div metal:fill-slot="content">
-    	<h1>We haven't found what you're looking for</h1>
-    	<h2>Try searching for something else</h2>
-                  	<form action='/search/' method='GET' class='form-search'>
-    					<input id="q" name='q' type="text" hint='enter search here..'>
-    					<input type="submit" value='Search' />
-					</form>
-
-                    <h2>Try viewing our categories</h2>
-	                    <div class="h1" tal:repeat="cat view.get_categories()">
-	            		<a href="/content/list/${cat.uuid}/"><img src="${request.static_url('cms:static/img/icon-diarrhoea.jpg')}">
-	              ${cat.title}
-	            </a>
-	            <div class="clear"></div>
-	        </div>
-                    <h2>Think you might need to get in touch with us about our content?</h2>
-                    <a href="/contact/">Click here for our contact details</a>
-			</div>
+<div id="content" metal:use-macro="view.global_template">
+    <div class="page-not-found" metal:fill-slot="content">
+    	<div class="h1">We can't find that page, sorry.</div>
+    	<div class="p">
+            <text>Go to the</text>
+            <a href="/">Home Page</a> 
+        </div>
+        <div class="h1">Search the site:</div>
+              	<form action='/search/' method='GET' class='form-search'>
+   					<input id="q" name='q' type="text" hint='enter search here..'>
+   					<input type="submit" value='Search' />
+				</form>
+		</div>
 </div>
