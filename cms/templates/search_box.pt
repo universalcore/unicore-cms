@@ -1,0 +1,9 @@
+<div xmlns:metal="http://xml.zope.org/namespaces/metal" 
+	 metal:define-macro="search_box">	
+	<div id="search_box">
+		<form action='/search/' method='GET' class='form-search'>
+		    <input id="q" name='q' type="text" hint='enter search here..'>
+		    <input type="submit" value='Search' />
+		</form>
+	</div>
+</div>

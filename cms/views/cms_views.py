@@ -70,6 +70,11 @@ class CmsViews(BaseCmsView):
         renderer = get_renderer("cms:templates/paginator.pt")
         return renderer.implementation().macros['paginator']
 
+    @reify
+    def search_box_template(self):
+        renderer = get_renderer("cms:templates/search_box.pt")
+        return renderer.implementation().macros['search_box']
+
     def get_localisation(self):
         try:
             [localisation] = self.workspace.S(
