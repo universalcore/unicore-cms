@@ -1,4 +1,3 @@
-import urlparse
 import mock
 
 from pyramid import testing
