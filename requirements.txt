@@ -19,3 +19,4 @@ python-dateutil
 libthumbor
 unicore.content
 unicore.google
+pycountry==1.10

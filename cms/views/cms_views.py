@@ -1,5 +1,8 @@
 from ast import literal_eval
 
+from babel import Locale
+from pycountry import languages
+
 from beaker.cache import cache_region
 
 from markdown import markdown
@@ -26,8 +29,38 @@ class CmsViews(BaseCmsView):
 
     @reify
     def get_available_languages(self):
-        return literal_eval(
-            self.settings.get('available_languages', '[]'))
+        available_languages = sorted(literal_eval(
+            (self.settings.get('available_languages', '[]'))),
+            key=lambda tup: tup[1].lower())
+        return [
+            (code, self.get_display_name(code))
+            for code, name in available_languages]
+
+    @reify
+    def get_featured_languages(self):
+        featured_languages = sorted(literal_eval(
+            (self.settings.get('featured_languages', '[]'))),
+            key=lambda tup: tup[1].lower())
+        return [
+            (code, self.get_display_name(code))
+            for code, name in featured_languages]
+
+    def get_display_name(self, locale):
+        language_code, _, country_code = locale.partition('_')
+        term_code = languages.get(bibliographic=language_code).terminology
+        return Locale.parse(term_code).language_name
+
+    def get_display_languages(self):
+        to_display = [
+            code for code, name in
+            self.get_featured_languages or self.get_available_languages[:2]]
+
+        featured_and_current = [self.locale] + sorted(list(
+            set(to_display) - set([self.locale])),
+            key=lambda tup: tup[1].lower())
+        return [
+            (code, self.get_display_name(code))
+            for code in featured_and_current]
 
     @reify
     def global_template(self):
@@ -187,6 +220,17 @@ class CmsViews(BaseCmsView):
             'page': page,
             'content': markdown(page.content),
             'description': markdown(page.description),
+        }
+
+    @view_config(
+        route_name='locale_change',
+        renderer='cms:templates/locale_change.pt')
+    def locale_change(self):
+        return {
+            'languages': self.get_featured_languages +
+            sorted(list(set(self.get_available_languages) -
+                   set(self.get_featured_languages)),
+                   key=lambda tup: tup[1].lower())
         }
 
     @view_config(route_name='locale')
