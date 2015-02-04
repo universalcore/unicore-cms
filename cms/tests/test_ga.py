@@ -74,8 +74,8 @@ class TestViews(UnicoreTestCase):
     def tearDown(self):
         testing.tearDown()
 
-    @mock.patch('UniversalAnalytics.Tracker.urlopen')
-    def test_ga_pageviews(self, mock_urlopen):
+    @mock.patch('unicore.google.tasks.pageview.delay')
+    def test_ga_pageviews(self, mock_delay):
         [category] = self.create_categories(self.workspace, count=1)
         page1 = Page({
             'title': 'title 1', 'language': 'eng_GB', 'position': 3,
@@ -84,36 +84,46 @@ class TestViews(UnicoreTestCase):
         self.workspace.save(page1, 'Add page')
         self.workspace.refresh_index()
 
-        self.app.get('/', status=200, headers={'HOST': 'some.site.com'})
-        mock_urlopen.assert_called_once()
-        ((arg, ), _) = mock_urlopen.call_args_list[0]
-        req = urlparse.parse_qs(arg.data)
-        self.assertEqual(req['tid'], ['UA-some-id'])
-        self.assertEqual(req['t'], ['pageview'])
-        self.assertEqual(req['dp'], ['/'])
-        self.assertEqual(req['uip'], ['192.0.0.1'])
-        self.assertEqual(req['dh'], ['some.site.com'])
-        self.assertIsNone(req.get('dr'))
-        self.assertTrue(['cid'], req)
+        self.app.get('/', status=200, headers={
+            'Accept-Language': 'en',
+            'User-Agent': 'Mozilla/5.0',
+        }, extra_environ={
+            'HTTP_HOST': 'some.site.com',
+            'REMOTE_ADDR': '192.0.0.1',
+        })
 
-        [cid] = req['cid']  # save cid for later
+        mock_delay.assert_called_once()
+        (profile_id, gen_client_id, data), _ = mock_delay.call_args_list[0]
+
+        self.assertEqual(profile_id, 'UA-some-id')
+        self.assertEqual(data, {
+            'path': '/',
+            'uip': '192.0.0.1',
+            'dr': '',
+            'dh': 'some.site.com',
+            'user_agent': 'Mozilla/5.0',
+            'ul': 'en',
+        })
 
         page_url = '/content/detail/%s/' % page1.uuid
-        headers = {
-            'REFERER': '/',
-            'HOST': 'some.site.com',
-            'User-agent': 'Mozilla/5.0'}
-        self.app.get(page_url, status=200, headers=headers)
-        ((arg, ), _) = mock_urlopen.call_args_list[1]
+        self.app.get(page_url, status=200, headers={
+            'User-agent': 'Mozilla/5.0',
+            'Accept-Language': 'en',
+        }, extra_environ={
+            'HTTP_REFERER': '/',
+            'HTTP_HOST': 'some.site.com',
+            'REMOTE_ADDR': '192.0.0.1',
+        })
 
-        req = urlparse.parse_qs(arg.data)
-        self.assertEqual(req['tid'], ['UA-some-id'])
-        self.assertEqual(req['t'], ['pageview'])
-        self.assertEqual(req['dp'], [page_url])
-        self.assertEqual(req['dr'], ['/'])
-        self.assertEqual(req['uip'], ['192.0.0.1'])
-        self.assertEqual(req['dh'], ['some.site.com'])
-        self.assertEqual(arg.headers['User-agent'], 'Mozilla/5.0')
+        (profile_id, client_id, data), _ = mock_delay.call_args_list[1]
+        self.assertEqual(profile_id, 'UA-some-id')
+        self.assertEqual(data, {
+            'path': page_url,
+            'uip': '192.0.0.1',
+            'dr': '/',
+            'dh': 'some.site.com',
+            'user_agent': 'Mozilla/5.0',
+            'ul': 'en',
+        })
 
-        # ensure cid is the same across calls
-        self.assertEqual(req['cid'], [cid])
+        self.assertEqual(gen_client_id, client_id)

@@ -79,7 +79,7 @@ class BaseCmsView(object):
             'dr': self.request.referer or '',
             'dh': self.request.domain,
             'user_agent': self.request.user_agent,
-            'ul': self.request.accept_language,
+            'ul': unicode(self.request.accept_language),
         })
 
     def get_language_direction(self):
