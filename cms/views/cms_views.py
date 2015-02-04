@@ -227,7 +227,7 @@ class CmsViews(BaseCmsView):
         return {
             'languages': self.get_featured_languages +
             sorted(list(set(self.get_available_languages) -
-                   set(self.get_featured_languages)),
+                        set(self.get_featured_languages)),
                    key=lambda tup: tup[1].lower())
         }
 
@@ -243,7 +243,8 @@ class CmsViews(BaseCmsView):
 
         return HTTPFound(location='/', headers=response.headers)
 
-    @view_config(route_name='search', renderer='cms:templates/search.pt')
+    @view_config(route_name='search',
+                 renderer='cms:templates/search_results.pt')
     def search(self):
 
         query = self.request.GET.get('q')
