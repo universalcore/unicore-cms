@@ -515,3 +515,7 @@ class TestViews(UnicoreTestCase):
         self.assertTrue(
             u'<a href="/locale/per_IR/">\u0641\u0627\u0631\u0633\u06cc</a>'
             in resp.body.decode('utf-8'))
+
+    def test_404_page(self):
+        resp = self.app.get('/;jsdafjahs;dfjas;')
+        self.assertTrue('class="page-not-found"'in resp.body)
