@@ -1,9 +1,13 @@
 CHANGELOG
 =========
 
+1.5.2
+-----
+- Refactor Search templates
+
 1.5.1
 -----
-- Eensure list of languages in change page is sorted
+- Ensure list of languages in change page is sorted
 
 1.5.0
 -----
