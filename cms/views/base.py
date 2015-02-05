@@ -7,7 +7,7 @@ from libthumbor import CryptoURL
 from unicore.google.tasks import pageview
 
 # known Right to Left language codes
-KNOWN_RTL = set(["urd", "ara", "arc", "fas", "heb", "kur", "yid"])
+KNOWN_RTL = set(["urd", "ara", "arc", "per", "heb", "kur", "yid"])
 
 
 class BaseCmsView(object):
@@ -79,7 +79,7 @@ class BaseCmsView(object):
             'dr': self.request.referer or '',
             'dh': self.request.domain,
             'user_agent': self.request.user_agent,
-            'ul': self.request.accept_language,
+            'ul': unicode(self.request.accept_language),
         })
 
     def get_language_direction(self):
