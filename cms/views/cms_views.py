@@ -20,6 +20,8 @@ from cms.views.base import BaseCmsView
 from unicore.content.models import Category, Page, Localisation
 from utils import EGPaginator
 
+from pyramid.view import notfound_view_config
+
 CACHE_TIME = 'default_term'
 
 
@@ -286,3 +288,7 @@ class CmsViews(BaseCmsView):
             'query': query,
             'p': p,
         }
+
+    @notfound_view_config(renderer='cms:templates/404.pt')
+    def notfound(request):
+        return {}
