@@ -49,7 +49,7 @@
           </div>
         </div>
 
-        <div class="base_search_box" tal:condition="not view.search_bar_404_exists()" metal:use-macro="view.search_box_template"></div>
+        <div tal:condition="not view.search_bar_404_exists()" metal:use-macro="view.search_box_template"></div>
 
 
     </div>

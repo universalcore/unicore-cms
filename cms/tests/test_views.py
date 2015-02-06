@@ -519,7 +519,3 @@ class TestViews(UnicoreTestCase):
     def test_404_page(self):
         resp = self.app.get('/;jsdafjahs;dfjas;')
         self.assertTrue('class="page-not-found"'in resp.body)
-
-    def test_404_page_non_repeating_search_box(self):
-        resp = self.app.get('/;jsdafjahs;dfjas;')
-        self.assertTrue('class="base_search_box"'not in resp.body)
