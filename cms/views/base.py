@@ -88,12 +88,3 @@ class BaseCmsView(object):
             return "rtl"
         else:
             return "ltr"
-
-    def search_bar_404_exists(self):
-        if (self.request.exception is not None):
-            if(str(self.request.exception.code) == '404'):
-                return True
-            else:
-                return False
-        else:
-            return False
