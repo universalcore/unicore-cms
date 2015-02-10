@@ -1,25 +1,75 @@
 from pyramid import testing
+from pyramid_beaker import set_cache_regions_from_settings
+
+from cms import locale_negotiator_with_fallbacks
 
 from cms.tests.base import UnicoreTestCase
-from unicore.content.models import Page
+from unicore.content.models import Page, Category, Localisation
 
 
 class TestSearch(UnicoreTestCase):
 
     def setUp(self):
         self.workspace = self.mk_workspace()
+        self.workspace.setup_custom_mapping(Page, {
+            'properties': {
+                'slug': {
+                    'type': 'string',
+                    'index': 'not_analyzed',
+                },
+                'language': {
+                    'type': 'string',
+                    'index': 'not_analyzed',
+                }
+            }
+        })
+        self.workspace.setup_custom_mapping(Category, {
+            'properties': {
+                'slug': {
+                    'type': 'string',
+                    'index': 'not_analyzed',
+                },
+                'language': {
+                    'type': 'string',
+                    'index': 'not_analyzed',
+                }
+            }
+        })
+
+        self.workspace.setup_custom_mapping(Localisation, {
+            'properties': {
+                'locale': {
+                    'type': 'string',
+                    'index': 'not_analyzed',
+                }
+            }
+        })
+
+        languages = ("[('eng_GB', 'English'), ('swa_KE', 'Swahili'),"
+                     "('spa_ES', 'Spanish'), ('fre_FR', 'French'),"
+                     "('hin_IN', 'Hindi'), ('ind_ID', 'Bahasa'),"
+                     "('per_IR', 'Persian')]")
+        featured_langs = "[('spa_ES', 'Spanish'), ('eng_GB', 'English')]"
+
         settings = {
-            'git.path': self.workspace.working_dir,
+            'git.path': self.workspace.repo.working_dir,
             'git.content_repo_url': '',
             'es.index_prefix': self.workspace.index_prefix,
             'cache.enabled': 'false',
             'cache.regions': 'long_term, default_term',
             'cache.long_term.expire': '1',
             'cache.default_term.expire': '1',
+            'available_languages': languages,
+            'featured_languages': featured_langs,
             'pyramid.default_locale_name': 'eng_GB',
+            'thumbor.security_key': 'sample-security-key',
+            'thumbor.server': 'http://some.site.com',
         }
 
         self.config = testing.setUp(settings=settings)
+        set_cache_regions_from_settings(settings)
+        self.config.set_locale_negotiator(locale_negotiator_with_fallbacks)
+
         self.app = self.mk_app(self.workspace, settings=settings)
 
     def test_search_no_results(self):
