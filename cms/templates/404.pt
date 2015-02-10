@@ -1,0 +1,15 @@
+<div id="content" metal:use-macro="view.global_template">
+    <div metal:fill-slot="search"></div>
+    <div class="page-not-found" metal:fill-slot="content">
+    	<div class="h1">We can't find that page, sorry.</div>
+    	<div class="p">
+            <text>Go to the</text>
+            <a href="/">Home Page</a> 
+        </div>
+        <div class="h1">Search the site:</div>
+              	<form action='/search/' method='GET' class='form-search'>
+   					<input id="q" name='q' type="text" hint='enter search here..'>
+   					<input type="submit" value='Search' />
+				</form>
+		</div>
+</div>

@@ -16,7 +16,10 @@ class BaseCmsView(object):
         self.request = request
         self.locale = request.locale_name
         self.settings = request.registry.settings
+        es_host = request.registry.settings.get(
+            'es.host', 'http://localhost:9200')
         self.workspace = EG.workspace(
+            es={'urls': [es_host]},
             workdir=self.settings['git.path'],
             index_prefix=self.settings['es.index_prefix'])
         self.track_pageview()
