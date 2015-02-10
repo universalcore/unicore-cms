@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+1.6.0
+-----
+- Add branded 404 page
+- Allow reading of `es.host` from config
+
 1.5.2
 -----
 - Refactor Search templates
