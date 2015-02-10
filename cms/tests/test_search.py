@@ -140,6 +140,23 @@ class TestSearch(UnicoreTestCase):
 
         resp = self.app.get('/search/', params={'q': 'mother'}, status=200)
 
-        self.assertTrue('mother' in resp.body)
+        self.assertTrue('title for english mother' in resp.body)
         self.assertTrue('1 search result' in resp.body)
         self.assertFalse('No results found' in resp.body)
+
+        self.app.get('/locale/spa_ES/', status=302)
+        resp = self.app.get('/search/', params={'q': 'mother'}, status=200)
+        self.assertTrue('title for spanish mother' in resp.body)
+        self.assertTrue('1 search result' in resp.body)
+        self.assertFalse('No results found' in resp.body)
+
+    def test_search_single_language_no_results(self):
+        mother_english = Page({
+            'title': 'title for english mother', 'language': 'eng_GB',
+            'position': 2, 'content': 'Page for mother test page'})
+        self.workspace.save(mother_english, 'Add mother page')
+        self.workspace.refresh_index()
+
+        self.app.get('/locale/spa_ES/', status=302)
+        resp = self.app.get('/search/', params={'q': 'mother'}, status=200)
+        self.assertTrue('No results found' in resp.body)
