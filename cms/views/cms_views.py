@@ -267,7 +267,8 @@ class CmsViews(BaseCmsView):
         if not query:
             return empty_defaults
 
-        all_results = self.workspace.S(Page).query(content__query_string=query)
+        all_results = self.workspace.S(Page).query(
+            content__query_string=query).filter(language=self.locale)
 
         # no results found
         if all_results.count() == 0:
