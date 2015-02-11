@@ -19,5 +19,5 @@ python-dateutil
 libthumbor
 unicore.content
 unicore.google
-unicore.distribute
+unicore.distribute>=0.0.2
 pycountry==1.10
