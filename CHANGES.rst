@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+1.6.1
+-----
+- provide es host in fastforward
+
 1.6.0
 -----
 - Add branded 404 page
