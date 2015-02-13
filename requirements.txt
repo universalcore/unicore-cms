@@ -13,11 +13,11 @@ lingua
 arrow
 Markdown==2.5.1
 raven==5.0.0
-elastic-git
+elastic-git>=1.0.0
 python-slugify
 python-dateutil
 libthumbor
-unicore.content
+unicore.content>=1.0.2
 unicore.google
 unicore.distribute>=0.0.2
 pycountry==1.10
