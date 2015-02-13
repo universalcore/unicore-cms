@@ -1,5 +1,8 @@
 from ast import literal_eval
 
+from babel import Locale
+from pycountry import languages
+
 from beaker.cache import cache_region
 
 from markdown import markdown
@@ -17,6 +20,8 @@ from cms.views.base import BaseCmsView
 from unicore.content.models import Category, Page, Localisation
 from utils import EGPaginator
 
+from pyramid.view import notfound_view_config
+
 CACHE_TIME = 'default_term'
 
 
@@ -24,8 +29,38 @@ class CmsViews(BaseCmsView):
 
     @reify
     def get_available_languages(self):
-        return literal_eval(
-            self.settings.get('available_languages', '[]'))
+        available_languages = sorted(literal_eval(
+            (self.settings.get('available_languages', '[]'))),
+            key=lambda tup: tup[1].lower())
+        return [
+            (code, self.get_display_name(code))
+            for code, name in available_languages]
+
+    @reify
+    def get_featured_languages(self):
+        featured_languages = sorted(literal_eval(
+            (self.settings.get('featured_languages', '[]'))),
+            key=lambda tup: tup[1].lower())
+        return [
+            (code, self.get_display_name(code))
+            for code, name in featured_languages]
+
+    def get_display_name(self, locale):
+        language_code, _, country_code = locale.partition('_')
+        term_code = languages.get(bibliographic=language_code).terminology
+        return Locale.parse(term_code).language_name
+
+    def get_display_languages(self):
+        to_display = [
+            code for code, name in
+            self.get_featured_languages or self.get_available_languages[:2]]
+
+        featured_and_current = [self.locale] + sorted(list(
+            set(to_display) - set([self.locale])),
+            key=lambda tup: tup[1].lower())
+        return [
+            (code, self.get_display_name(code))
+            for code in featured_and_current]
 
     @reify
     def global_template(self):
@@ -36,6 +71,11 @@ class CmsViews(BaseCmsView):
     def paginator_template(self):
         renderer = get_renderer("cms:templates/paginator.pt")
         return renderer.implementation().macros['paginator']
+
+    @reify
+    def search_box_template(self):
+        renderer = get_renderer("cms:templates/search_box.pt")
+        return renderer.implementation().macros['search_box']
 
     def get_localisation(self):
         try:
@@ -187,6 +227,17 @@ class CmsViews(BaseCmsView):
             'description': markdown(page.description),
         }
 
+    @view_config(
+        route_name='locale_change',
+        renderer='cms:templates/locale_change.pt')
+    def locale_change(self):
+        return {
+            'languages': self.get_featured_languages +
+            sorted(list(set(self.get_available_languages) -
+                        set(self.get_featured_languages)),
+                   key=lambda tup: tup[1].lower())
+        }
+
     @view_config(route_name='locale')
     @view_config(route_name='locale_matched')
     def set_locale_cookie(self):
@@ -199,7 +250,8 @@ class CmsViews(BaseCmsView):
 
         return HTTPFound(location='/', headers=response.headers)
 
-    @view_config(route_name='search', renderer='cms:templates/search.pt')
+    @view_config(route_name='search',
+                 renderer='cms:templates/search_results.pt')
     def search(self):
 
         query = self.request.GET.get('q')
@@ -215,7 +267,8 @@ class CmsViews(BaseCmsView):
         if not query:
             return empty_defaults
 
-        all_results = self.workspace.S(Page).query(content__query_string=query)
+        all_results = self.workspace.S(Page).query(
+            content__query_string=query).filter(language=self.locale)
 
         # no results found
         if all_results.count() == 0:
@@ -236,3 +289,7 @@ class CmsViews(BaseCmsView):
             'query': query,
             'p': p,
         }
+
+    @notfound_view_config(renderer='cms:templates/404.pt')
+    def notfound(request):
+        return {}

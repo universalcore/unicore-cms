@@ -97,6 +97,7 @@ def includeme(config):
     config.add_route('category', '/content/list/{category}/')
     config.add_route('content', '/content/detail/{uuid}/')
     config.add_route('locale', '/locale/')
+    config.add_route('locale_change', '/locale/change/')
     config.add_route('locale_matched', '/locale/{language}/')
     config.add_route('flatpage', '/{slug}/')
     config.scan()

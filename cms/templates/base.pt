@@ -16,6 +16,13 @@
 </head>
 <body>
 <div id="wrap">
+    <div id="nav">
+      <span tal:repeat="item view.get_display_languages()">
+        <a href="/locale/${item[0]}/">${item[1]}</a>
+        <span tal:omit-tag="" tal:condition="not repeat.item.end"> |</span>
+      </span>
+      <span> | </span><a href="/locale/change/">&gt;&gt;</a>
+    </div>
     <div id="header">
         <a href="/"><img src="${request.static_url('cms:static/img/logo.png')}" border="0" /></a>
     </div>
@@ -42,18 +49,17 @@
           </div>
         </div>
 
+          <div metal:define-slot="search" metal:use-macro="view.search_box_template"></div>
+
     </div>
 
     <div id="footer">
         <span>&copy; Unicef 2014</span>
     </div>
+    
+
 
 </div>
-
-<form action='/search/' method='GET' class='form-search'>
-    <input id="q" name='q' type="text" hint='enter search here..'>
-    <input type="submit" value='Search' />
-</form>
 
 </body>
 </html>

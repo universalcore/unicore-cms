@@ -1,25 +1,75 @@
 from pyramid import testing
+from pyramid_beaker import set_cache_regions_from_settings
+
+from cms import locale_negotiator_with_fallbacks
 
 from cms.tests.base import UnicoreTestCase
-from unicore.content.models import Page
+from unicore.content.models import Page, Category, Localisation
 
 
 class TestSearch(UnicoreTestCase):
 
     def setUp(self):
         self.workspace = self.mk_workspace()
+        self.workspace.setup_custom_mapping(Page, {
+            'properties': {
+                'slug': {
+                    'type': 'string',
+                    'index': 'not_analyzed',
+                },
+                'language': {
+                    'type': 'string',
+                    'index': 'not_analyzed',
+                }
+            }
+        })
+        self.workspace.setup_custom_mapping(Category, {
+            'properties': {
+                'slug': {
+                    'type': 'string',
+                    'index': 'not_analyzed',
+                },
+                'language': {
+                    'type': 'string',
+                    'index': 'not_analyzed',
+                }
+            }
+        })
+
+        self.workspace.setup_custom_mapping(Localisation, {
+            'properties': {
+                'locale': {
+                    'type': 'string',
+                    'index': 'not_analyzed',
+                }
+            }
+        })
+
+        languages = ("[('eng_GB', 'English'), ('swa_KE', 'Swahili'),"
+                     "('spa_ES', 'Spanish'), ('fre_FR', 'French'),"
+                     "('hin_IN', 'Hindi'), ('ind_ID', 'Bahasa'),"
+                     "('per_IR', 'Persian')]")
+        featured_langs = "[('spa_ES', 'Spanish'), ('eng_GB', 'English')]"
+
         settings = {
-            'git.path': self.workspace.working_dir,
+            'git.path': self.workspace.repo.working_dir,
             'git.content_repo_url': '',
             'es.index_prefix': self.workspace.index_prefix,
             'cache.enabled': 'false',
             'cache.regions': 'long_term, default_term',
             'cache.long_term.expire': '1',
             'cache.default_term.expire': '1',
+            'available_languages': languages,
+            'featured_languages': featured_langs,
             'pyramid.default_locale_name': 'eng_GB',
+            'thumbor.security_key': 'sample-security-key',
+            'thumbor.server': 'http://some.site.com',
         }
 
         self.config = testing.setUp(settings=settings)
+        set_cache_regions_from_settings(settings)
+        self.config.set_locale_negotiator(locale_negotiator_with_fallbacks)
+
         self.app = self.mk_app(self.workspace, settings=settings)
 
     def test_search_no_results(self):
@@ -75,3 +125,38 @@ class TestSearch(UnicoreTestCase):
             '/search/', params={'q': 'baby', 'p': '0'}, status=200)
         self.assertFalse('Previous' in resp.body)
         self.assertTrue('Next' in resp.body)
+
+    def test_search_single_language_results(self):
+        mother_english = Page({
+            'title': 'title for english mother', 'language': 'eng_GB',
+            'position': 2, 'content': 'Page for mother test page'})
+        mother_spanish = Page({
+            'title': 'title for spanish mother', 'language': 'spa_ES',
+            'position': 2, 'content': 'Page for mother test page'})
+        self.workspace.save(mother_english, 'Add mother page')
+        self.workspace.save(mother_spanish, 'Add mother page')
+
+        self.workspace.refresh_index()
+
+        resp = self.app.get('/search/', params={'q': 'mother'}, status=200)
+
+        self.assertTrue('title for english mother' in resp.body)
+        self.assertTrue('1 search result' in resp.body)
+        self.assertFalse('No results found' in resp.body)
+
+        self.app.get('/locale/spa_ES/', status=302)
+        resp = self.app.get('/search/', params={'q': 'mother'}, status=200)
+        self.assertTrue('title for spanish mother' in resp.body)
+        self.assertTrue('1 search result' in resp.body)
+        self.assertFalse('No results found' in resp.body)
+
+    def test_search_single_language_no_results(self):
+        mother_english = Page({
+            'title': 'title for english mother', 'language': 'eng_GB',
+            'position': 2, 'content': 'Page for mother test page'})
+        self.workspace.save(mother_english, 'Add mother page')
+        self.workspace.refresh_index()
+
+        self.app.get('/locale/spa_ES/', status=302)
+        resp = self.app.get('/search/', params={'q': 'mother'}, status=200)
+        self.assertTrue('No results found' in resp.body)

@@ -1,0 +1,14 @@
+<div metal:use-macro="view.global_template">
+    <div metal:fill-slot="content">
+
+        <div class="items">
+            <div class="box">
+                <div class="item" tal:repeat="lang languages[:10]">
+                    <div class="text">
+                        <a href="/locale/${lang[0]}/">${lang[1]}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

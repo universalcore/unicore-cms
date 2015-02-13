@@ -1,6 +1,27 @@
 CHANGELOG
 =========
 
+1.6.1
+-----
+- provide es host in fastforward
+
+1.6.0
+-----
+- Add branded 404 page
+- Allow reading of `es.host` from config
+
+1.5.2
+-----
+- Refactor Search templates
+
+1.5.1
+-----
+- Ensure list of languages in change page is sorted
+
+1.5.0
+-----
+- Change language selector to allow featured languages
+
 1.4.2
 -----
 - Allow querystring-less locale url
