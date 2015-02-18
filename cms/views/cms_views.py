@@ -199,7 +199,10 @@ class CmsViews(BaseCmsView):
         else:
             linked_pages = []
 
-        category = self.get_category(page.primary_category)
+        category = None
+        if page.primary_category:
+            category = self.get_category(page.primary_category)
+
         if page.language != self.locale:
             raise HTTPNotFound()
         return {
