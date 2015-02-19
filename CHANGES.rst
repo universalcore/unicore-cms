@@ -1,6 +1,14 @@
 CHANGELOG
 =========
 
+1.6.3
+-----
+- Ensure detail page doesn't break for flat pages
+
+1.6.2
+-----
+- Use latest changes of EG (Changes to Avro schema)
+
 1.6.1
 -----
 - provide es host in fastforward
