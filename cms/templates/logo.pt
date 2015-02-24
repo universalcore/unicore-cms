@@ -1,9 +1,14 @@
 <div xmlns:metal="http://xml.zope.org/namespaces/metal"
      metal:define-macro="logo">
-    <div id="logo-container" tal:define="localisation view.get_localisation()" tal:condition="localisation">
-        <a href="/" tal:condition="localisation.logo_image">
-            <img src="${view.get_image_url(localisation.logo_image_host, localisation.logo_image)}" border="0" alt="${localisation.logo_description}"/>
+    <?python
+        try:
+            default_image_src
+        except NameError:
+            default_image_src = None
+    ?>
+    <div id="logo-container" tal:define="attribs view.get_logo_attributes(default_image_src)" tal:condition="attribs['src']">
+        <a href="/">
+            <img tal:attributes="attribs" border="0"/>
         </a>
-        <div tal:condition="localisation.logo_text">${localisation.logo_text}</div>
     </div>
 </div>
