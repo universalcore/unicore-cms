@@ -77,6 +77,11 @@ class CmsViews(BaseCmsView):
         renderer = get_renderer("cms:templates/search_box.pt")
         return renderer.implementation().macros['search_box']
 
+    @reify
+    def logo_template(self):
+        renderer = get_renderer("cms:templates/logo.pt")
+        return renderer.implementation().macros['logo']
+
     def get_localisation(self):
         try:
             [localisation] = self.workspace.S(
