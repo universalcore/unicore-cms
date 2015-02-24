@@ -2,13 +2,13 @@
      metal:define-macro="logo">
     <?python
         try:
-            default_image_src
+            img_attrs
         except NameError:
-            default_image_src = None
+            img_attrs = view.get_logo_attributes()
     ?>
-    <div id="logo-container" tal:define="attribs view.get_logo_attributes(default_image_src)" tal:condition="attribs['src']">
+    <div id="logo-container" tal:condition="img_attrs['src']">
         <a href="/">
-            <img tal:attributes="attribs" border="0"/>
+            <img tal:attributes="img_attrs" border="0"/>
         </a>
     </div>
 </div>

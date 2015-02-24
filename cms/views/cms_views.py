@@ -82,12 +82,16 @@ class CmsViews(BaseCmsView):
         renderer = get_renderer("cms:templates/logo.pt")
         return renderer.implementation().macros['logo']
 
-    def get_logo_attributes(self, default_image_src=None):
+    def get_logo_attributes(self, default_image_src=None,
+                            width=None, height=None):
+        attrs = {'width': width, 'height': height}
         localisation = self.get_localisation()
-        if not localisation:
-            return {'src': default_image_src, 'alt': None}
 
-        attrs = {'alt': localisation.logo_description or None}
+        if not localisation:
+            attrs.update({'src': default_image_src, 'alt': None})
+            return attrs
+
+        attrs['alt'] = localisation.logo_description or None
         if localisation.logo_image:
             attrs['src'] = self.get_image_url(localisation.logo_image_host,
                                               localisation.logo_image)

@@ -470,7 +470,8 @@ class TestViews(UnicoreTestCase):
             request = testing.DummyRequest({'_LOCALE_': locale})
             self.views = CmsViews(request)
             if default_src:
-                define = 'tal:define="default_image_src \'%s\'"' % default_src
+                define = 'tal:define="img_attrs view.get_logo_attributes' \
+                    '(default_image_src=\'%s\')"' % default_src
             else:
                 define = ''
             template = '<div metal:use-macro="view.logo_template" %s></div>'
