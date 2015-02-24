@@ -1,4 +1,5 @@
 import uuid
+from urlparse import urljoin
 
 from elasticgit import EG
 from dateutil import parser
@@ -52,7 +53,7 @@ class BaseCmsView(object):
             image_url = crypto.generate(
                 width=0, height=height, image_url=image_uuid)
 
-        return u'%s%s' % (image_host, image_url)
+        return urljoin(image_host, image_url)
 
     def get_or_create_ga_client_id(self):
         '''
