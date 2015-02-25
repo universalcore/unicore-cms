@@ -17,7 +17,7 @@ elastic-git>=1.0.0
 python-slugify
 python-dateutil
 libthumbor
-unicore.content>=1.0.2
+unicore.content>=1.0.4
 unicore.google
 unicore.distribute>=0.0.2
 pycountry==1.10
