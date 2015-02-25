@@ -5,7 +5,7 @@ pyramid_beaker
 python-memcached
 waitress
 webtest
-cornice
+cornice==0.17
 pyramid_celery>=2.0.0.rc4
 pyramid_redis
 babel
