@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+1.6.4
+-----
+- Add localised logo support
+
 1.6.3
 -----
 - Ensure detail page doesn't break for flat pages
