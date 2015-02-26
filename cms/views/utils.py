@@ -86,3 +86,27 @@ class EGPaginator(Paginator):
 
     def total_count(self):
         return self.results.count()
+
+    def get_page(self):
+        return to_eg_objects(super(EGPaginator, self).get_page())
+
+
+class ResultGenerator(object):
+
+    def __init__(self, es_results):
+        self.es_results = es_results
+
+    def __iter__(self):
+        return (obj.get_object() for obj in self.es_results)
+
+    def __len__(self):
+        return self.es_results.__len__()
+
+    def __getitem__(self, k):
+        if isinstance(k, slice):
+            return ResultGenerator(self.es_results.__getitem__(k))
+        return self.es_results.__getitem__(k).get_object()
+
+
+def to_eg_objects(es_results):
+    return ResultGenerator(es_results)
