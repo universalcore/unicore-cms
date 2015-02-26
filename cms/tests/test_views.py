@@ -204,7 +204,7 @@ class TestViews(UnicoreTestCase):
         self.views = CmsViews(request)
         response = self.views.content()
         [linked_page] = response['linked_pages']
-        self.assertEqual(linked_page.get_object(), page1)
+        self.assertEqual(linked_page, page1)
 
     def test_content_linked_pages_none(self):
         [category] = self.create_categories(self.workspace, count=1)

@@ -18,7 +18,7 @@ from elasticgit import F
 from cms.views.base import BaseCmsView
 
 from unicore.content.models import Category, Page, Localisation
-from utils import EGPaginator
+from utils import EGPaginator, to_eg_objects
 
 from pyramid.view import notfound_view_config
 
@@ -103,7 +103,7 @@ class CmsViews(BaseCmsView):
         try:
             [localisation] = self.workspace.S(
                 Localisation).filter(locale=self.locale)
-            return localisation
+            return localisation.get_object()
         except ValueError:
             return None
 
@@ -112,13 +112,13 @@ class CmsViews(BaseCmsView):
 
     @cache_region(CACHE_TIME)
     def _get_categories(self, locale, order_by):
-        return self.workspace.S(Category).filter(
-            language=locale).order_by(*order_by)
+        return to_eg_objects(self.workspace.S(Category).filter(
+            language=locale).order_by(*order_by))
 
     @cache_region(CACHE_TIME)
     def get_category(self, uuid):
         [category] = self.workspace.S(Category).filter(uuid=uuid)
-        return category
+        return category.get_object()
 
     def get_pages(self, limit=5, order_by=('position', '-modified_at')):
         """
@@ -129,13 +129,13 @@ class CmsViews(BaseCmsView):
             The attributes to order on,
             defaults to ('position', '-modified_at')
         """
-        return self.workspace.S(Page).filter(
-            language=self.locale).order_by(*order_by)[:limit]
+        return to_eg_objects(self.workspace.S(Page).filter(
+            language=self.locale).order_by(*order_by)[:limit])
 
     @cache_region(CACHE_TIME)
     def _get_featured_pages(self, locale, limit, order_by):
-        return self.workspace.S(Page).filter(
-            language=locale, featured=True).order_by(*order_by)[:limit]
+        return to_eg_objects(self.workspace.S(Page).filter(
+            language=locale, featured=True).order_by(*order_by)[:limit])
 
     def get_featured_pages(
             self, limit=5, order_by=('position', '-modified_at')):
@@ -154,9 +154,9 @@ class CmsViews(BaseCmsView):
     @cache_region(CACHE_TIME)
     def get_pages_for_category(
             self, category_id, locale, order_by=('position',)):
-        return self.workspace.S(Page).filter(
+        return to_eg_objects(self.workspace.S(Page).filter(
             primary_category=category_id,
-            language=locale).order_by(*order_by)
+            language=locale).order_by(*order_by))
 
     def get_featured_category_pages(
             self, category_id, order_by=('position',)):
@@ -165,9 +165,9 @@ class CmsViews(BaseCmsView):
 
     @cache_region(CACHE_TIME)
     def _get_featured_category_pages(self, category_id, locale, order_by):
-        return self.workspace.S(Page).filter(
+        return to_eg_objects(self.workspace.S(Page).filter(
             primary_category=category_id, language=locale,
-            featured_in_category=True).order_by(*order_by)
+            featured_in_category=True).order_by(*order_by))
 
     @cache_region(CACHE_TIME)
     def get_page(self, uuid=None, slug=None, locale=None):
@@ -177,7 +177,7 @@ class CmsViews(BaseCmsView):
             if locale is not None:
                 query = query.filter(language=locale)
             [page] = query[:1]
-            return page
+            return page.get_object()
         except ValueError:
             return None
 
@@ -187,9 +187,9 @@ class CmsViews(BaseCmsView):
 
     @cache_region(CACHE_TIME)
     def _get_top_nav(self, locale, order_by):
-        return self.workspace.S(Category).filter(
+        return to_eg_objects(self.workspace.S(Category).filter(
             language=locale,
-            featured_in_navbar=True).order_by(*order_by)
+            featured_in_navbar=True).order_by(*order_by))
 
     @view_config(route_name='home', renderer='cms:templates/home.pt')
     @view_config(route_name='categories',
@@ -216,8 +216,8 @@ class CmsViews(BaseCmsView):
             raise HTTPNotFound()
 
         if page.linked_pages:
-            linked_pages = self.workspace.S(Page).filter(
-                uuid__in=page.linked_pages)
+            linked_pages = to_eg_objects(self.workspace.S(Page).filter(
+                uuid__in=page.linked_pages))
         else:
             linked_pages = []
 
