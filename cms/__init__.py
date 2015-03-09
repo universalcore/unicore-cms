@@ -87,10 +87,12 @@ def locale_negotiator_with_fallbacks(request):
 
 def includeme(config):
     config.include('pyramid_chameleon')
+    config.include('pyramid_jinja2')
     config.include('pyramid_beaker')
     config.include("cornice")
     config.include("pyramid_celery")
     config.add_static_view('static', 'cms:static', cache_max_age=3600)
+    config.add_route('home_jinja', '/spice/')
     config.add_route('home', '/')
     config.add_route('search', '/search/')
     config.add_route('categories', '/content/list/')

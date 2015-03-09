@@ -1,0 +1,13 @@
+{% extends "base.jinja2" %}
+
+{% block content %}
+<div id="banner"><img src="/static/img/kids.jpg"></div>
+{% for cat in view.get_categories() %}
+<div class="h1">
+    <a href="/content/list/{{cat.uuid}}/"><img src="/static/img/icon-diarrhoea.jpg">
+      {{cat.title}}
+    </a>
+    <div class="clear"></div>
+</div>
+{% endfor %}
+{% endblock %}

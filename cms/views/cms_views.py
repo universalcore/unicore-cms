@@ -170,6 +170,7 @@ class CmsViews(BaseCmsView):
             featured_in_navbar=True).order_by(*order_by)
 
     @view_config(route_name='home', renderer='cms:templates/home.pt')
+    @view_config(route_name='home_jinja', renderer='cms:templates/home.jinja2')
     @view_config(route_name='categories',
                  renderer='cms:templates/categories.pt')
     def categories(self):
