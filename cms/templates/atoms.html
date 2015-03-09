@@ -1,0 +1,11 @@
+{% macro image(src) -%}
+    <img src="{{src}}">
+{%- endmacro %}
+{% macro link(href, value) -%}
+    <p><a href="{{href}}">{{value}}</a></p>
+{%- endmacro %}
+{% macro image_link(href, image_src, title) -%}
+    <a href="{{href}}"><img src="{{image_src}}"/>
+    {{title}}
+    </a>
+{%- endmacro %}
