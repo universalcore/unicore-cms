@@ -6,7 +6,7 @@ pyramid_beaker
 python-memcached
 waitress
 webtest
-cornice
+cornice==0.17
 pyramid_celery>=2.0.0.rc4
 pyramid_redis
 babel
@@ -18,7 +18,7 @@ elastic-git>=1.0.0
 python-slugify
 python-dateutil
 libthumbor
-unicore.content>=1.0.2
+unicore.content>=1.0.4
 unicore.google
 unicore.distribute>=0.0.2
 pycountry==1.10

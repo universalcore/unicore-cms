@@ -1,6 +1,22 @@
 CHANGELOG
 =========
 
+1.6.5
+-----
+- Consistently convert ES objects to `elastic-git` model objects
+
+1.6.4
+-----
+- Add localised logo support
+
+1.6.3
+-----
+- Ensure detail page doesn't break for flat pages
+
+1.6.2
+-----
+- Use latest changes of EG (Changes to Avro schema)
+
 1.6.1
 -----
 - provide es host in fastforward

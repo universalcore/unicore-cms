@@ -1,9 +1,9 @@
 import arrow
 from datetime import timedelta
 
+from chameleon import PageTemplate
 from pyramid import testing
 from pyramid_beaker import set_cache_regions_from_settings
-
 
 from cms import locale_negotiator_with_fallbacks
 from cms.tests.base import UnicoreTestCase
@@ -72,6 +72,7 @@ class TestViews(UnicoreTestCase):
         }
 
         self.config = testing.setUp(settings=settings)
+        self.config.include('pyramid_chameleon')
         set_cache_regions_from_settings(settings)
         self.config.set_locale_negotiator(locale_negotiator_with_fallbacks)
         self.views = CmsViews(testing.DummyRequest())
@@ -203,7 +204,7 @@ class TestViews(UnicoreTestCase):
         self.views = CmsViews(request)
         response = self.views.content()
         [linked_page] = response['linked_pages']
-        self.assertEqual(linked_page.get_object(), page1)
+        self.assertEqual(linked_page, page1)
 
     def test_content_linked_pages_none(self):
         [category] = self.create_categories(self.workspace, count=1)
@@ -455,6 +456,36 @@ class TestViews(UnicoreTestCase):
         self.views = CmsViews(request)
 
         self.assertIsNone(self.views.get_localisation())
+
+    def test_localised_logo(self):
+        self.create_localisation(
+            self.workspace,
+            locale='eng_GB',
+            logo_text='logo_text_foo',
+            logo_description='logo_description_foo',
+            logo_image='sample-uuid-000000-0002',
+            logo_image_host='http://some.site.com/')
+
+        def render_logo(locale, default_src=None):
+            request = testing.DummyRequest({'_LOCALE_': locale})
+            self.views = CmsViews(request)
+            if default_src:
+                define = 'tal:define="img_attrs view.get_logo_attributes' \
+                    '(default_image_src=\'%s\')"' % default_src
+            else:
+                define = ''
+            template = '<div metal:use-macro="view.logo_template" %s></div>'
+            template = PageTemplate(template % define)
+            return template.render(view=self.views, request=request)
+
+        localised_logo = render_logo('eng_GB')
+        non_localised_logo = render_logo('spa_ES', '/default/logo.png')
+        no_logo = render_logo('spa_ES')
+        self.assertTrue('http://some.site.com/' in localised_logo)
+        self.assertTrue('sample-uuid-000000-0002' in localised_logo)
+        self.assertTrue('logo_description_foo' in localised_logo)
+        self.assertFalse('logo-container' in no_logo)
+        self.assertTrue('/default/logo.png' in non_localised_logo)
 
     def test_locale_cookie(self):
         [category1] = self.create_categories(
