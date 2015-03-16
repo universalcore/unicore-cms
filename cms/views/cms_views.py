@@ -11,13 +11,17 @@ from pyramid.view import view_config
 from pyramid.renderers import get_renderer
 from pyramid.decorator import reify
 from pyramid.response import Response
+from pyramid.security import remember
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 
 from elasticgit import F
 
+from cms import USER_DATA_SESSION_KEY
 from cms.views.base import BaseCmsView
 
 from unicore.content.models import Category, Page, Localisation
+from unicore.hub.client import ClientException as HubClientException
+from unicore.hub.client.utils import same_origin
 from utils import EGPaginator, to_eg_objects
 
 from pyramid.view import notfound_view_config
@@ -318,3 +322,44 @@ class CmsViews(BaseCmsView):
     @notfound_view_config(renderer='cms:templates/404.pt')
     def notfound(request):
         return {}
+
+    @view_config(route_name='login')
+    def login(self):
+        hubclient = self.request.registry.hubclient
+        response = HTTPFound()
+
+        # redeem ticket to get user data
+        ticket = self.request.GET.get('ticket', None)
+        if ticket:
+            try:
+                user_data = hubclient.get_user(
+                    ticket, self.request.route_url('redirect_to_login'))
+                self.request.session[USER_DATA_SESSION_KEY] = user_data
+                user_id = user_data['uuid']
+                headers = remember(self.request, user_id)
+                response.headerlist.extend(headers)
+
+            except HubClientException:
+                # TODO: what to do when ticket is invalid?
+                pass
+
+        redirect_url = self.request.GET.get('url', None)
+        if not (redirect_url and same_origin(
+                redirect_url, self.request.current_route_url())):
+            redirect_url = self.request.route_url(route_name='home')
+        response.location = redirect_url
+
+        return response
+
+    @view_config(route_name='redirect_to_login')
+    def redirect_to_login(self):
+        hubclient = self.request.registry.hubclient
+
+        if self.request.referrer and same_origin(
+                self.request.referrer, self.request.current_route_url()):
+            callback_url = self.request.route_url(
+                route_name='login', _query={'url': self.request.referrer})
+        else:
+            callback_url = self.request.route_url(route_name='login')
+
+        return HTTPFound(hubclient.get_login_redirect_url(callback_url))
