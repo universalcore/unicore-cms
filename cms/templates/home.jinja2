@@ -1,12 +1,16 @@
 {% extends "base.jinja2" %}
 {% import 'atoms.html' as atoms %}
-{% import 'atoms.html' as atoms %}
+{% import 'molecules.html' as molecules %}
+
+
 
 {% block content %}
-<div id="banner"><img src="/static/img/kids.jpg"></div>
+
+{{molecules.banner_with_image("/static/img/kids.jpg")}}
+
 {% for cat in view.get_categories() %}
-<div class="h1">
+
     {{atoms.image_link('/content/list/'+cat.uuid, '/static/img/icon-diarrhoea.jpg', cat.title)}}
-</div>
+
 {% endfor %}
 {% endblock %}

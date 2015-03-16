@@ -1,11 +1,49 @@
-{% macro image(src) -%}
-    <img src="{{src}}">
+{% macro  em() -%}
+    <p>The <em>em element</em> example</p>
 {%- endmacro %}
+
+{% macro  heading1(heading_text) -%}
+    <h1>{{heading_text}}</h1>
+{%- endmacro %}
+
+{% macro  heading2(heading_text) -%}
+    <h2>{{heading_text}}</h2>
+{%- endmacro %}
+
+{% macro  heading3(heading_text) -%}
+    <h3>{{heading_text}}</h3>
+{%- endmacro %}
+
+{% macro  heading4(heading_text) -%}
+    <h4>{{heading_text}}</h4>
+{%- endmacro %}
+
+{% macro image(src, srcset, alt) -%}
+    <img src="{{src}}" alt="Header Image">
+{%- endmacro %}
+
+{% macro input_search() -%}
+    <input type="search" id="input-search" name="input-search" placeholder="place your search item here">
+{%- endmacro %}
+
+{% macro input_submit() -%}
+    <input type="submit" value="Submit">
+{%- endmacro %}
+
+{%- endmacro label() %}
+	<label for="input-search">Search:</label>
+{% macro -%}
+
 {% macro link(href, value) -%}
     <p><a href="{{href}}">{{value}}</a></p>
 {%- endmacro %}
+
 {% macro image_link(href, image_src, title) -%}
     <a href="{{href}}"><img src="{{image_src}}"/>
     {{title}}
     </a>
+{%- endmacro %}
+
+{% macro -%}
+    
 {%- endmacro %}

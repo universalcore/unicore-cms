@@ -1,0 +1,7 @@
+{% import 'atoms.html' as atoms %}
+
+{% macro banner_with_image(src) -%}
+<div class ="banner">
+	{{ atoms.image(src)}}
+</div>
+{%- endmacro %}

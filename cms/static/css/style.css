@@ -67,3 +67,15 @@
 /*  FOOTER  */
 
 	#footer { padding: 10px; background: #cce9fc; color: #666; }
+
+/* Mobile "preview" for large screens */
+
+	@media screen and (min-width: 1024px) { 
+		html {
+			background-color: #333;
+		}
+		body {
+		    max-width: 320px;
+		    margin: 0 auto;
+		}
+	}
