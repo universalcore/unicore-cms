@@ -5,6 +5,8 @@ from pyramid_beaker import set_cache_regions_from_settings
 from pyramid.config import Configurator
 from pyramid.i18n import default_locale_negotiator
 
+from unicore.hub.client import UserClient as HubUserClient
+
 import logging
 log = logging.getLogger(__name__)
 
@@ -85,6 +87,11 @@ def locale_negotiator_with_fallbacks(request):
     return get_locale_with_fallbacks(locale_name)
 
 
+def init_hubclient(config):
+    hubclient = HubUserClient.from_config(config.registry.settings)
+    config.registry.hubclient = hubclient
+
+
 def includeme(config):
     config.include('pyramid_chameleon')
     config.include('pyramid_beaker')
@@ -103,4 +110,5 @@ def includeme(config):
     config.scan()
     config.set_locale_negotiator(locale_negotiator_with_fallbacks)
 
+    init_hubclient(config)
     init_repository(config)
