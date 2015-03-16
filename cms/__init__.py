@@ -4,6 +4,8 @@ from elasticgit import EG
 from pyramid_beaker import set_cache_regions_from_settings
 from pyramid.config import Configurator
 from pyramid.i18n import default_locale_negotiator
+from pyramid.authentication import SessionAuthenticationPolicy
+from pyramid.authorization import ACLAuthorizationPolicy
 
 from unicore.hub.client import UserClient as HubUserClient
 
@@ -23,6 +25,8 @@ LANGUAGE_FALLBACKS = {
 COUNTRY_FALLBACKS = {
     'UK': 'GB',
 }
+
+USER_DATA_SESSION_KEY = 'user_data'
 
 
 def main(global_config, **settings):
@@ -92,6 +96,26 @@ def init_hubclient(config):
     config.registry.hubclient = hubclient
 
 
+def init_auth(config):
+
+    def user(request):
+        return request.session.get(USER_DATA_SESSION_KEY, None)
+
+    def verify_user_in_session(user_id, request):
+        user_data = request.session.get(USER_DATA_SESSION_KEY, None)
+
+        if user_data is not None and user_data['uuid'] == user_id:
+            return (user_id, )
+
+        return None
+
+    authn_policy = SessionAuthenticationPolicy(callback=verify_user_in_session)
+    authz_policy = ACLAuthorizationPolicy()
+    config.set_authentication_policy(authn_policy)
+    config.set_authorization_policy(authz_policy)
+    config.add_request_method(user, reify=True)
+
+
 def includeme(config):
     config.include('pyramid_chameleon')
     config.include('pyramid_beaker')
@@ -110,5 +134,6 @@ def includeme(config):
     config.scan()
     config.set_locale_negotiator(locale_negotiator_with_fallbacks)
 
+    init_auth(config)
     init_hubclient(config)
     init_repository(config)
