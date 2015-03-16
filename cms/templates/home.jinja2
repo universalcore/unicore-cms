@@ -2,15 +2,10 @@
 {% import 'atoms.html' as atoms %}
 {% import 'molecules.html' as molecules %}
 
-
-
 {% block content %}
 
 {{molecules.banner_with_image("/static/img/kids.jpg")}}
 
-{% for cat in view.get_categories() %}
+{{molecules.category_list_ffl( view.get_categories() )}}
 
-    {{atoms.image_link('/content/list/'+cat.uuid, '/static/img/icon-diarrhoea.jpg', cat.title)}}
-
-{% endfor %}
 {% endblock %}

@@ -1,7 +1,57 @@
 {% import 'atoms.html' as atoms %}
 
+{% macro nav_inline_centered(languages) -%}
+<ul class="nav list-inline l-tac" role="navigation">
+{% for key, value in languages %}
+	<li><a href="/locale/{{key}}/">{{value}}</a></li>
+{% endfor %}
+	<li><a href="/locale/change/">&gt;&gt;</a></li>
+</ul>
+{%- endmacro %}
+
 {% macro banner_with_image(src) -%}
 <div class ="banner">
 	{{ atoms.image(src)}}
+</div>
+{%- endmacro %}
+
+{% macro category_list_ffl(categories) -%}
+<ul>
+{% for cat in categories %}
+    <li>
+    	{{atoms.image_link('/content/list/'+cat.uuid, '/static/img/icon-diarrhoea.jpg')}}
+    	{{atoms.heading3_link('/content/list/'+cat.uuid, cat.title)}}		
+    </li>
+{% endfor %}
+</ul>
+{%- endmacro %}
+
+{% macro nav_inline_highlight_primary() -%}
+<ul class="nav list-inline highlight-primary" role="navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/about/">About</a></li>
+  <li><a href="/credits/">Credits</a></li>
+  <li><a href="/contact/">Contact</a></li>
+</ul>
+{%- endmacro %}
+
+{% macro nav_block_highlight_secondary() -%}
+<ul class="nav list-block highlight-secondary" role="navigation">
+  <li><a href="/">Home</a></li>
+  <li><a href="/about/">About</a></li>
+  <li><a href="/credits/">Credits</a></li>
+  <li><a href="/contact/">Contact</a></li>
+</ul>
+{%- endmacro %}
+
+{% macro logo(href, src) -%}
+<div class="logo">
+	{{atoms.image_link(href, src)}}
+</div>
+{%- endmacro %}
+
+{% macro footer(message) -%}
+<div class="footer" role="contentinfo">
+  &copy; {{message}}
 </div>
 {%- endmacro %}

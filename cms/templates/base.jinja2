@@ -1,3 +1,4 @@
+{% import 'molecules.html' as molecules %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
@@ -12,59 +13,25 @@
     <link href="/static/css/style.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
-<div id="wrap">
-    <div id="nav">
-    {% for key, value in view.get_display_languages() %}
-      <span>
-        <a href="/locale/{{key}}/">{{value}}</a>
-      </span>
-      {% endfor %}
-      <span> | </span><a href="/locale/change/">&gt;&gt;</a>
-    </div>
-    <div id="header">
-        <a href="/"><img src="/static/img/logo.png" border="0" /></a>
-    </div>
-    <div id="nav">
-        <a href="/">Home</a> |
-        <a href="/about/">About</a> |
-        <a href="/credits/">Credits</a> |
-        <a href="/contact/">Contact</a>
-    </div>
+<!-- lang div -->
+{{molecules.nav_inline_centered(view.get_display_languages())}}
+
+{{molecules.logo("/" , "/static/img/logo.png")}}
+
+{{molecules.nav_inline_highlight_primary()}}
+
+{% block content %}
+{% endblock %}
 
 
-    <div id="content">
+{% block menu %}   
+{{molecules.nav_block_highlight_secondary()}}
+{% endblock%}
 
-        <div>
-        {% block content %}
-        {% endblock %}
-        </div>
+{% block search %}
+{% endblock %}
 
-
-        <div>
-        {% block menu %}
-          <div id="menu">
-              <a href="/">Home</a>
-              <a href="/about/">About</a>
-              <a href="/credits/">Credits</a>
-              <a href="/contact/">Contact</a>
-          </div>
-        {% endblock%}
-        </div>
-
-        <div>
-        {% block search %}
-        {% endblock %}
-        </div>
-
-    </div>
-
-    <div id="footer">
-        <span>&copy; Unicef 2014</span>
-    </div>
-
-
-
-</div>
+{{molecules.footer("Unicef 2014")}}
 
 </body>
 </html>
