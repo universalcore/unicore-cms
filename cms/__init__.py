@@ -99,7 +99,8 @@ def init_hubclient(config):
 def init_auth(config):
 
     def user(request):
-        return request.session.get(USER_DATA_SESSION_KEY, None)
+        return (request.session[USER_DATA_SESSION_KEY]
+                if request.authenticated_userid else None)
 
     def verify_user_in_session(user_id, request):
         user_data = request.session.get(USER_DATA_SESSION_KEY, None)
