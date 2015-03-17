@@ -193,12 +193,15 @@ class CmsViews(BaseCmsView):
 
     @view_config(route_name='home', renderer='cms:templates/home.pt')
     @view_config(route_name='home_jinja', renderer='cms:templates/home.jinja2')
+    # redundantcategory
     @view_config(route_name='categories',
                  renderer='cms:templates/categories.pt')
     def categories(self):
         return {}
 
     @view_config(route_name='category', renderer='cms:templates/category.pt')
+    @view_config(route_name='category_jinja2',
+                 renderer='cms:templates/category.jinja2')
     def category(self):
         category_id = self.request.matchdict['category']
         category = self.get_category(category_id)
@@ -210,6 +213,8 @@ class CmsViews(BaseCmsView):
         return {'category': category, 'pages': pages}
 
     @view_config(route_name='content', renderer='cms:templates/content.pt')
+    @view_config(route_name='content_jinja',
+                 renderer='cms:templates/content.jinja2')
     def content(self):
         page = self.get_page(self.request.matchdict['uuid'])
 
@@ -278,6 +283,8 @@ class CmsViews(BaseCmsView):
 
     @view_config(route_name='search',
                  renderer='cms:templates/search_results.pt')
+    @view_config(route_name='search_jinja',
+                 renderer='cms:templates/search_results.jinja2')
     def search(self):
 
         query = self.request.GET.get('q')

@@ -19,8 +19,8 @@
 <ul>
 {% for cat in categories %}
     <li>
-    	{{atoms.image_link('/content/list/'+cat.uuid, '/static/img/icon-diarrhoea.jpg')}}
-    	{{atoms.heading3_link('/content/list/'+cat.uuid, cat.title)}}		
+    	{{atoms.image_link('/spice/content/list/'+cat.uuid + '/', '/static/img/icon-diarrhoea.jpg')}}
+    	{{atoms.heading3_link('/spice/content/list/'+cat.uuid + '/', cat.title)}}		
     </li>
 {% endfor %}
 </ul>
