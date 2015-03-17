@@ -48,20 +48,9 @@ class TestViews(UnicoreTestCase):
         })
 
         languages = "[('eng_GB', 'English'), ('swa_KE', 'Swahili (Kenya)')]"
-        settings = {
-            'git.path': self.workspace.repo.working_dir,
-            'git.content_repo_url': '',
-            'es.index_prefix': self.workspace.index_prefix,
-            'cache.enabled': 'false',
-            'cache.regions': 'long_term, default_term',
-            'cache.long_term.expire': '1',
-            'cache.default_term.expire': '1',
-            'available_languages': languages,
-            'pyramid.default_locale_name': 'eng_GB',
-            'thumbor.security_key': 'sample-security-key',
-            'thumbor.server': 'http://some.site.com',
-            'ga.profile_id': 'UA-some-id',
-        }
+        settings = self.get_settings(
+            self.workspace, available_languages=languages,
+            **{'ga.profile_id': 'UA-some-id'})
         self.config = testing.setUp(settings=settings)
         set_cache_regions_from_settings(settings)
         self.config.set_locale_negotiator(locale_negotiator_with_fallbacks)

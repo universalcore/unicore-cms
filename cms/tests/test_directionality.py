@@ -46,20 +46,7 @@ class TestDirectionality(UnicoreTestCase):
             }
         })
 
-        languages = "[('eng_GB', 'English'), ('urd_IN', 'Urdu')]"
-        settings = {
-            'git.path': self.workspace.repo.working_dir,
-            'git.content_repo_url': '',
-            'es.index_prefix': self.workspace.index_prefix,
-            'cache.enabled': 'false',
-            'cache.regions': 'long_term, default_term',
-            'cache.long_term.expire': '1',
-            'cache.default_term.expire': '1',
-            'available_languages': languages,
-            'pyramid.default_locale_name': 'eng_GB',
-            'thumbor.security_key': 'sample-security-key',
-            'thumbor.server': 'http://some.site.com',
-        }
+        settings = self.get_settings(self.workspace)
         self.config = testing.setUp(settings=settings)
         set_cache_regions_from_settings(settings)
         self.config.set_locale_negotiator(locale_negotiator_with_fallbacks)

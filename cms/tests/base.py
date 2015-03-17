@@ -54,6 +54,10 @@ class UnicoreTestCase(TestCase):
         settings_defaults = {
             'git.path': workspace.working_dir,
             'es.index_prefix': workspace.index_prefix,
+            'unicorehub.host': 'http://hub.unicore.io',
+            'unicorehub.app_id': 'sample-app-id',
+            'unicorehub.app_password': 'sample-password',
+            'unicorehub.redirect_to_https': None,
         }
         settings_defaults.update(settings)
 
@@ -139,3 +143,25 @@ class UnicoreTestCase(TestCase):
             localisation, message=u'Added localisation %s.' % locale)
         workspace.refresh_index()
         return localisation
+
+    def get_settings(self, workspace, **overrides):
+        settings = {
+            'git.path': workspace.repo.working_dir,
+            'git.content_repo_url': '',
+            'es.index_prefix': workspace.index_prefix,
+            'cache.enabled': 'false',
+            'cache.regions': 'long_term, default_term',
+            'cache.long_term.expire': '1',
+            'cache.default_term.expire': '1',
+            'available_languages': "[('eng_GB', 'English'),"
+                                   " ('urd_IN', 'Urdu')]",
+            'pyramid.default_locale_name': 'eng_GB',
+            'thumbor.security_key': 'sample-security-key',
+            'thumbor.server': 'http://some.site.com',
+            'unicorehub.host': 'http://hub.unicore.io',
+            'unicorehub.app_id': 'sample-app-id',
+            'unicorehub.app_password': 'sample-password',
+            'unicorehub.redirect_to_https': None,
+        }
+        settings.update(overrides)
+        return settings

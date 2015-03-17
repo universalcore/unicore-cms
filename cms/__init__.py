@@ -4,6 +4,10 @@ from elasticgit import EG
 from pyramid_beaker import set_cache_regions_from_settings
 from pyramid.config import Configurator
 from pyramid.i18n import default_locale_negotiator
+from pyramid.authentication import SessionAuthenticationPolicy
+from pyramid.authorization import ACLAuthorizationPolicy
+
+from unicore.hub.client import User, UserClient as HubUserClient
 
 import logging
 log = logging.getLogger(__name__)
@@ -21,6 +25,8 @@ LANGUAGE_FALLBACKS = {
 COUNTRY_FALLBACKS = {
     'UK': 'GB',
 }
+
+USER_DATA_SESSION_KEY = 'user_data'
 
 
 def main(global_config, **settings):
@@ -85,6 +91,36 @@ def locale_negotiator_with_fallbacks(request):
     return get_locale_with_fallbacks(locale_name)
 
 
+def init_hubclient(config):
+    hubclient = HubUserClient.from_config(config.registry.settings)
+    config.registry.hubclient = hubclient
+
+
+def init_auth(config):
+
+    def user(request):
+        if request.authenticated_userid:
+            return User(
+                request.registry.hubclient,
+                request.session[USER_DATA_SESSION_KEY])
+
+        return None
+
+    def verify_user_in_session(user_id, request):
+        user_data = request.session.get(USER_DATA_SESSION_KEY, None)
+
+        if user_data is not None and user_data['uuid'] == user_id:
+            return (user_id, )
+
+        return None
+
+    authn_policy = SessionAuthenticationPolicy(callback=verify_user_in_session)
+    authz_policy = ACLAuthorizationPolicy()
+    config.set_authorization_policy(authz_policy)
+    config.set_authentication_policy(authn_policy)
+    config.add_request_method(user, reify=True)
+
+
 def includeme(config):
     config.include('pyramid_chameleon')
     config.include('pyramid_beaker')
@@ -99,8 +135,15 @@ def includeme(config):
     config.add_route('locale', '/locale/')
     config.add_route('locale_change', '/locale/change/')
     config.add_route('locale_matched', '/locale/{language}/')
+    config.add_route('login', '/login/')
+    config.add_route('redirect_to_login', '/login/hub/')
+    # NB: this must be last
     config.add_route('flatpage', '/{slug}/')
-    config.scan()
+
     config.set_locale_negotiator(locale_negotiator_with_fallbacks)
 
+    init_auth(config)
+    init_hubclient(config)
     init_repository(config)
+
+    config.scan()
