@@ -112,8 +112,8 @@ def init_auth(config):
 
     authn_policy = SessionAuthenticationPolicy(callback=verify_user_in_session)
     authz_policy = ACLAuthorizationPolicy()
-    config.set_authentication_policy(authn_policy)
     config.set_authorization_policy(authz_policy)
+    config.set_authentication_policy(authn_policy)
     config.add_request_method(user, reify=True)
 
 

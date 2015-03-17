@@ -362,4 +362,5 @@ class CmsViews(BaseCmsView):
         else:
             callback_url = self.request.route_url(route_name='login')
 
-        return HTTPFound(hubclient.get_login_redirect_url(callback_url))
+        return HTTPFound(hubclient.get_login_redirect_url(
+            callback_url, locale=self.locale))

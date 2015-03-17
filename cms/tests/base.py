@@ -54,7 +54,7 @@ class UnicoreTestCase(TestCase):
         settings_defaults = {
             'git.path': workspace.working_dir,
             'es.index_prefix': workspace.index_prefix,
-            'unicorehub.host': 'hub.unicore.io',
+            'unicorehub.host': 'http://hub.unicore.io',
             'unicorehub.app_id': 'sample-app-id',
             'unicorehub.app_password': 'sample-password',
             'unicorehub.redirect_to_https': None,
@@ -158,7 +158,7 @@ class UnicoreTestCase(TestCase):
             'pyramid.default_locale_name': 'eng_GB',
             'thumbor.security_key': 'sample-security-key',
             'thumbor.server': 'http://some.site.com',
-            'unicorehub.host': 'hub.unicore.io',
+            'unicorehub.host': 'http://hub.unicore.io',
             'unicorehub.app_id': 'sample-app-id',
             'unicorehub.app_password': 'sample-password',
             'unicorehub.redirect_to_https': None,
