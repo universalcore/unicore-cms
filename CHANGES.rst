@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+1.6.6
+-----
+- Remove cornice version pinning
+
 1.6.5
 -----
 - Consistently convert ES objects to `elastic-git` model objects
