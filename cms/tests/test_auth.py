@@ -164,6 +164,6 @@ class TestAuth(UnicoreTestCase):
             internal_request_no_auth = mock_handler.call_args_list[1][0][0]
 
         self.assertTrue(hasattr(internal_request_auth, 'user'))
-        self.assertEqual(internal_request_auth.user, user_data)
+        self.assertEqual(internal_request_auth.user.data, user_data)
         self.assertTrue(hasattr(internal_request_no_auth, 'user'))
         self.assertEqual(internal_request_no_auth.user, None)

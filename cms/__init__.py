@@ -7,7 +7,7 @@ from pyramid.i18n import default_locale_negotiator
 from pyramid.authentication import SessionAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 
-from unicore.hub.client import UserClient as HubUserClient
+from unicore.hub.client import User, UserClient as HubUserClient
 
 import logging
 log = logging.getLogger(__name__)
@@ -99,8 +99,12 @@ def init_hubclient(config):
 def init_auth(config):
 
     def user(request):
-        return (request.session[USER_DATA_SESSION_KEY]
-                if request.authenticated_userid else None)
+        if request.authenticated_userid:
+            return User(
+                request.registry.hubclient,
+                request.session[USER_DATA_SESSION_KEY])
+
+        return None
 
     def verify_user_in_session(user_id, request):
         user_data = request.session.get(USER_DATA_SESSION_KEY, None)

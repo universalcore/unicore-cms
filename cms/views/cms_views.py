@@ -332,10 +332,10 @@ class CmsViews(BaseCmsView):
         ticket = self.request.GET.get('ticket', None)
         if ticket:
             try:
-                user_data = hubclient.get_user(
+                user = hubclient.get_user(
                     ticket, self.request.route_url('redirect_to_login'))
-                self.request.session[USER_DATA_SESSION_KEY] = user_data
-                user_id = user_data['uuid']
+                self.request.session[USER_DATA_SESSION_KEY] = user.data
+                user_id = user.get('uuid')
                 headers = remember(self.request, user_id)
                 response.headerlist.extend(headers)
 
