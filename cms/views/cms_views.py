@@ -242,6 +242,8 @@ class CmsViews(BaseCmsView):
         }
 
     @view_config(route_name='flatpage', renderer='cms:templates/flatpage.pt')
+    @view_config(route_name='flatpage_jinja',
+                 renderer='cms:templates/flatpage.jinja2')
     def flatpage(self):
         page = self.get_page(
             None, self.request.matchdict['slug'], self.locale)

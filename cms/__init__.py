@@ -106,6 +106,7 @@ def includeme(config):
     config.add_route('locale_change_jinja', '/spice/locale/change/')
     config.add_route('locale_matched', '/locale/{language}/')
     config.add_route('flatpage', '/{slug}/')
+    config.add_route('flatpage_jinja', '/spice/{slug}/')
     config.scan()
     config.set_locale_negotiator(locale_negotiator_with_fallbacks)
 
