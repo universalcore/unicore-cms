@@ -112,7 +112,8 @@ class TestAuth(UnicoreTestCase):
         responses.reset()
         responses.add(
             responses.GET, re.compile(r'.*/sso/validate.*'),
-            body='no\n', status=200, content_type='application/json')
+            body=json.dumps('no\n'), status=200,
+            content_type='application/json')
 
         resp = self.app.request(request_with_url)
         self.assertEqual(resp.status_int, 302)
