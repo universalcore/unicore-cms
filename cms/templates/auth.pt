@@ -3,12 +3,12 @@
     <div id="auth-container" tal:define="user view.request.user" tal:switch="bool(user)">
 
         <div tal:case="True" tal:omit-tag="">
-            <span i18n:translate="" class="align-right">You are signed in as <span tal:replace="user.get('username')" i18n:name="username" />.</span>
-            <a href="" i18n:translate="" class="align-right">Sign Out</a>
+            <span i18n:translate="">You are signed in as <span tal:replace="user.get('username')" i18n:name="username" />.</span>
+            <a href="" i18n:translate="">Sign Out</a>
         </div>
 
         <div tal:case="False" tal:omit-tag="">
-            <a href="${request.route_url('redirect_to_login')}" i18n:translate="" class="align-right">Sign In</a>
+            <a href="${request.route_url('redirect_to_login')}" i18n:translate="">Sign In</a>
         </div>
 
     </div>
