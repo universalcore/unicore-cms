@@ -22,3 +22,16 @@
 {% endfor %}
 </ul>
 {%- endmacro %}
+
+{% macro list_of_links_FFL(pages, category) -%}
+<ul>
+{% for page in pages %}
+	<li>
+		<a href="/spice/content/detail/{{page.uuid}}/">{{page.title}}</a>
+	</li>
+{% endfor %}
+	<li>
+		<a href="/about/{{category.slug}}/">Why it is important</a>
+	</li>
+</ul>
+{%- endmacro %}
