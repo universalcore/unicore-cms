@@ -12,3 +12,13 @@
 {% endfor %}
 </ul>
 {%- endmacro %}
+
+{% macro list_of_links(pages) -%}
+<ul>
+{% for page in pages %}
+	<li>
+		<a href="/content/detail/{{page.uuid}}/">{{page.title}}</a>
+	</li>
+{% endfor %}
+</ul>
+{%- endmacro %}
