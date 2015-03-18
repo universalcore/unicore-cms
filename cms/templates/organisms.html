@@ -6,7 +6,7 @@
 {% for cat in view.get_categories() %}
     <li>
     	<a href='/spice/content/list/{{cat.uuid}}/'>
-    		{{atoms.image( view.get_image_url(cat.image_host, cat.image, 45, 45), NOTHING, NOTHING ) }}
+    		{{atoms.image( view.get_image_url(cat.image_host, cat.image, 45, 45), "" , "" ) }}
     		<h3>{{cat.title}}</h3>
        	</a>
     </li>
