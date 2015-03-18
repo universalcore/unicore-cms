@@ -3,5 +3,6 @@
 {% import 'molecules.html' as molecules %}
 
 {% block content %}
-<h3>This is a flatpage</h3>
+<h3>page.title</h3>
+{{content|safe}}
 {% endblock %}
