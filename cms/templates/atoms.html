@@ -39,7 +39,11 @@
 {%- endmacro %}
 
 {% macro image_link(href, src) -%}
+{% if href=='' %}
+    <a><img src="{{src}}"/></a>
+{% else %}
     <a href="{{href}}"><img src="{{src}}"/></a>
+{% endif %}
 {%- endmacro %}
 
 {% macro image_link_test(href, image_src, title) -%}

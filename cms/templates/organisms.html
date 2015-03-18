@@ -1,0 +1,11 @@
+{% import 'molecules.html' as molecules %}
+
+{% macro category_list_ffl(categories) -%}
+<ul>
+{% for cat in categories %}
+    <li>
+    	{{molecules.category_heading(cat)}}
+    </li>
+{% endfor %}
+</ul>
+{%- endmacro %}
