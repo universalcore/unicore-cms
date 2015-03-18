@@ -1,12 +1,12 @@
 {% import 'molecules.html' as molecules %}
 {% import 'atoms.html' as atoms %}
 
-{% macro category_list_ffl(categories) -%}
+{% macro list_of_images_and_heading(view) -%}
 <ul>
-{% for cat in categories %}
+{% for cat in view.get_categories() %}
     <li>
     	<a href='/spice/content/list/{{cat.uuid}}/'>
-    		{{atoms.image('/static/img/icon-diarrhoea.jpg')}}
+    		{{atoms.image( view.get_image_url(cat.image_host, cat.image, 45, 45), NOTHING, NOTHING ) }}
     		<h3>{{cat.title}}</h3>
        	</a>
     </li>
