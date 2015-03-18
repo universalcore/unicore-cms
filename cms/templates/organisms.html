@@ -1,10 +1,14 @@
 {% import 'molecules.html' as molecules %}
+{% import 'atoms.html' as atoms %}
 
 {% macro category_list_ffl(categories) -%}
 <ul>
 {% for cat in categories %}
     <li>
-    	{{molecules.category_heading(cat)}}
+    	<a href='/spice/content/list/{{cat.uuid}}/'>
+    		{{atoms.image('/static/img/icon-diarrhoea.jpg')}}
+    		<h3>{{cat.title}}</h3>
+       	</a>
     </li>
 {% endfor %}
 </ul>
