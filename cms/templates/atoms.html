@@ -1,41 +1,9 @@
-{% macro  em() -%}
-    <p>The <em>em element</em> example</p>
-{%- endmacro %}
-
-<!-- {% macro  heading1(heading_text) -%}
-    <h1>{{heading_text}}</h1>
-{%- endmacro %}
-
-{% macro  heading2(heading_text) -%}
-    <h2>{{heading_text}}</h2>
-{%- endmacro %} -->
-
-{% macro  heading3_link(href, heading_text) -%}
-    <h3><a href="{{href}}">{{heading_text}}</a></h3>
-{%- endmacro %}
-
-<!-- {% macro  heading4(heading_text) -%}
-    <h4>{{heading_text}}</h4>
-{%- endmacro %} -->
-
 {% macro image(src, srcset, alt) -%}
     <img src="{{src}}" alt="Header Image">
 {%- endmacro %}
 
-{% macro input_search() -%}
-    <input type="search" id="input-search" name="input-search" placeholder="place your search item here">
-{%- endmacro %}
-
-{% macro input_submit() -%}
-    <input type="submit" value="Submit">
-{%- endmacro %}
-
-{% macro label() -%}
-	<label for="input-search">Search:</label>
-{%- endmacro %}
-
-{% macro link(href, value) -%}
-    <p><a href="{{href}}">{{value}}</a></p>
+{% macro  heading3_link(href, heading_text) -%}
+    <h3><a href="{{href}}">{{heading_text}}</a></h3>
 {%- endmacro %}
 
 {% macro image_link(href, src) -%}
@@ -44,8 +12,4 @@
 {% else %}
     <a href="{{href}}"><img src="{{src}}"/></a>
 {% endif %}
-{%- endmacro %}
-
-{% macro image_link_test(href, image_src, title) -%}
-    <a href="{{href}}"><img src="{{image_src}}"/>{{title}}</a>
 {%- endmacro %}
