@@ -11,7 +11,7 @@ from pyramid.view import view_config
 from pyramid.renderers import get_renderer
 from pyramid.decorator import reify
 from pyramid.response import Response
-from pyramid.security import remember
+from pyramid.security import forget, remember
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 
 from elasticgit import F
@@ -85,6 +85,11 @@ class CmsViews(BaseCmsView):
     def logo_template(self):
         renderer = get_renderer("cms:templates/logo.pt")
         return renderer.implementation().macros['logo']
+
+    @reify
+    def auth_template(self):
+        renderer = get_renderer("cms:templates/auth.pt")
+        return renderer.implementation().macros['auth']
 
     def get_logo_attributes(self, default_image_src=None,
                             width=None, height=None):
@@ -364,3 +369,15 @@ class CmsViews(BaseCmsView):
 
         return HTTPFound(hubclient.get_login_redirect_url(
             callback_url, locale=self.locale))
+
+    @view_config(route_name='logout')
+    def logout(self):
+        response = HTTPFound(headers=forget(self.request))
+
+        if self.request.referrer and same_origin(
+                self.request.referrer, self.request.current_route_url()):
+            response.location = self.request.referrer
+        else:
+            response.location = self.request.route_url(route_name='home')
+
+        return response
