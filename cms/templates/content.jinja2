@@ -4,6 +4,12 @@
 
 {% block content %}
 
-<h1>This is content!</h1>
+<a href="/content/list/{{primary_category.uuid}}/">
+{{molecules.image_and_heading(view, primary_category )}}
+</a>
+
+{{page.title}}
+
+{{content|safe}}
 
 {% endblock %}
