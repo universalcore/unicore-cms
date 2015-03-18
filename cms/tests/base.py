@@ -2,12 +2,15 @@ import os
 import tempfile
 from ConfigParser import ConfigParser
 from datetime import datetime
+from uuid import uuid4
 
-
+from beaker.session import Session
 from webtest import TestApp
 from unittest import TestCase
 
-from cms import main
+from pyramid import testing
+
+from cms import main, USER_DATA_SESSION_KEY
 
 from elasticgit import EG
 
@@ -85,6 +88,24 @@ class UnicoreTestCase(TestCase):
                     cp.set(section, key, value)
             cp.write(fp)
         return pathname
+
+    def mk_session(self, logged_in=True, user_data={}):
+        session_id = uuid4().hex
+        session = Session(
+            testing.DummyRequest(), id=session_id, use_cookies=False)
+
+        if logged_in:
+            user_data = user_data or {
+                'uuid': uuid4().hex,
+                'username': 'foo',
+                'app_data': {'display_name': 'foobar'}
+            }
+            session[USER_DATA_SESSION_KEY] = user_data
+            session['auth.userid'] = user_data['uuid']
+
+        session.save()
+        # return the session and cookie header
+        return session, {'Cookie': 'beaker.session.id=%s' % session_id}
 
     def create_categories(
             self, workspace, count=2, locale='eng_GB', **kwargs):

@@ -4,7 +4,7 @@
 
         <div tal:case="True" tal:omit-tag="">
             <span i18n:translate="">You are signed in as <span tal:replace="user.get('username')" i18n:name="username" />.</span>
-            <a href="" i18n:translate="">Sign Out</a>
+            <a href="${request.route_url('logout')}" i18n:translate="">Sign Out</a>
         </div>
 
         <div tal:case="False" tal:omit-tag="">

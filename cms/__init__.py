@@ -136,6 +136,7 @@ def includeme(config):
     config.add_route('locale_change', '/locale/change/')
     config.add_route('locale_matched', '/locale/{language}/')
     config.add_route('login', '/login/')
+    config.add_route('logout', '/logout/')
     config.add_route('redirect_to_login', '/login/hub/')
     # NB: this must be last
     config.add_route('flatpage', '/{slug}/')
