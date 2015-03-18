@@ -86,6 +86,11 @@ class CmsViews(BaseCmsView):
         renderer = get_renderer("cms:templates/logo.pt")
         return renderer.implementation().macros['logo']
 
+    @reify
+    def auth_template(self):
+        renderer = get_renderer("cms:templates/auth.pt")
+        return renderer.implementation().macros['auth']
+
     def get_logo_attributes(self, default_image_src=None,
                             width=None, height=None):
         attrs = {'width': width, 'height': height}
