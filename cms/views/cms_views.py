@@ -261,6 +261,9 @@ class CmsViews(BaseCmsView):
     @view_config(
         route_name='locale_change',
         renderer='cms:templates/locale_change.pt')
+    @view_config(
+        route_name='locale_change_jinja',
+        renderer='cms:templates/locale_change.jinja2')
     def locale_change(self):
         return {
             'languages': self.get_featured_languages +

@@ -103,6 +103,7 @@ def includeme(config):
     config.add_route('content_jinja', '/spice/content/detail/{uuid}/')
     config.add_route('locale', '/locale/')
     config.add_route('locale_change', '/locale/change/')
+    config.add_route('locale_change_jinja', '/spice/locale/change/')
     config.add_route('locale_matched', '/locale/{language}/')
     config.add_route('flatpage', '/{slug}/')
     config.scan()
