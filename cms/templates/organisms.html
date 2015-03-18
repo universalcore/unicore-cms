@@ -35,3 +35,13 @@
 	</li>
 </ul>
 {%- endmacro %}
+
+{% macro list_of_languages(languages) -%}
+<ul>
+{% for lang in languages[:10] %}
+	<li>
+		<a href="/locale/{{lang[0]}}/">{{lang[1]}}</a>
+	</li>
+{% endfor %}
+</ul>
+{%- endmacro %}
