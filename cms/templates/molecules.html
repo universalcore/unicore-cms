@@ -11,7 +11,7 @@
 
 {% macro banner_with_image(src) -%}
 <div class ="banner">
-	{{ atoms.image(src)}}
+	{{ atoms.image(src, "", "")}}
 </div>
 {%- endmacro %}
 
@@ -39,9 +39,11 @@
 </ul>
 {%- endmacro %}
 
-{% macro logo(href, src) -%}
+{% macro logo(src) -%}
 <div class="logo">
-	{{atoms.image_link(href, src)}}
+  <a href="/">
+	 {{atoms.image(src, "", "")}}
+  </a>
 </div>
 {%- endmacro %}
 
