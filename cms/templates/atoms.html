@@ -1,15 +1,3 @@
 {% macro image(src, srcset, alt) -%}
      <img src="{{src}}" srcset="{{srcset}}" alt="{{alt}}">
 {%- endmacro %}
-
-{% macro  heading3_link(href, heading_text) -%}
-    <h3><a href="{{href}}">{{heading_text}}</a></h3>
-{%- endmacro %}
-
-{% macro image_link(href, src) -%}
-{% if href=='' %}
-    <a><img src="{{src}}"/></a>
-{% else %}
-    <a href="{{href}}"><img src="{{src}}"/></a>
-{% endif %}
-{%- endmacro %}
