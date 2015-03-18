@@ -15,9 +15,9 @@
 </div>
 {%- endmacro %}
 
-{% macro image_and_heading(cat) -%}
-{{atoms.image_link('/spice/content/list/'+cat.uuid + '/', '/static/img/icon-diarrhoea.jpg')}}
-{{atoms.heading3_link('/spice/content/list/'+cat.uuid + '/', cat.title)}}		
+{% macro image_and_heading(view, cat) -%}
+{{atoms.image( view.get_image_url(cat.image_host, cat.image, 45, 45), "" , "" ) }}
+<h3>{{cat.title}}</h3>
 {%- endmacro %}
 
 
