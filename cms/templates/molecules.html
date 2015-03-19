@@ -62,7 +62,7 @@
   </form>
 {%- endmacro %}
 
-{% macro paginator(paginator) -%}
+{% macro paginator(paginator, p, query) -%}
 
   {% if paginator.has_previous_page() %}
     <a href="/spice/search/?q={{query}}&p={{p-1}}">&nbsp;&lt;&nbsp;Previous</a>

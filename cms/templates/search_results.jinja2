@@ -3,6 +3,17 @@
 {% import 'molecules.html' as molecules %}
 
 {% block content %}
+{% if  paginator %}
+	{% if paginator.total_count()==1 %}
+		<p>1 search result for: <b>{{query}}</b></p>
+	{% elif paginator.total_count() > 1 %}
+		<p>{{paginator.total_count()}} search results for: <b>{{query}}</b></p>
+	{% endif %}
+{% endif %}
+
+{% if paginator.total_pages() > 1 %}
+	{{molecules.paginator(paginator, p, query)}}
+{% endif %}
 
 {% if paginator  %}
 	<ul>
@@ -11,10 +22,11 @@
 			{% if result.primary_category  %}
 				<p>{{view.get_category(result.primary_category).title}}</p>
 			{% endif %}
-			<a href="/content/detail/{{result.uuid}}/">{{result.title}} ... Read More &gt;</a>
+			<a href="/spice/content/detail/{{result.uuid}}/">{{result.title}} ... Read More &gt;</a>
 		</li>
 	{% endfor %}
 	</ul>
+
 {% else %}
 	{% if query %}
 		<p>No results found for <b>{{query}}</b></p>
