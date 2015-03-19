@@ -199,3 +199,23 @@ class TestAuth(UnicoreTestCase):
 
         resp = self.app.get('/search/', headers=headers)
         self.assertIn('Sign In', resp.body)
+
+    def test_no_hubclient_configured(self):
+        workspace = self.mk_workspace()
+        settings = self.get_settings(workspace)
+        settings['unicorehub.app_id'] = None
+        app = self.mk_app(workspace, settings=settings)
+
+        self.assertEqual(app.app.registry.hubclient, None)
+
+        resp = app.get('/login/hub/')
+        self.assertEqual(resp.status_int, 302)
+        self.assertEqual(resp.location, 'http://localhost/login/')
+
+        resp = app.get('/login/?ticket=1234')
+        self.assertEqual(resp.status_int, 302)
+        self.assertEqual(resp.location, 'http://localhost/')
+
+        resp = app.get('/logout/')
+        self.assertEqual(resp.status_int, 302)
+        self.assertEqual(resp.location, 'http://localhost/')
