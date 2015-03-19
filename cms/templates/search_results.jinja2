@@ -4,8 +4,23 @@
 
 {% block content %}
 
-<h1>THIS IS SEARCH</h1>
-
-
+{% if paginator  %}
+	<ul>
+	{% for result in paginator.get_page() %}
+		<li>
+			{% if result.primary_category  %}
+				<p>{{view.get_category(result.primary_category).title}}</p>
+			{% endif %}
+			<a href="/content/detail/{{result.uuid}}/">{{result.title}} ... Read More &gt;</a>
+		</li>
+	{% endfor %}
+	</ul>
+{% else %}
+	{% if query %}
+		<p>No results found for <b>{{query}}</b></p>
+	{% else %}
+		<p>No results found!</p>
+	{% endif %}
+{% endif %}
 
 {% endblock %}
