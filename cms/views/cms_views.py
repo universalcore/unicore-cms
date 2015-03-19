@@ -78,11 +78,6 @@ class CmsViews(BaseCmsView):
         return renderer.implementation().macros['search_box']
 
     @reify
-    def search_box_jinja_template(self):
-        renderer = get_renderer("cms:templates/search_box.jinja2")
-        return renderer.implementation().macros['search_box']
-
-    @reify
     def logo_template(self):
         renderer = get_renderer("cms:templates/logo.pt")
         return renderer.implementation().macros['logo']
