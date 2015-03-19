@@ -95,7 +95,7 @@
   {% endif %}
 
   {% if paginator.show_end()  %}
-    <a href="/spice/search/?q={{query}}&p={{paginator.total_pages()-1}}">&nbsp;{{paginator.total_pages()}&nbsp;</a>
+    <a href="/spice/search/?q={{query}}&p={{paginator.total_pages()-1}}">&nbsp;{{paginator.total_pages()}}&nbsp;</a>
   {% endif %}
 
   {% if paginator.has_next_page() %}
