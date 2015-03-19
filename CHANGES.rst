@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+1.7.0
+-----
+- Add auth using unicore.hub.client
+- pin cornice to 0.18.1
+
 1.6.6
 -----
 - Remove cornice version pinning
