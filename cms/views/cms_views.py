@@ -335,7 +335,7 @@ class CmsViews(BaseCmsView):
 
         # redeem ticket to get user data
         ticket = self.request.GET.get('ticket', None)
-        if ticket:
+        if ticket and hubclient:
             try:
                 user = hubclient.get_user(
                     ticket, self.request.route_url('redirect_to_login'))
@@ -366,6 +366,10 @@ class CmsViews(BaseCmsView):
                 route_name='login', _query={'url': self.request.referrer})
         else:
             callback_url = self.request.route_url(route_name='login')
+
+        if hubclient is None:
+            # benign redirect if hubclient is not configured
+            return HTTPFound(callback_url)
 
         return HTTPFound(hubclient.get_login_redirect_url(
             callback_url, locale=self.locale))

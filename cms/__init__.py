@@ -92,8 +92,11 @@ def locale_negotiator_with_fallbacks(request):
 
 
 def init_hubclient(config):
-    hubclient = HubUserClient.from_config(config.registry.settings)
-    config.registry.hubclient = hubclient
+    if 'unicorehub.app_id' in config.registry.settings:
+        hubclient = HubUserClient.from_config(config.registry.settings)
+        config.registry.hubclient = hubclient
+    else:
+        config.registry.hubclient = None
 
 
 def init_auth(config):
