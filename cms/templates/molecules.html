@@ -61,3 +61,45 @@
         <input type="submit" value='Submit' />
   </form>
 {%- endmacro %}
+
+{% macro paginator(paginator) -%}
+
+  {% if paginator.has_previous_page() %}
+    <a href="/spice/search/?q={{query}}&p={{p-1}}">&nbsp;&lt;&nbsp;Previous</a>
+  {% endif %}
+
+  {% if  paginator.show_start() %}
+    <a href="/spice/search/?q={{query}}&p=0">&nbsp;1&nbsp;</a>
+  {% endif %}
+
+  {% if paginator.needs_start_ellipsis() %}
+    <a>...</a>
+  {% endif %}
+
+  {% if paginator.page_numbers_left()  %}
+    {% for number in paginator.page_numbers_left() %}
+      <a href="/spice/search/?q={{query}}&p={{number}}">&nbsp;{{number + 1}}&nbsp;</a>
+    {% endfor %}
+  {% endif %}
+
+  &nbsp;&nbsp;<b>{{p + 1}}</b>&nbsp;&nbsp;
+
+  {% if paginator.page_numbers_right()  %}
+    {% for number in paginator.page_numbers_right() %}
+      <a href="/spice/search/?q={{query}}&p={{number}}">&nbsp;{{number + 1}}&nbsp;</a>
+    {% endfor %}
+  {% endif %}
+
+  {% if paginator.needs_end_ellipsis() %}
+    <a>...</a>
+  {% endif %}
+
+  {% if paginator.show_end()  %}
+    <a href="/spice/search/?q={{query}}&p={{paginator.total_pages()-1}}">&nbsp;{{paginator.total_pages()}&nbsp;</a>
+  {% endif %}
+
+  {% if paginator.has_next_page() %}
+    <a href="/spice/search/?q={{query}}&p={{p + 1}}">&nbsp;Next&nbsp;&gt;</a>
+  {% endif %}
+
+{%- endmacro %}
