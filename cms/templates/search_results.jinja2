@@ -3,36 +3,21 @@
 {% import 'molecules.html' as molecules %}
 
 {% block content %}
+
+
+
 {% if  paginator %}
-	{% if paginator.total_count()==1 %}
-		<p>1 search result for: <b>{{query}}</b></p>
-	{% elif paginator.total_count() > 1 %}
-		<p>{{paginator.total_count()}} search results for: <b>{{query}}</b></p>
+    
+    {{molecules.search_summary(paginator.total_count(), query)}}
+
+	{% if paginator.total_pages() > 1 %}
+		{{molecules.page_number_navigator(paginator, p, query)}}
 	{% endif %}
-{% endif %}
 
-{% if paginator.total_pages() > 1 %}
-	{{molecules.paginator(paginator, p, query)}}
-{% endif %}
-
-{% if paginator  %}
-	<ul>
-	{% for result in paginator.get_page() %}
-		<li>
-			{% if result.primary_category  %}
-				<p>{{view.get_category(result.primary_category).title}}</p>
-			{% endif %}
-			<a href="/spice/content/detail/{{result.uuid}}/">{{result.title}} ... Read More &gt;</a>
-		</li>
-	{% endfor %}
-	</ul>
-
+	{{organisms.list_of_returned_articles(paginator, view)}}
+	
 {% else %}
-	{% if query %}
-		<p>No results found for <b>{{query}}</b></p>
-	{% else %}
-		<p>No results found!</p>
-	{% endif %}
+	{{molecules.message_for_no_results(query)}}
 {% endif %}
 
 {% endblock %}

@@ -45,3 +45,13 @@
 {% endfor %}
 </ul>
 {%- endmacro %}
+
+{% macro list_of_returned_articles(paginator, view) -%}
+<ul>
+	{% for result in paginator.get_page() %}
+		<li>
+			{{molecules.article_summary(result, view )}}
+		</li>
+	{% endfor %}
+</ul>
+{%- endmacro %}

@@ -62,7 +62,7 @@
   </form>
 {%- endmacro %}
 
-{% macro paginator(paginator, p, query) -%}
+{% macro page_number_navigator(paginator, p, query) -%}
 
   {% if paginator.has_previous_page() %}
     <a href="/spice/search/?q={{query}}&p={{p-1}}">&nbsp;&lt;&nbsp;Previous</a>
@@ -102,4 +102,27 @@
     <a href="/spice/search/?q={{query}}&p={{p + 1}}">&nbsp;Next&nbsp;&gt;</a>
   {% endif %}
 
+{%- endmacro %}
+
+{% macro message_for_no_results(query) -%}
+  {% if query %}
+    <p>No results found for <b>{{query}}</b></p>
+  {% else %}
+    <p>No results found!</p>
+  {% endif %}
+{%- endmacro %}
+
+{% macro search_summary(num_of_results, query) -%}
+  {% if num_of_results==1 %}
+    <p>1 search result for: <b>{{query}}</b></p>
+  {% elif num_of_results > 1 %}
+    <p>{{num_of_results}} search results for: <b>{{query}}</b></p>
+  {% endif %}
+{%- endmacro %}
+
+{% macro article_summary(result, view) -%}
+  {% if result.primary_category  %}
+      <p>{{view.get_category(result.primary_category).title}}</p>
+      {% endif %}
+      <a href="/spice/content/detail/{{result.uuid}}/">{{result.title}} ... Read More &gt;</a>
 {%- endmacro %}
