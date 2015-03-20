@@ -1,6 +1,15 @@
 CHANGELOG
 =========
 
+1.7.0
+-----
+- Add auth using unicore.hub.client
+- pin cornice to 0.18.1
+
+1.6.6
+-----
+- Remove cornice version pinning
+
 1.6.5
 -----
 - Consistently convert ES objects to `elastic-git` model objects

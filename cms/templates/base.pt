@@ -25,6 +25,7 @@
     </div>
     <div id="header">
         <a href="/"><img src="${request.static_url('cms:static/img/logo.png')}" border="0" /></a>
+        <div metal:use-macro="view.auth_template" tal:omit-tag=""></div>
     </div>
     <div id="nav">
         <a href="/">Home</a> |
