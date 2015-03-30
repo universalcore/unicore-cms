@@ -19,14 +19,14 @@
 
 {{molecules.logo("/static/img/logo.png")}}
 
-{{molecules.nav_inline_highlight_primary()}}
+{{molecules.list_of_site_links(view) }}
 
 {% block content %}
 {% endblock %}
 
 
 {% block menu %}   
-{{molecules.nav_block_highlight_secondary()}}
+{{molecules.list_of_site_links(view)}}
 {% endblock%}
 
 {% block search %}
@@ -34,6 +34,8 @@
 {% endblock %}
 
 {{molecules.footer("Unicef 2014")}}
+
+<a href="{{request.route_url('home_jinja')}}" >HOME</a>
 
 </body>
 </html>
