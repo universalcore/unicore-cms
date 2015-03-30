@@ -15,9 +15,9 @@
 </head>
 <body>
 <!-- lang div -->
-{{molecules.list_of_languages(view.get_display_languages())}}
+{{molecules.list_of_languages(view, view.get_display_languages())}}
 
-{{molecules.logo("/static/img/logo.png")}}
+{{molecules.logo(view, "/static/img/logo.png")}}
 
 {{molecules.list_of_site_links(view, [('about', 'About'), ('credit', 'Credit'), ('contact', 'Contact')] ) }}
 
@@ -30,12 +30,10 @@
 {% endblock%}
 
 {% block search %}
-{{molecules.search_box()}}
+{{molecules.search_box(view)}}
 {% endblock %}
 
 {{molecules.footer("Unicef 2014")}}
-
-<a href="{{request.route_url('home_jinja')}}" >HOME</a>
 
 </body>
 </html>

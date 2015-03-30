@@ -1,9 +1,11 @@
 {% import 'atoms.html' as atoms %}
 
-{% macro list_of_languages(languages) -%}
+{% macro list_of_languages(view, languages) -%}
 <ul>
-{% for key, value in languages %}
-	<li><a href="/locale/{{key}}/">{{value}}</a></li>
+{% for lang_code, lang_name in languages %}
+  <li>
+    <a href={{view.request.route_url('locale_matched',  language=lang_code ) }}>{{lang_name}}</a>
+  </li>
 {% endfor %}
 	<li><a href="/spice/locale/change/">&gt;&gt;</a></li>
 </ul>
@@ -30,9 +32,9 @@
 </ul>
 {%- endmacro %}
 
-{% macro logo(src) -%}
+{% macro logo(view, src) -%}
 <div class="logo">
-  <a href="/">
+  <a href={{view.request.route_url('home_jinja')}}>
 	 {{atoms.image(src, "", "")}}
   </a>
 </div>
@@ -44,8 +46,8 @@
 </div>
 {%- endmacro %}
 
-{% macro search_box() -%}
-  <form action='/spice/search/' method='GET'>
+{% macro search_box(view) -%}
+  <form action={{view.request.route_url('search_jinja')}} method='GET'>
     <label for="search">Search: 
         <input id="input-search" name="q" type="text">
     </label>
@@ -53,14 +55,14 @@
   </form>
 {%- endmacro %}
 
-{% macro page_number_navigator(paginator, p, query) -%}
+{% macro page_number_navigator(view, paginator, p, query) -%}
 
   {% if paginator.has_previous_page() %}
-    <a href="/spice/search/?q={{query}}&p={{p-1}}">&nbsp;&lt;&nbsp;Previous</a>
+    <a href={{view.request.route_url('search_jinja')}}?q={{query}}&p={{p-1}} >&nbsp;&lt;&nbsp;Previous</a>
   {% endif %}
 
   {% if  paginator.show_start() %}
-    <a href="/spice/search/?q={{query}}&p=0">&nbsp;1&nbsp;</a>
+    <a href={{view.request.route_url('search_jinja')}}?q={{query}}&p=0>&nbsp;1&nbsp;</a>
   {% endif %}
 
   {% if paginator.needs_start_ellipsis() %}
@@ -69,7 +71,7 @@
 
   {% if paginator.page_numbers_left()  %}
     {% for number in paginator.page_numbers_left() %}
-      <a href="/spice/search/?q={{query}}&p={{number}}">&nbsp;{{number + 1}}&nbsp;</a>
+      <a href={{view.request.route_url('search_jinja')}}?q={{query}}&p={{number}}>&nbsp;{{number + 1}}&nbsp;</a>
     {% endfor %}
   {% endif %}
 
@@ -77,7 +79,7 @@
 
   {% if paginator.page_numbers_right()  %}
     {% for number in paginator.page_numbers_right() %}
-      <a href="/spice/search/?q={{query}}&p={{number}}">&nbsp;{{number + 1}}&nbsp;</a>
+      <a href={{view.request.route_url('search_jinja')}}?q={{query}}&p={{number}}>&nbsp;{{number + 1}}&nbsp;</a>
     {% endfor %}
   {% endif %}
 
@@ -86,11 +88,11 @@
   {% endif %}
 
   {% if paginator.show_end()  %}
-    <a href="/spice/search/?q={{query}}&p={{paginator.total_pages()-1}}">&nbsp;{{paginator.total_pages()}}&nbsp;</a>
+    <a href={{view.request.route_url('search_jinja')}}?q={{query}}&p={{paginator.total_pages()-1}}>&nbsp;{{paginator.total_pages()}}&nbsp;</a>
   {% endif %}
 
   {% if paginator.has_next_page() %}
-    <a href="/spice/search/?q={{query}}&p={{p + 1}}">&nbsp;Next&nbsp;&gt;</a>
+    <a href={{view.request.route_url('search_jinja')}}?q={{query}}&p={{p + 1}}>&nbsp;Next&nbsp;&gt;</a>
   {% endif %}
 
 {%- endmacro %}
@@ -115,5 +117,5 @@
   {% if result.primary_category  %}
       <p>{{view.get_category(result.primary_category).title}}</p>
       {% endif %}
-      <a href="/spice/content/detail/{{result.uuid}}/">{{result.title}} ... Read More &gt;</a>
+      <a href={{view.request.route_url('content_jinja', uuid=result.uuid)}}>{{result.title}} ... Read More &gt;</a>
 {%- endmacro %}

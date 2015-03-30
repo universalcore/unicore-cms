@@ -5,7 +5,7 @@
 <ul>
 {% for cat in view.get_categories() %}
     <li>
-    	<a href='/spice/content/list/{{cat.uuid}}/'>
+    	<a href={{view.request.route_url('category_jinja2', category=cat.uuid)}}>
     		{{molecules.image_and_heading(view, cat)}}
        	</a>
     </li>
@@ -13,21 +13,21 @@
 </ul>
 {%- endmacro %}
 
-{% macro list_of_links(pages) -%}
+{% macro list_of_links(view, pages) -%}
 <ul>
 {% for page in pages %}
 	<li>
-		<a href="/spice/content/detail/{{page.uuid}}/">{{page.title}}</a>
+		<a href={{view.request.route_url('content_jinja', uuid=page.uuid)}}>{{page.title}} </a>
 	</li>
 {% endfor %}
 </ul>
 {%- endmacro %}
 
-{% macro list_of_links_FFL(pages, category) -%}
+{% macro list_of_links_FFL(view, pages, category) -%}
 <ul>
 {% for page in pages %}
 	<li>
-		<a href="/spice/content/detail/{{page.uuid}}/">{{page.title}}</a>
+		<a href={{view.request.route_url('content_jinja', uuid=page.uuid)}}>{{page.title}}</a>
 	</li>
 {% endfor %}
 	<li>
@@ -36,11 +36,11 @@
 </ul>
 {%- endmacro %}
 
-{% macro list_of_languages(languages) -%}
+{% macro list_of_all_languages(view, languages) -%}
 <ul>
 {% for lang_code, lang_name in languages[:10] %}
 	<li>
-		<a href="/locale/{{lang_code}}/">{{lang_name}}</a>
+		<a href={{view.request.route_url('locale_matched',  language=lang_code ) }}>{{lang_name}}</a>
 	</li>
 {% endfor %}
 </ul>
