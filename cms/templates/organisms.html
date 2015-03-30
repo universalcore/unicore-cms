@@ -38,9 +38,9 @@
 
 {% macro list_of_languages(languages) -%}
 <ul>
-{% for lang in languages[:10] %}
+{% for lang_code, lang_name in languages[:10] %}
 	<li>
-		<a href="/locale/{{lang[0]}}/">{{lang[1]}}</a>
+		<a href="/locale/{{lang_code}}/">{{lang_name}}</a>
 	</li>
 {% endfor %}
 </ul>
