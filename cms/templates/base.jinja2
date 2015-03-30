@@ -15,18 +15,18 @@
 </head>
 <body>
 <!-- lang div -->
-{{molecules.nav_inline_centered(view.get_display_languages())}}
+{{molecules.list_of_languages(view.get_display_languages())}}
 
 {{molecules.logo("/static/img/logo.png")}}
 
-{{molecules.list_of_site_links(view) }}
+{{molecules.list_of_site_links(view, [('about', 'About'), ('credit', 'Credit'), ('contact', 'Contact')] ) }}
 
 {% block content %}
 {% endblock %}
 
 
 {% block menu %}   
-{{molecules.list_of_site_links(view)}}
+{{molecules.list_of_site_links(view, [('about', 'About'), ('credit', 'Credit'), ('contact', 'Contact')] ) }}
 {% endblock%}
 
 {% block search %}

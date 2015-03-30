@@ -1,7 +1,7 @@
 {% import 'atoms.html' as atoms %}
 
-{% macro nav_inline_centered(languages) -%}
-<ul class="nav list-inline l-tac" role="navigation">
+{% macro list_of_languages(languages) -%}
+<ul>
 {% for key, value in languages %}
 	<li><a href="/locale/{{key}}/">{{value}}</a></li>
 {% endfor %}
@@ -20,13 +20,13 @@
 <h3>{{cat.title}}</h3>
 {%- endmacro %}
 
-
-{% macro list_of_site_links(view) -%}
+<!-- Has to have home -->
+{% macro list_of_site_links(view, dict) -%}
 <ul>
   <li><a href={{view.request.route_url('home_jinja')}}>Home</a></li>
-  <li><a href={{view.request.route_url('flatpage_jinja', slug="about")}}>About</a></li>
-  <li><a href={{view.request.route_url('flatpage_jinja', slug = "credits")}}>Credits</a></li>
-  <li><a href={{view.request.route_url('flatpage_jinja', slug = "contact")}}>Contact</a></li>
+  {% for key, value in dict %}
+    <li><a href={{view.request.route_url('flatpage_jinja', slug=key)}}>{{value}}</a></li>
+  {% endfor %}
 </ul>
 {%- endmacro %}
 
