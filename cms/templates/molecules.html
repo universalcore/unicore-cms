@@ -46,10 +46,10 @@
 </div>
 {%- endmacro %}
 
-{% macro search_box(view) -%}
+{% macro search_box(view) -%} 
   <form action={{view.request.route_url('search_jinja')}} method='GET'>
-    <label for="search">Search: 
-        <input id="input-search" name="q" type="text">
+    <label for="q">Search: 
+        <input id="q" name="q" type="text">
     </label>
         <input type="submit" value='Submit' />
   </form>
