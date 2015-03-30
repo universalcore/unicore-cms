@@ -6,7 +6,7 @@
 {% block content %}
 
 <h1>We can't find that page, sorry.</h1>
-Go to the<a href="/spice/">Home Page</a> 
+Go to the<a href={{view.request.route_url('home_jinja')}}>Home Page</a> 
 
 {{molecules.search_box()}}
 
