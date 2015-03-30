@@ -1,0 +1,14 @@
+// Facts for Life
+
+$colorFirst: #cce9fc; // baby blue
+$colorSecond: #fff; // white
+$colorThird: #0093ef; // blue
+$colorFourth: #92AFC1; // grey blue
+
+@include links($colorThird);
+
+.list-block {
+  li {
+    border-bottom: 1px dotted $colorSecond;
+  }
+}

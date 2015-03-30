@@ -1,0 +1,113 @@
+@import "variables";
+
+/* ==|== primary styles ===================================================== */
+
+::-moz-selection {
+  background-color: lighten($colorFirst, 65%);
+  color: $colorFirst;
+  text-shadow: none;
+}
+
+::selection {
+  background-color: lighten($colorFirst, 65%);
+  color: $colorFirst;
+  text-shadow: none;
+}
+
+/* Cancels out Firefox Mobile's gradient background */
+button {
+  background-image: none;
+}
+
+// img
+
+img {
+  border-width: 0;
+  vertical-align: middle;
+  -ms-interpolation-mode: bicubic;
+  max-width: 100%;
+  height: auto;
+}
+
+.banner {
+  img {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+
+svg:not(:root) {
+  overflow: hidden;
+}
+
+// https://github.com/mrmrs/fluidity
+
+canvas, iframe, video, svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Wrap tables or pre elements in a div with this class */
+.overflow-container { overflow-y: scroll; }
+
+// http://timkadlec.com/2012/10/ie10-snap-mode-and-responsive-design/
+
+@-webkit-viewport {
+  width : device-width;
+}
+
+@-moz-viewport {
+  width : device-width;
+}
+
+@-ms-viewport {
+  width : device-width;
+}
+
+@-o-viewport {
+  width : device-width;
+}
+
+@viewport {
+  width : device-width;
+}
+
+html {
+  -webkit-overflow-scrolling : touch;
+  -webkit-tap-highlight-color : lighten(#333, 75%);
+}
+
+/* ==|== Links ==== */
+
+:not(a):focus {
+  outline: none;
+}
+
+html {
+  font-family: $font-family-sans-serif;
+  line-height: 1.25;
+}
+
+%clearfix {
+    *zoom: 1;
+    &:before {
+      content: " ";
+      display: table;
+    }
+    &:after {
+      content: " ";
+      display: table;
+      clear: both;
+    }
+}
+
+body {
+  @extend %no-m;
+}
+
+// Typography
+
+h1, h2, h3, h4 {
+  margin-top: 0;
+}

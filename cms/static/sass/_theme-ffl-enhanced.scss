@@ -1,0 +1,35 @@
+// Facts for Life
+
+$colorFirst: #cce9fc; // baby blue
+$colorSecond: #fff; // white
+$colorThird: #0093ef; // blue
+$colorFourth: #92AFC1; // grey blue
+
+@include links($colorFirst);
+
+// white, blue links, on baby blue
+.highlight-primary {
+  background-color: $colorFirst;
+  color: $colorSecond;
+  a {
+    color: $colorThird;
+  }
+  .active {
+    color: #92AFC1;
+  }
+}
+
+// white on blue
+.highlight-secondary {
+  background-color: $colorThird;
+  color: $colorSecond;
+  a {
+    color: $colorSecond;
+  }
+}
+
+.list-block {
+  li {
+    border-bottom: 1px dotted $colorSecond;
+  }
+}

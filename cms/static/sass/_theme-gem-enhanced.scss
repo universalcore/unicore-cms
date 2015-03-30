@@ -1,0 +1,163 @@
+// MAMA
+
+$colorFirst: #32a6a6; // turquoise
+$colorSecond: #124f52; // dark turquoise
+$colorThird: #c4d131; // green
+$colorFourth: #333; // black
+
+@include links($colorFirst);
+
+// dark turquoise on turquoise
+.highlight-primary {
+  background-color: $colorFirst;
+  color: $colorSecond;
+  a {
+    color: $colorSecond;
+  }
+  .active {
+    color: lighten($colorSecond, 10%)
+  }
+}
+
+// black on green
+.highlight-secondary {
+  background-color: $colorThird;
+  color: $colorFourth;
+  a {
+    color: $colorFourth;
+  }
+  .active {
+    color: lighten($colorFourth, 30%)
+  }
+}
+
+// GEM special
+
+$latest: #ff9933; // orange
+$articles: #ea178b; // pink - Girl Heroes, Life Tips
+$girlEffect: $colorFirst; // turquoise
+
+.more {
+  background-color: #eee;
+}
+
+// white on background colours
+
+.latest {
+  a {
+    color: $latest;
+  }
+  .list-header {
+    background-color: $latest;
+  }
+}
+
+.articles {
+  a {
+    color: $articles;
+  }
+  .list-header {
+    background-color: $articles;
+  }
+}
+
+.girl-effect {
+  a {
+    color: $girlEffect;
+  }
+  .list-header {
+    background-color: $girlEffect;
+  }
+}
+
+.girl-effect-logo {
+  background-color: $girlEffect;
+}
+
+.latest, .articles, .girl-effect {
+  .list-header {
+    color: white;
+    @extend %uc;
+  }
+  .list-header a {
+    color: white;
+  }
+}
+
+// extra fancy
+
+$latest-flip: #fad527; // yellow
+$articles-flip: #e31f26; // red
+$girlEffect-flip: $colorThird; // green
+
+.list-header {
+  strong, a strong {
+    color: #333;
+  }
+}
+
+.list-block {
+  h3 {
+    text-transform: uppercase;
+    font-weight: bold;
+  }
+  a {
+    text-decoration: none;
+  }
+}
+
+// arrows
+
+%highlighted-links {
+  a {
+    position: relative;
+    padding-right: 2.5em;
+    &:after {
+      content: "\279c";
+      position: absolute;
+      right: 0.5em;
+      font-size: 1.5em;
+      top: 0.1em;
+    }
+    [dir="rtl"] & {
+      padding-right: 0.5em;
+      &:after {
+        content: "";
+      }
+    }
+  }
+  .more {
+    a {
+      padding-right: 0.5em;
+      padding-left: 2.5em;
+      &:after {
+        left: 1em;
+        font-size: 1em;
+        top: 0.5em;
+      }
+    }
+  }
+}
+
+.latest {
+  @include fancy-list-headers($latest-flip, $latest, true);
+}
+
+.articles {
+  @include fancy-list-headers($articles-flip, $articles, true);
+  @extend %highlighted-links;
+}
+
+.girl-heroes {
+  @extend %has-thumb;
+  @extend %thumb-circle;
+}
+
+.life-tips {
+  @extend %has-thumb;
+}
+
+.girl-effect {
+  @include fancy-list-headers($girlEffect-flip, $girlEffect, true);
+  @extend %has-thumb-flip;
+}

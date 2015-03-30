@@ -1,0 +1,24 @@
+// Malaria No More
+
+$colorFirst: #cd3209;// burnt orange
+$colorSecond: #dc5a11; //  light orange  
+$colorThird: #fff; // white
+$colorFourth: #ebebeb; // light grey
+
+@include links($colorFirst);
+
+// white text on burnt orange background
+.highlight-primary {
+  color: $colorFirst;
+}
+
+// dark grey, orange links, on light grey
+.highlight-secondary {
+  color: darken($colorFourth, 30%);
+  a {
+    color: $colorSecond;
+  }
+  .active {
+    color: darken($colorFourth, 30%);
+  }
+}
