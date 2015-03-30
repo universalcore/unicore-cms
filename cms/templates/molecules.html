@@ -58,11 +58,11 @@
 {% macro page_number_navigator(view, paginator, p, query) -%}
 
   {% if paginator.has_previous_page() %}
-    <a href={{view.request.route_url('search_jinja')}}?q={{query}}&p={{p-1}} >&nbsp;&lt;&nbsp;Previous</a>
+    <a href={{view.request.route_url('search_jinja')}}?q={{query}}&p={{p-1}} >&lt;&nbsp;Previous</a>
   {% endif %}
 
   {% if  paginator.show_start() %}
-    <a href={{view.request.route_url('search_jinja')}}?q={{query}}&p=0>&nbsp;1&nbsp;</a>
+    <a href={{view.request.route_url('search_jinja')}}?q={{query}}&p=0>1</a>
   {% endif %}
 
   {% if paginator.needs_start_ellipsis() %}
@@ -71,15 +71,15 @@
 
   {% if paginator.page_numbers_left()  %}
     {% for number in paginator.page_numbers_left() %}
-      <a href={{view.request.route_url('search_jinja')}}?q={{query}}&p={{number}}>&nbsp;{{number + 1}}&nbsp;</a>
+      <a href={{view.request.route_url('search_jinja')}}?q={{query}}&p={{number}}>{{number + 1}}</a>
     {% endfor %}
   {% endif %}
 
-  &nbsp;&nbsp;<b>{{p + 1}}</b>&nbsp;&nbsp;
+  <b>{{p + 1}}</b>
 
   {% if paginator.page_numbers_right()  %}
     {% for number in paginator.page_numbers_right() %}
-      <a href={{view.request.route_url('search_jinja')}}?q={{query}}&p={{number}}>&nbsp;{{number + 1}}&nbsp;</a>
+      <a href={{view.request.route_url('search_jinja')}}?q={{query}}&p={{number}}>{{number + 1}}</a>
     {% endfor %}
   {% endif %}
 
@@ -88,11 +88,11 @@
   {% endif %}
 
   {% if paginator.show_end()  %}
-    <a href={{view.request.route_url('search_jinja')}}?q={{query}}&p={{paginator.total_pages()-1}}>&nbsp;{{paginator.total_pages()}}&nbsp;</a>
+    <a href={{view.request.route_url('search_jinja')}}?q={{query}}&p={{paginator.total_pages()-1}}>{{paginator.total_pages()}}</a>
   {% endif %}
 
   {% if paginator.has_next_page() %}
-    <a href={{view.request.route_url('search_jinja')}}?q={{query}}&p={{p + 1}}>&nbsp;Next&nbsp;&gt;</a>
+    <a href={{view.request.route_url('search_jinja')}}?q={{query}}&p={{p + 1}}>Next&nbsp;&gt;</a>
   {% endif %}
 
 {%- endmacro %}
