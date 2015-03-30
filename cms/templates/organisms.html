@@ -23,19 +23,6 @@
 </ul>
 {%- endmacro %}
 
-{% macro list_of_links_FFL(view, pages, category) -%}
-<ul>
-{% for page in pages %}
-	<li>
-		<a href={{view.request.route_url('content_jinja', uuid=page.uuid)}}>{{page.title}}</a>
-	</li>
-{% endfor %}
-	<li>
-		<a href="/spice/about/{{category.slug}}/">Why it is important</a>
-	</li>
-</ul>
-{%- endmacro %}
-
 {% macro list_of_all_languages(view, languages) -%}
 <ul>
 {% for lang_code, lang_name in languages[:10] %}
