@@ -1,0 +1,10 @@
+{% extends "base.jinja2" %}
+{% import 'atoms.html' as atoms %}
+{% import 'molecules.html' as molecules %}
+{% import 'organisms.html' as organisms %}
+
+{% block content %}
+
+{{organisms.list_of_all_languages(view, languages)}}
+
+{% endblock %}

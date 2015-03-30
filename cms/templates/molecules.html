@@ -1,0 +1,121 @@
+{% import 'atoms.html' as atoms %}
+
+{% macro list_of_languages(view, languages) -%}
+<ul>
+{% for lang_code, lang_name in languages %}
+  <li>
+    <a href={{view.request.route_url('locale_matched',  language=lang_code ) }}>{{lang_name}}</a>
+  </li>
+{% endfor %}
+	<li><a href="/spice/locale/change/">&gt;&gt;</a></li>
+</ul>
+{%- endmacro %}
+
+{% macro banner_with_image(src) -%}
+<div class ="banner">
+	{{ atoms.image(src, "", "")}}
+</div>
+{%- endmacro %}
+
+{% macro image_and_heading(view, cat) -%}
+{{atoms.image( view.get_image_url(cat.image_host, cat.image, 45, 45), "" , "" ) }}
+<h3>{{cat.title}}</h3>
+{%- endmacro %}
+
+<!-- Has to have home -->
+{% macro list_of_site_links(view, dict) -%}
+<ul>
+  <li><a href={{view.request.route_url('home_jinja')}}>Home</a></li>
+  {% for key, value in dict %}
+    <li><a href={{view.request.route_url('flatpage_jinja', slug=key)}}>{{value}}</a></li>
+  {% endfor %}
+</ul>
+{%- endmacro %}
+
+{% macro logo(view, src) -%}
+<div class="logo">
+  <a href={{view.request.route_url('home_jinja')}}>
+	 {{atoms.image(src, "", "")}}
+  </a>
+</div>
+{%- endmacro %}
+
+{% macro footer(message) -%}
+<div class="footer" role="contentinfo">
+  &copy; {{message}}
+</div>
+{%- endmacro %}
+
+{% macro search_box(view) -%} 
+  <form action={{view.request.route_url('search_jinja')}} method='GET'>
+    <label for="q">Search: 
+        <input id="q" name="q" type="text">
+    </label>
+        <input type="submit" value='Submit' />
+  </form>
+{%- endmacro %}
+
+{% macro page_number_navigator(view, paginator, p, query) -%}
+
+  {% if paginator.has_previous_page() %}
+    <a href={{view.request.route_url('search_jinja')}}?q={{query}}&p={{p-1}} >&lt;&nbsp;Previous</a>
+  {% endif %}
+
+  {% if  paginator.show_start() %}
+    <a href={{view.request.route_url('search_jinja')}}?q={{query}}&p=0>1</a>
+  {% endif %}
+
+  {% if paginator.needs_start_ellipsis() %}
+    <a>...</a>
+  {% endif %}
+
+  {% if paginator.page_numbers_left()  %}
+    {% for number in paginator.page_numbers_left() %}
+      <a href={{view.request.route_url('search_jinja')}}?q={{query}}&p={{number}}>{{number + 1}}</a>
+    {% endfor %}
+  {% endif %}
+
+  <b>{{p + 1}}</b>
+
+  {% if paginator.page_numbers_right()  %}
+    {% for number in paginator.page_numbers_right() %}
+      <a href={{view.request.route_url('search_jinja')}}?q={{query}}&p={{number}}>{{number + 1}}</a>
+    {% endfor %}
+  {% endif %}
+
+  {% if paginator.needs_end_ellipsis() %}
+    <a>...</a>
+  {% endif %}
+
+  {% if paginator.show_end()  %}
+    <a href={{view.request.route_url('search_jinja')}}?q={{query}}&p={{paginator.total_pages()-1}}>{{paginator.total_pages()}}</a>
+  {% endif %}
+
+  {% if paginator.has_next_page() %}
+    <a href={{view.request.route_url('search_jinja')}}?q={{query}}&p={{p + 1}}>Next&nbsp;&gt;</a>
+  {% endif %}
+
+{%- endmacro %}
+
+{% macro message_for_no_results(query) -%}
+  {% if query %}
+    <p>No results found for <b>{{query}}</b></p>
+  {% else %}
+    <p>No results found!</p>
+  {% endif %}
+{%- endmacro %}
+
+{% macro search_summary(num_of_results, query) -%}
+  {% if num_of_results==1 %}
+    <p>1 search result for: <b>{{query}}</b></p>
+  {% elif num_of_results > 1 %}
+    <p>{{num_of_results}} search results for: <b>{{query}}</b></p>
+  {% endif %}
+{%- endmacro %}
+
+{% macro article_summary(result, view) -%}
+  {% if result.primary_category  %}
+      <p>{{view.get_category(result.primary_category).title}}</p>
+      {% endif %}
+      <a href={{view.request.route_url('content_jinja', uuid=result.uuid)}}>{{result.title}} ... Read More &gt;</a>
+{%- endmacro %}
