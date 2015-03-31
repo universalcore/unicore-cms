@@ -58,3 +58,8 @@ coverage.xml
 docs/_build/
 
 .DS_Store
+
+#sass files for jinja
+cms/static/sass/.sass-cache/*
+cms/static/sass/*.css
+cms/static/sass/*.map
