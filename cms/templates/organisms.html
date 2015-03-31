@@ -1,7 +1,7 @@
 {% import 'molecules.html' as molecules %}
 {% import 'atoms.html' as atoms %}
 
-{% macro list_of_images_and_heading(view) -%}
+{% macro list_of_categories(view) -%}
 <ul>
 {% for cat in view.get_categories() %}
     <li>
