@@ -1,7 +1,7 @@
 {% import 'atoms.html' as atoms %}
 
 {% macro list_of_languages(view, languages) -%}
-<ul>
+<ul class="nav list-inline highlight-primary" role="navigation">
 {% for lang_code, lang_name in languages %}
   <li>
     <a href={{view.request.route_url('locale_matched',  language=lang_code ) }}>{{lang_name}}</a>
@@ -11,20 +11,23 @@
 </ul>
 {%- endmacro %}
 
+{% macro logo(view, src) -%}
+<div class="logo">
+  <a href={{view.request.route_url('home_jinja')}}>
+   {{atoms.image(src, "", "")}}
+  </a>
+</div>
+{%- endmacro %}
+
 {% macro banner_with_image(src) -%}
 <div class ="banner">
 	{{ atoms.image(src, "", "")}}
 </div>
 {%- endmacro %}
 
-{% macro image_and_heading(view, cat) -%}
-{{atoms.image( view.get_image_url(cat.image_host, cat.image, 45, 45), "" , "" ) }}
-<h3>{{cat.title}}</h3>
-{%- endmacro %}
-
 <!-- Has to have home -->
 {% macro list_of_site_links(view, dict) -%}
-<ul>
+<ul class="nav list-inline" role="navigation">
   <li><a href={{view.request.route_url('home_jinja')}}>Home</a></li>
   {% for key, value in dict %}
     <li><a href={{view.request.route_url('flatpage_jinja', slug=key)}}>{{value}}</a></li>
@@ -32,12 +35,9 @@
 </ul>
 {%- endmacro %}
 
-{% macro logo(view, src) -%}
-<div class="logo">
-  <a href={{view.request.route_url('home_jinja')}}>
-	 {{atoms.image(src, "", "")}}
-  </a>
-</div>
+{% macro image_and_heading(view, cat) -%}
+{{atoms.image( view.get_image_url(cat.image_host, cat.image, 45, 45), "" , "" ) }}
+<h3>{{cat.title}}</h3>
 {%- endmacro %}
 
 {% macro footer(message) -%}
