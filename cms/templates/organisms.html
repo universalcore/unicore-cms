@@ -2,7 +2,7 @@
 {% import 'atoms.html' as atoms %}
 
 {% macro list_of_categories(view) -%}
-<ul>
+<ul class="list-block">
 {% for cat in view.get_categories() %}
     <li>
     	<a href={{view.request.route_url('category_jinja2', category=cat.uuid)}}>
