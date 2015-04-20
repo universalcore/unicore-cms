@@ -1,5 +1,6 @@
 import uuid
 from urlparse import urljoin
+from datetime import datetime
 
 from elasticgit import EG
 from dateutil import parser
@@ -25,14 +26,17 @@ class BaseCmsView(object):
             index_prefix=self.settings['es.index_prefix'])
         self.track_pageview()
 
-    def format_date(self, date_str, fmt='%d %B %Y'):
+    def format_date(self, date_obj, fmt='%d %B %Y'):
+        if isinstance(date_obj, datetime):
+            return date_obj.strftime(fmt)
+
         try:
-            dt = parser.parse(date_str)
+            dt = parser.parse(date_obj)
             return dt.strftime(fmt)
         except TypeError:
-            return date_str
+            return date_obj
         except ValueError:
-            return date_str
+            return date_obj
 
     def get_image_url(self, image_host, image_uuid, width=None, height=None):
         security_key = self.settings.get('thumbor.security_key')

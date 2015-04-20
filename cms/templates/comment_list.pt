@@ -1,0 +1,16 @@
+<div xmlns:metal="http://xml.zope.org/namespaces/metal"
+     metal:define-macro="comment_list"
+     class="comments highlight-quaternary"
+     tal:condition="exists:comments.state">
+
+      <div class="comments-header" i18n:translate="">
+        <span tal:replace="comments.total" i18n:name="total" /> comments
+      </div>
+
+      <ul class="comment-list" tal:condition="comments.state in ('open', 'closed')">
+        <li tal:repeat="comment comments" class="comment">
+            <span metal:use-macro="view.comment_template" />
+        </li>
+      </ul>
+
+</div>

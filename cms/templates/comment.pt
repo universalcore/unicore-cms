@@ -1,0 +1,15 @@
+<div xmlns:metal="http://xml.zope.org/namespaces/metal"
+     metal:define-macro="comment"
+     tal:omit-tag="">
+
+    <span class="comment-meta">
+      <span class="comment-author" tal:content="comment.get('user_name')" /> <span class="date" tal:content="view.format_date(comment.get('submit_datetime'))" />
+    </span>
+
+    <p tal:content="comment.get('comment')"></p>
+
+    <ul class="comment-actions nav list-inline">
+      <!-- <li><a href="#">Report</a></li> -->
+    </ul>
+
+</div>

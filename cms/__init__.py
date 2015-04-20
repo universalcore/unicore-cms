@@ -93,7 +93,7 @@ def locale_negotiator_with_fallbacks(request):
 
 
 def init_hubclient(config):
-    if config.registry.settings.get('unicorehub.app_id', None):
+    if config.registry.settings.get('unicorehub.app_id'):
         hubclient = HubUserClient.from_config(config.registry.settings)
         config.registry.hubclient = hubclient
     else:
@@ -101,7 +101,12 @@ def init_hubclient(config):
 
 
 def init_commentclient(config):
-    if config.registry.settings.get('unicorecomments.host', None):
+    if config.registry.settings.get('unicorecomments.host'):
+        app_id = config.registry.settings.get('unicorehub.app_id')
+        if app_id is None:
+            return None
+
+        config.registry.settings['unicorecomments.app_id'] = app_id
         commentclient = CommentClient.from_config(config.registry.settings)
         config.registry.commentclient = commentclient
     else:

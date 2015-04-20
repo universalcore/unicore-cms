@@ -91,6 +91,16 @@ class CmsViews(BaseCmsView):
         renderer = get_renderer("cms:templates/auth.pt")
         return renderer.implementation().macros['auth']
 
+    @reify
+    def comment_template(self):
+        renderer = get_renderer("cms:templates/comment.pt")
+        return renderer.implementation().macros['comment']
+
+    @reify
+    def comment_list_template(self):
+        renderer = get_renderer("cms:templates/comment_list.pt")
+        return renderer.implementation().macros['comment_list']
+
     def get_logo_attributes(self, default_image_src=None,
                             width=None, height=None):
         attrs = {'width': width, 'height': height}
@@ -190,6 +200,16 @@ class CmsViews(BaseCmsView):
         except ValueError:
             return None
 
+    def get_comments_for_content(self, content_uuid, **page_args):
+        commentclient = self.request.registry.commentclient
+        if commentclient is None:
+            return None
+
+        return commentclient.get_comment_page(
+            content_uuid=content_uuid,
+            app_uuid=commentclient.settings['app_id'],
+            **page_args)
+
     @reify
     def get_top_nav(self, order_by=('position',)):
         return self._get_top_nav(self.locale, order_by)
@@ -248,6 +268,7 @@ class CmsViews(BaseCmsView):
             'primary_category': category,
             'content': markdown(page.content),
             'description': markdown(page.description),
+            'comments': self.get_comments_for_content(page.uuid, limit=10)
         }
 
     @view_config(route_name='flatpage', renderer='cms:templates/flatpage.pt')

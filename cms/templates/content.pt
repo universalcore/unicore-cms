@@ -22,6 +22,9 @@
                     <div class="clear"></div>
                 </div>
             </div>
+
+            <div metal:use-macro="view.comment_list_template" />
+
         </div>
 
     </div>
