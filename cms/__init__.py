@@ -8,6 +8,7 @@ from pyramid.authentication import SessionAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 
 from unicore.hub.client import User, UserClient as HubUserClient
+from unicore.comments.client import CommentClient
 
 import logging
 log = logging.getLogger(__name__)
@@ -99,6 +100,14 @@ def init_hubclient(config):
         config.registry.hubclient = None
 
 
+def init_commentclient(config):
+    if config.registry.settings.get('unicorecomments.host', None):
+        commentclient = CommentClient.from_config(config.registry.settings)
+        config.registry.commentclient = commentclient
+    else:
+        config.registry.commentclient = None
+
+
 def init_auth(config):
 
     def user(request):
@@ -155,6 +164,7 @@ def includeme(config):
 
     init_auth(config)
     init_hubclient(config)
+    init_commentclient(config)
     init_repository(config)
 
     config.scan()
