@@ -93,12 +93,12 @@ class CmsViews(BaseCmsView):
 
     @reify
     def comment_template(self):
-        renderer = get_renderer("cms:templates/comment.pt")
+        renderer = get_renderer("cms:templates/comments/comment.pt")
         return renderer.implementation().macros['comment']
 
     @reify
     def comment_list_template(self):
-        renderer = get_renderer("cms:templates/comment_list.pt")
+        renderer = get_renderer("cms:templates/comments/comment_list.pt")
         return renderer.implementation().macros['comment_list']
 
     def get_logo_attributes(self, default_image_src=None,
