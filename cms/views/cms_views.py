@@ -27,6 +27,7 @@ from utils import EGPaginator, to_eg_objects
 from pyramid.view import notfound_view_config
 
 CACHE_TIME = 'default_term'
+COMMENTS_PER_PAGE = 20
 
 
 class CmsViews(BaseCmsView):
@@ -205,10 +206,19 @@ class CmsViews(BaseCmsView):
         if commentclient is None:
             return None
 
+        default_page_args = {'limit': COMMENTS_PER_PAGE}
+
+        if 'c_after' in self.request.GET:
+            default_page_args['after'] = self.request.GET['c_after']
+        elif 'c_before' in self.request.GET:
+            default_page_args['before'] = self.request.GET['c_before']
+
+        default_page_args.update(page_args)
+
         return commentclient.get_comment_page(
             content_uuid=content_uuid,
             app_uuid=commentclient.settings['app_id'],
-            **page_args)
+            **default_page_args)
 
     @reify
     def get_top_nav(self, order_by=('position',)):
@@ -262,14 +272,21 @@ class CmsViews(BaseCmsView):
 
         if page.language != self.locale:
             raise HTTPNotFound()
+
         return {
             'page': page,
             'linked_pages': linked_pages,
             'primary_category': category,
             'content': markdown(page.content),
             'description': markdown(page.description),
-            'comments': self.get_comments_for_content(page.uuid, limit=10)
+            'comments': self.get_comments_for_content(
+                page.uuid, limit=COMMENTS_PER_PAGE)
         }
+
+    @view_config(route_name='comments',
+                 renderer='cms:templates/comments/comment_page.pt')
+    def comments(self):
+        return self.content()
 
     @view_config(route_name='flatpage', renderer='cms:templates/flatpage.pt')
     @view_config(route_name='flatpage_jinja',

@@ -3,14 +3,27 @@
      class="comments highlight-quaternary"
      tal:condition="exists:comments.state">
 
+  <div tal:condition="comments.state in ('open', 'closed')" tal:omit-tag="">
+
       <div class="comments-header" i18n:translate="">
         <span tal:replace="comments.total" i18n:name="total" /> comments
       </div>
 
-      <ul class="comment-list" tal:condition="comments.state in ('open', 'closed')">
+      <ul class="comment-list">
         <li tal:repeat="comment comments" class="comment">
             <span metal:use-macro="view.comment_template" />
         </li>
       </ul>
+
+      <div class="comments-pagination">
+        <a tal:condition="comments.has_previous()"
+          i18n:translate=""
+          tal:attributes="href '/content/comments/%(content_uuid)s/?c_after=%(after)s' % comments.get_previous_args()">&lt;&nbsp;Previous</a>
+        <a tal:condition="comments.has_next()"
+          i18n:translate=""
+          tal:attributes="href '/content/comments/%(content_uuid)s/?c_before=%(before)s' % comments.get_next_args()">Next&nbsp;&gt;</a>
+      </div>
+
+  </div>
 
 </div>

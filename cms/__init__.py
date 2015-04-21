@@ -154,6 +154,7 @@ def includeme(config):
     config.add_route('category_jinja2', '/spice/content/list/{category}/')
     config.add_route('content', '/content/detail/{uuid}/')
     config.add_route('content_jinja', '/spice/content/detail/{uuid}/')
+    config.add_route('comments', '/content/comments/{uuid}/')
     config.add_route('locale', '/locale/')
     config.add_route('locale_change', '/locale/change/')
     config.add_route('locale_change_jinja', '/spice/locale/change/')
