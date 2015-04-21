@@ -10,6 +10,7 @@ cornice==0.18.1
 pyramid_celery>=2.0.0.rc4
 pyramid_redis
 babel
+deform>=0.9.9
 lingua
 arrow
 Markdown==2.5.1

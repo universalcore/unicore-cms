@@ -295,6 +295,10 @@ class CmsViews(BaseCmsView):
     def comments(self):
         return self.content()
 
+    @view_config(route_name='post_comment', request_method='POST')
+    def post_comment(self):
+        pass
+
     @view_config(route_name='flatpage', renderer='cms:templates/flatpage.pt')
     @view_config(route_name='flatpage_jinja',
                  renderer='cms:templates/flatpage.jinja2')
