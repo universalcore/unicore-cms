@@ -22,6 +22,7 @@ from cms.views.base import BaseCmsView
 from unicore.content.models import Category, Page, Localisation
 from unicore.hub.client import ClientException as HubClientException
 from unicore.hub.client.utils import same_origin
+from unicore.comments.client import LazyCommentPage
 from utils import EGPaginator, to_eg_objects
 
 from pyramid.view import notfound_view_config
@@ -220,7 +221,8 @@ class CmsViews(BaseCmsView):
 
         default_page_args.update(page_args)
 
-        return commentclient.get_comment_page(
+        return LazyCommentPage(
+            commentclient,
             content_uuid=content_uuid,
             app_uuid=commentclient.settings['app_id'],
             **default_page_args)
