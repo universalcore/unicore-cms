@@ -1,0 +1,29 @@
+<div xmlns:metal="http://xml.zope.org/namespaces/metal"
+     metal:define-macro="comment_form"
+     class="add-comment"
+     id="add-comment"
+     tal:condition="exists:comments.state"
+     tal:switch="comments.state">
+
+    <div tal:case="'open'" tal:omit-tag="" tal:define="user view.request.user">
+
+        <div tal:switch="bool(user)" tal:omit-tag="">
+
+          <form action="" tal:case="True">
+            <label for="your-comment"><span i18n:translate="" tal:omit-tag="">Add your comment</span>
+              <textarea name="your-comment" id="your-comment"></textarea>
+            </label>
+            <input type="submit" tal:attributes="value 'Comment'" i18n:attributes="value" class="btn btn-wide" />
+          </form>
+
+          <p tal:case="False">
+            <span i18n:translate="" tal:omit-tag="">You have to be signed in to add a comment</span>. <a href="${request.route_url('redirect_to_login')}" i18n:translate="">Sign in here</a>.
+          </p>
+
+        </div>
+
+    </div>
+
+    <p tal:case="'closed'" i18n:translate="">Commenting has been closed.</p>
+
+</div

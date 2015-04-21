@@ -17,11 +17,11 @@
 
       <div class="comments-pagination">
         <a tal:condition="comments.has_previous()"
-          i18n:translate=""
-          tal:attributes="href '/content/comments/%(content_uuid)s/?c_after=%(after)s' % comments.get_previous_args()">&lt;&nbsp;Previous</a>
+          tal:define="args comments.get_previous_args()"
+          href="${request.route_url('comments', uuid=args['content_uuid'], _query={'c_after': args['after']})}">&lt;&nbsp;<span i18n:translate="" tal:omit-tag="">Previous</span></a>
         <a tal:condition="comments.has_next()"
-          i18n:translate=""
-          tal:attributes="href '/content/comments/%(content_uuid)s/?c_before=%(before)s' % comments.get_next_args()">Next&nbsp;&gt;</a>
+          tal:define="args comments.get_next_args()"
+          href="${request.route_url('comments', uuid=args['content_uuid'], _query={'c_before': args['before']})}"><span i18n:translate="" tal:omit-tag="">Next</span>&nbsp;&gt;</a>
       </div>
 
   </div>

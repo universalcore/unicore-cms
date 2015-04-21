@@ -23,6 +23,7 @@
                 </div>
             </div>
 
+            <div metal:use-macro="view.comment_form_template" />
             <div metal:use-macro="view.comment_list_template" />
 
         </div>
