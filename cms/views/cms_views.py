@@ -110,6 +110,11 @@ class CmsViews(BaseCmsView):
         renderer = get_renderer("cms:templates/comments/comment_form.pt")
         return renderer.implementation().macros['comment_form']
 
+    @reify
+    def form_utils(self):
+        renderer = get_renderer("cms:templates/form_utils.pt")
+        return renderer.implementation().macros
+
     def get_logo_attributes(self, default_image_src=None,
                             width=None, height=None):
         attrs = {'width': width, 'height': height}
