@@ -6,6 +6,7 @@ import colander
 from deform import Form, widget, ValidationFailure
 
 from unicore.content.models import Page
+from utils import translation_string_factory as _
 
 
 COMMENT_MAX_LENGTH = 3000
@@ -101,7 +102,8 @@ class CommentSchema(CSRFSchema):
     comment = colander.SchemaNode(
         colander.String(),
         validator=colander.Length(max=COMMENT_MAX_LENGTH),
-        widget=widget.TextAreaWidget())
+        widget=widget.TextAreaWidget(),
+        title=_('Comment'))
     content_uuid = colander.SchemaNode(
         colander.String(),
         default=deferred_content_uuid_default,

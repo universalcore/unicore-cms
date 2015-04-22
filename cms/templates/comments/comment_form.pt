@@ -12,7 +12,7 @@
           <form action="${request.route_url('comments', uuid=page.uuid, _query=request.GET)}" method="post" tal:case="True">
             <div tal:define="error comment_form.error" metal:use-macro="view.form_utils['errors']"></div>
             <div tal:repeat="field comment_form" metal:use-macro="view.form_utils['field']"></div>
-            <input name="submit" type="submit" tal:attributes="value 'Add comment'" i18n:attributes="value" class="btn btn-wide" />
+            <input name="submit" type="submit" tal:attributes="value 'Add your comment'" i18n:attributes="value" class="btn btn-wide" />
           </form>
 
           <p tal:case="False">
@@ -23,6 +23,6 @@
 
     </div>
 
-    <p tal:case="'closed'" i18n:translate="">Commenting has been closed.</p>
+    <p tal:case="'closed'"><span i18n:translate="" tal:omit-tag="">Commenting has been closed</span>.</p>
 
 </div

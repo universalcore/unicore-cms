@@ -26,7 +26,7 @@ from unicore.hub.client import ClientException as HubClientException
 from unicore.hub.client.utils import same_origin
 from unicore.comments.client import (
     LazyCommentPage, UserBanned, CommentStreamNotOpen)
-from utils import EGPaginator, to_eg_objects
+from utils import EGPaginator, to_eg_objects, translation_string_factory as _
 from forms import CommentForm
 
 from pyramid.view import notfound_view_config
@@ -318,17 +318,19 @@ class CmsViews(BaseCmsView):
                 data = form.validate(self.request.POST.items())
                 commentclient = self.request.registry.commentclient
                 commentclient.create_comment(data)
-                # TODO: redirect
+                raise HTTPFound(self.request.route_url(
+                    'comments', uuid=data['content_uuid']))
 
             except ValidationFailure as e:
                 context['comment_form'] = e.field
 
             except UserBanned:
                 form.error = colander.Invalid(
-                    form, 'You have been banned from commenting')
+                    form, _('You have been banned from commenting'))
+
             except CommentStreamNotOpen:
-                # TODO: redirect
-                pass
+                raise HTTPFound(self.request.route_url(
+                    'comments', uuid=data['content_uuid']))
 
             except ValueError as e:
                 raise HTTPBadRequest()
