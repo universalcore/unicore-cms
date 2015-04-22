@@ -11,7 +11,7 @@
     tal:omit-tag="">
     <div tal:case="True" tal:omit-tag="">${structure:field.render()}</div>
     <div tal:case="False" class="field">
-        <label i18n:translate="">${field.title}</label>
+        <label for="${field.oid}" i18n:translate="">${field.title}</label>
         ${structure:field.render()}
         <div tal:define="error field.error" metal:use-macro="view.form_utils['errors']"></div>
     </div>
