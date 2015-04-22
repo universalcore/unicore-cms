@@ -6,6 +6,7 @@ from pycountry import languages
 from beaker.cache import cache_region
 
 from markdown import markdown
+import colander
 from deform import ValidationFailure
 
 from pyramid.view import view_config
@@ -23,7 +24,8 @@ from cms.views.base import BaseCmsView
 from unicore.content.models import Category, Page, Localisation
 from unicore.hub.client import ClientException as HubClientException
 from unicore.hub.client.utils import same_origin
-from unicore.comments.client import LazyCommentPage
+from unicore.comments.client import (
+    LazyCommentPage, UserBanned, CommentStreamNotOpen)
 from utils import EGPaginator, to_eg_objects
 from forms import CommentForm
 
@@ -316,9 +318,17 @@ class CmsViews(BaseCmsView):
                 data = form.validate(self.request.POST.items())
                 commentclient = self.request.registry.commentclient
                 commentclient.create_comment(data)
+                # TODO: redirect
 
             except ValidationFailure as e:
                 context['comment_form'] = e.field
+
+            except UserBanned:
+                form.error = colander.Invalid(
+                    form, 'You have been banned from commenting')
+            except CommentStreamNotOpen:
+                # TODO: redirect
+                pass
 
             except ValueError as e:
                 raise HTTPBadRequest()
