@@ -1,0 +1,14 @@
+{% extends "base.jinja2" %}
+{% import 'atoms.html' as atoms %}
+{% import 'molecules.html' as molecules %}
+
+{% block content %}
+<a href={{view.request.route_url('category_jinja2', category=primary_category.uuid)}}>
+{{molecules.image_and_heading(view, primary_category )}}
+</a>
+
+{{page.title}}
+
+{{content|safe}}
+
+{% endblock %}

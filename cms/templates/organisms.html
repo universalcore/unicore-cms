@@ -1,0 +1,44 @@
+{% import 'molecules.html' as molecules %}
+{% import 'atoms.html' as atoms %}
+
+{% macro list_of_images_and_heading(view) -%}
+<ul>
+{% for cat in view.get_categories() %}
+    <li>
+    	<a href={{view.request.route_url('category_jinja2', category=cat.uuid)}}>
+    		{{molecules.image_and_heading(view, cat)}}
+       	</a>
+    </li>
+{% endfor %}
+</ul>
+{%- endmacro %}
+
+{% macro list_of_articles(view, pages) -%}
+<ul>
+{% for page in pages %}
+	<li>
+		<a href={{view.request.route_url('content_jinja', uuid=page.uuid)}}>{{page.title}} </a>
+	</li>
+{% endfor %}
+</ul>
+{%- endmacro %}
+
+{% macro list_of_all_languages(view, languages) -%}
+<ul>
+{% for lang_code, lang_name in languages[:10] %}
+	<li>
+		<a href={{view.request.route_url('locale_matched',  language=lang_code ) }}>{{lang_name}}</a>
+	</li>
+{% endfor %}
+</ul>
+{%- endmacro %}
+
+{% macro list_of_returned_articles(paginator, view) -%}
+<ul>
+	{% for result in paginator.get_page() %}
+		<li>
+			{{molecules.article_summary(result, view )}}
+		</li>
+	{% endfor %}
+</ul>
+{%- endmacro %}

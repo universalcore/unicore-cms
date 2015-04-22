@@ -1,0 +1,23 @@
+{% extends "base.jinja2" %}
+{% import 'atoms.html' as atoms %}
+{% import 'molecules.html' as molecules %}
+
+{% block content %}
+
+
+
+{% if  paginator %}
+    
+    {{molecules.search_summary(paginator.total_count(), query)}}
+
+	{% if paginator.total_pages() > 1 %}
+		{{molecules.page_number_navigator(view, paginator, p, query)}}
+	{% endif %}
+
+	{{organisms.list_of_returned_articles(paginator, view)}}
+	
+{% else %}
+	{{molecules.message_for_no_results(query)}}
+{% endif %}
+
+{% endblock %}

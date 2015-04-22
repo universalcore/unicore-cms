@@ -201,12 +201,16 @@ class CmsViews(BaseCmsView):
             featured_in_navbar=True).order_by(*order_by))
 
     @view_config(route_name='home', renderer='cms:templates/home.pt')
+    @view_config(route_name='home_jinja', renderer='cms:templates/home.jinja2')
+    # redundantcategory
     @view_config(route_name='categories',
                  renderer='cms:templates/categories.pt')
     def categories(self):
         return {}
 
     @view_config(route_name='category', renderer='cms:templates/category.pt')
+    @view_config(route_name='category_jinja2',
+                 renderer='cms:templates/category.jinja2')
     def category(self):
         category_id = self.request.matchdict['category']
         category = self.get_category(category_id)
@@ -218,6 +222,8 @@ class CmsViews(BaseCmsView):
         return {'category': category, 'pages': pages}
 
     @view_config(route_name='content', renderer='cms:templates/content.pt')
+    @view_config(route_name='content_jinja',
+                 renderer='cms:templates/content.jinja2')
     def content(self):
         page = self.get_page(self.request.matchdict['uuid'])
 
@@ -245,6 +251,8 @@ class CmsViews(BaseCmsView):
         }
 
     @view_config(route_name='flatpage', renderer='cms:templates/flatpage.pt')
+    @view_config(route_name='flatpage_jinja',
+                 renderer='cms:templates/flatpage.jinja2')
     def flatpage(self):
         page = self.get_page(
             None, self.request.matchdict['slug'], self.locale)
@@ -264,6 +272,9 @@ class CmsViews(BaseCmsView):
     @view_config(
         route_name='locale_change',
         renderer='cms:templates/locale_change.pt')
+    @view_config(
+        route_name='locale_change_jinja',
+        renderer='cms:templates/locale_change.jinja2')
     def locale_change(self):
         return {
             'languages': self.get_featured_languages +
@@ -286,6 +297,8 @@ class CmsViews(BaseCmsView):
 
     @view_config(route_name='search',
                  renderer='cms:templates/search_results.pt')
+    @view_config(route_name='search_jinja',
+                 renderer='cms:templates/search_results.jinja2')
     def search(self):
 
         query = self.request.GET.get('q')

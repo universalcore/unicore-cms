@@ -126,23 +126,30 @@ def init_auth(config):
 
 def includeme(config):
     config.include('pyramid_chameleon')
+    config.include('pyramid_jinja2')
     config.include('pyramid_beaker')
     config.include("cornice")
     config.include("pyramid_celery")
     config.add_static_view('static', 'cms:static', cache_max_age=3600)
+    config.add_route('home_jinja', '/spice/')
     config.add_route('home', '/')
     config.add_route('search', '/search/')
+    config.add_route('search_jinja', '/spice/search/')
     config.add_route('categories', '/content/list/')
     config.add_route('category', '/content/list/{category}/')
+    config.add_route('category_jinja2', '/spice/content/list/{category}/')
     config.add_route('content', '/content/detail/{uuid}/')
+    config.add_route('content_jinja', '/spice/content/detail/{uuid}/')
     config.add_route('locale', '/locale/')
     config.add_route('locale_change', '/locale/change/')
+    config.add_route('locale_change_jinja', '/spice/locale/change/')
     config.add_route('locale_matched', '/locale/{language}/')
     config.add_route('login', '/login/')
     config.add_route('logout', '/logout/')
     config.add_route('redirect_to_login', '/login/hub/')
     # NB: this must be last
     config.add_route('flatpage', '/{slug}/')
+    config.add_route('flatpage_jinja', '/spice/{slug}/')
 
     config.set_locale_negotiator(locale_negotiator_with_fallbacks)
 
