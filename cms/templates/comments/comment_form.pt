@@ -9,11 +9,20 @@
 
         <div tal:switch="bool(user)" tal:omit-tag="">
 
-          <form action="" tal:case="True">
-            <label for="your-comment"><span i18n:translate="" tal:omit-tag="">Add your comment</span>
-              <textarea name="your-comment" id="your-comment"></textarea>
+          <form action="${request.route_url('comments', uuid=page.uuid, _query=request.GET)}" method="post" tal:case="True">
+            <div tal:repeat="field comment_form" tal:omit-tag="">
+                <div tal:condition="field.widget.hidden" tal:omit-tag="">${structure:field.render()}</div>
+            </div>
+
+            <label for="${comment_form.comment.name}">
+                <span i18n:translate="" tal:omit-tag="">Add your comment</span>
+                ${structure:comment_form.comment.render()}
             </label>
-            <input type="submit" tal:attributes="value 'Comment'" i18n:attributes="value" class="btn btn-wide" />
+            <ul class="error-list" tal:define="c comment_form.comment" tal:condition="c.error">
+                <li class="error" tal:repeat="msg c.error.messages()" i18n:translate="">${msg}</li>
+            </ul>
+
+            <input name="submit" type="submit" tal:attributes="value 'Comment'" i18n:attributes="value" class="btn btn-wide" />
           </form>
 
           <p tal:case="False">

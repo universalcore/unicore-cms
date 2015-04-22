@@ -6,13 +6,14 @@ from pycountry import languages
 from beaker.cache import cache_region
 
 from markdown import markdown
+from deform import ValidationFailure
 
 from pyramid.view import view_config
 from pyramid.renderers import get_renderer
 from pyramid.decorator import reify
 from pyramid.response import Response
 from pyramid.security import forget, remember
-from pyramid.httpexceptions import HTTPFound, HTTPNotFound
+from pyramid.httpexceptions import HTTPFound, HTTPNotFound, HTTPBadRequest
 
 from elasticgit import F
 
@@ -24,6 +25,7 @@ from unicore.hub.client import ClientException as HubClientException
 from unicore.hub.client.utils import same_origin
 from unicore.comments.client import LazyCommentPage
 from utils import EGPaginator, to_eg_objects
+from forms import CommentForm
 
 from pyramid.view import notfound_view_config
 
@@ -227,6 +229,13 @@ class CmsViews(BaseCmsView):
             app_uuid=commentclient.settings['app_id'],
             **default_page_args)
 
+    def get_comment_context(self, content_object):
+        return {
+            'comments': self.get_comments_for_content(
+                content_object.uuid, limit=COMMENTS_PER_PAGE),
+            'comment_form': CommentForm(self.request, content_object)
+        }
+
     @reify
     def get_top_nav(self, order_by=('position',)):
         return self._get_top_nav(self.locale, order_by)
@@ -280,24 +289,36 @@ class CmsViews(BaseCmsView):
         if page.language != self.locale:
             raise HTTPNotFound()
 
-        return {
+        context = {
             'page': page,
             'linked_pages': linked_pages,
             'primary_category': category,
             'content': markdown(page.content),
             'description': markdown(page.description),
-            'comments': self.get_comments_for_content(
-                page.uuid, limit=COMMENTS_PER_PAGE)
         }
+        context.update(self.get_comment_context(page))
+        return context
 
     @view_config(route_name='comments',
                  renderer='cms:templates/comments/comment_page.pt')
     def comments(self):
-        return self.content()
+        context = self.content()
 
-    @view_config(route_name='post_comment', request_method='POST')
-    def post_comment(self):
-        pass
+        if 'submit' in self.request.POST:
+            form = context['comment_form']
+
+            try:
+                data = form.validate(self.request.POST.items())
+                commentclient = self.request.registry.commentclient
+                commentclient.create_comment(data)
+
+            except ValidationFailure as e:
+                context['comment_form'] = e.field
+
+            except ValueError as e:
+                raise HTTPBadRequest()
+
+        return context
 
     @view_config(route_name='flatpage', renderer='cms:templates/flatpage.pt')
     @view_config(route_name='flatpage_jinja',

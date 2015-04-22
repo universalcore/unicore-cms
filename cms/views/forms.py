@@ -1,7 +1,9 @@
 import time
+from datetime import datetime
+import pytz
 
 import colander
-from deform import Form, widget
+from deform import Form, widget, ValidationFailure
 
 from unicore.content.models import Page
 
@@ -80,11 +82,6 @@ def validate_comment_timestamp(node, value):
         raise colander.Invalid(node, 'Timestamp check failed')
 
 
-def validate_honeypot(node, value):
-    if value:
-        raise colander.Invalid(node, 'This field must be left empty')
-
-
 '''
 Schemata
 '''
@@ -109,7 +106,7 @@ class CommentSchema(CSRFSchema):
         colander.String(),
         default=deferred_content_uuid_default,
         validator=deferred_content_uuid_validator,
-        wiget=widget.HiddenWidget())
+        widget=widget.HiddenWidget())
     content_type = colander.SchemaNode(
         colander.String(),
         default=deferred_content_type_default,
@@ -119,11 +116,6 @@ class CommentSchema(CSRFSchema):
         colander.Integer(),
         default=deferred_timestamp_default,
         validator=validate_comment_timestamp,
-        widget=widget.HiddenWidget())
-    honeypot = colander.SchemaNode(
-        colander.String(),
-        missing=None,
-        validator=validate_honeypot,
         widget=widget.HiddenWidget())
 
 
@@ -141,4 +133,38 @@ class CommentForm(Form):
         self.request = request
         self.content_object = content_object
 
-        super(CommentForm, self).__init__(self.schema, buttons=('submit', ))
+        super(CommentForm, self).__init__(self.schema)
+
+    def validate(self, cstruct):
+        c_client = self.request.registry.commentclient
+        user = self.request.user
+        if not c_client:
+            raise ValueError('No comment client configured')
+        if not user:
+            raise ValueError('No authenticated user')
+
+        try:
+            appstruct = super(CommentForm, self).validate(cstruct)
+        except ValidationFailure as e:
+            # re-raise security errors as ValueError
+            security_fields = {
+                'content_type', 'content_uuid', 'timestamp'}
+            for field, msg in e.error.asdict().iteritems():
+                if field in security_fields:
+                    raise ValueError(msg)
+            raise e
+
+        data = {
+            'app_uuid': c_client.settings['app_id'],
+            'content_uuid': appstruct['content_uuid'],
+            'user_uuid': user.get('uuid'),
+            'comment': appstruct['comment'],
+            'user_name': user.get('app_data').get('display_name', 'Anonymous'),
+            'submit_datetime': datetime.now(pytz.utc).isoformat(),
+            'content_type': appstruct['content_type'],
+            'content_title': self.content_object.title,
+            'content_url': self.request.route_url(
+                'content', uuid=self.content_object.uuid),
+            'locale': self.request.locale_name,
+        }
+        return data
