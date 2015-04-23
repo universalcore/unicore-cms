@@ -1,0 +1,13 @@
+{% macro comment(comment_obj) -%}
+<span class="comment-meta">
+    <span class="comment-author">{{ comment_obj.get('user_name') }}</span>
+    {# implement a datetime filter like https://docs.djangoproject.com/en/1.8/ref/contrib/humanize/#naturaltime #}
+    <span class="date">{{ comment_obj.get('submit_datetime').strftime('%H:%M %d %B %Y') }}</span>
+</span>
+
+<p>{{ comment_obj.get('comment') }}</p>
+
+<ul class="comment-actions nav list-inline">
+  <!-- <li><a href="#">Report</a></li> -->
+</ul>
+{%- endmacro %}
