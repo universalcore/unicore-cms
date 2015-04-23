@@ -13,7 +13,8 @@ from unicore.hub.client import User
 from unicore.comments.client import CommentClient
 from unicore.content.models import Page
 from cms.tests.base import UnicoreTestCase
-from cms.views.forms import CommentForm, COMMENT_STALE_AFTER
+from cms.views.forms import (
+    CommentForm, COMMENT_STALE_AFTER, COMMENT_MAX_LENGTH)
 
 
 class TestCommentViews(UnicoreTestCase):
@@ -96,6 +97,9 @@ class TestCommentForm(TestCase):
         self.assertRaises(
             ValidationFailure, self.form.validate, cstruct.items())
         cstruct['comment'] = ''
+        self.assertRaises(
+            ValidationFailure, self.form.validate, cstruct.items())
+        cstruct['comment'] = 'c' * (COMMENT_MAX_LENGTH + 1)
         self.assertRaises(
             ValidationFailure, self.form.validate, cstruct.items())
 
