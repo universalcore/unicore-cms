@@ -97,26 +97,6 @@ class CmsViews(BaseCmsView):
         renderer = get_renderer("cms:templates/auth.pt")
         return renderer.implementation().macros['auth']
 
-    @reify
-    def comment_template(self):
-        renderer = get_renderer("cms:templates/comments/comment.pt")
-        return renderer.implementation().macros['comment']
-
-    @reify
-    def comment_list_template(self):
-        renderer = get_renderer("cms:templates/comments/comment_list.pt")
-        return renderer.implementation().macros['comment_list']
-
-    @reify
-    def comment_form_template(self):
-        renderer = get_renderer("cms:templates/comments/comment_form.pt")
-        return renderer.implementation().macros['comment_form']
-
-    @reify
-    def form_utils(self):
-        renderer = get_renderer("cms:templates/form_utils.pt")
-        return renderer.implementation().macros
-
     def get_logo_attributes(self, default_image_src=None,
                             width=None, height=None):
         attrs = {'width': width, 'height': height}
@@ -307,7 +287,7 @@ class CmsViews(BaseCmsView):
         return context
 
     @view_config(route_name='comments',
-                 renderer='cms:templates/comments/comment_page.pt')
+                 renderer='cms:templates/comments/comment_page.jinja2')
     def comments(self):
         context = self.content()
 
