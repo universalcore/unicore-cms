@@ -1,0 +1,74 @@
+// MAMA
+
+$colorFirst: #f7a11a; // orange
+$colorSecond: #fff; // white
+$colorThird: #f0f0f0; // very light grey
+$colorFourth: #999; // grey
+
+@include links($colorFirst);
+
+// white on orange
+.highlight-primary {
+  background-color: $colorFirst;
+  color: $colorSecond;
+  a {
+    color: $colorSecond;
+  }
+}
+
+// grey, orange links, on very light grey
+.highlight-secondary {
+  background-color: $colorThird;
+  color: lighten($colorFourth, 25%);
+  a {
+    color: $colorFirst;
+  }
+}
+
+// MAMA special
+
+$pregnancy: #00b0ca; // blue
+$baby: #69be28; // green;
+$mamaToMama: #d81f29; // red;
+
+// white on background colours
+
+.list-header {
+  color: white;
+}
+
+.pregnancy {
+  .list-header {
+    background-color: $pregnancy;
+  }
+  .more {
+    color: $pregnancy;
+    a {
+      color: $pregnancy;
+    }
+  }
+}
+
+.baby {
+  .list-header {
+    background-color: $baby;
+  }
+  .more {
+    color: $baby;
+    a {
+      color: $baby;
+    }
+  }
+}
+
+.mama-to-mama {
+  .list-header {
+    background-color: $mamaToMama;
+  }
+  .more {
+    color: $mamaToMama;
+    a {
+      color: $mamaToMama;
+    }
+  }
+}

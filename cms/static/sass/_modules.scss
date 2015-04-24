@@ -1,0 +1,65 @@
+@import "variables";
+
+.nav {
+  a {
+  	padding: 0.5em;
+  }
+  p {
+  	padding: 0.5em 1em;
+  }
+}
+
+.list-inline {
+	@extend %no-bull;
+	@extend %no-m;
+	padding: 0.5em 1em;
+	> li {
+		@extend %l-ib;
+		border-top: none;
+		border-right: none;
+		border-bottom: none;
+		border-left: solid 2px #ddd;
+		&:first-child {
+			border-left: none;
+		}
+	}
+}
+
+.list-block {
+	@extend %no-mp;
+	> li {
+		@extend %l-db;
+		border-top: none;
+		border-right: none;
+		border-bottom: 1px solid #ddd;
+		border-left: none;
+		clear: both;
+	}
+	a {
+		padding: 0.5em 1em;
+		@extend %l-db;
+	}
+	h2, h3 {
+		@extend %no-m;
+		font-size: 1em;
+	}
+	p {
+		@extend %no-m;
+	}
+}
+
+.list-header {
+	@extend %no-m;
+	padding: 0.5em;
+	font-size: 1em;
+	line-height: 1;
+	a {
+		text-decoration: none;
+	}
+}
+
+.header-centered {
+	@extend %l-tac;
+}
+
+.content {padding: 0 1em;}

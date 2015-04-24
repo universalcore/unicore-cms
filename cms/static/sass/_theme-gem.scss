@@ -1,0 +1,77 @@
+// MAMA
+
+$colorFirst: #32a6a6; // turquoise
+$colorSecond: #124f52; // dark turquoise
+$colorThird: #c4d131; // green
+$colorFourth: #333; // black
+
+@include links($colorSecond);
+
+// dark turquoise on turquoise
+.highlight-primary {
+  color: $colorSecond;
+  .active {
+    color: lighten($colorSecond, 10%)
+  }
+}
+
+// black on green
+.highlight-secondary {
+  color: $colorThird;
+  a {
+    color: $colorThird;
+  }
+  .active {
+    color: lighten($colorThird, 30%)
+  }
+}
+
+// GEM special
+
+$latest: #ff9933; // orange
+$articles: #ea178b; // pink - Girl Heroes, Life Tips
+$girlEffect: $colorFirst; // turquoise
+
+.list-header {
+  border-bottom: solid 1px #ddd;
+}
+
+.more {
+  font-weight: bold;
+}
+
+// white on background colours
+
+.latest {
+  a {
+    color: $latest;
+  }
+}
+
+.articles {
+  a {
+    color: $articles;
+  }
+}
+
+.girl-effect {
+  a {
+    color: $girlEffect;
+  }
+}
+
+.girl-effect-logo {
+  background-color: $girlEffect;
+}
+
+.latest, .articles, .girl-effect {
+  .list-header {
+    @extend %uc;
+  }
+  p {
+    padding-top: 0;
+  }
+  h3 {
+    font-weight: normal;    
+  }
+}

@@ -1,8 +1,8 @@
 {% import 'molecules.html' as molecules %}
 {% import 'atoms.html' as atoms %}
 
-{% macro list_of_images_and_heading(view) -%}
-<ul>
+{% macro list_of_categories(view) -%}
+<ul class="list-block">
 {% for cat in view.get_categories() %}
     <li>
     	<a href={{view.request.route_url('category_jinja2', category=cat.uuid)}}>
