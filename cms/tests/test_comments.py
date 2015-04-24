@@ -3,22 +3,115 @@ from unittest import TestCase
 from datetime import datetime
 from dateutil import parser as dt_parser
 import pytz
+import uuid
 
 import mock
 from deform import ValidationFailure
 
 from pyramid import testing
+from pyramid_beaker import set_cache_regions_from_settings
 
 from unicore.hub.client import User
-from unicore.comments.client import CommentClient
+from unicore.comments.client import CommentClient, LazyCommentPage
 from unicore.content.models import Page
 from cms.tests.base import UnicoreTestCase
 from cms.views.forms import (
     CommentForm, COMMENT_STALE_AFTER, COMMENT_MAX_LENGTH)
+from cms.views.cms_views import CmsViews, COMMENTS_PER_PAGE
 
 
 class TestCommentViews(UnicoreTestCase):
-    pass
+
+    def setUp(self):
+        self.workspace = self.mk_workspace()
+        settings = self.get_settings(self.workspace, **{
+            'unicorecomments.host': 'http://localhost/commentservice'})
+
+        self.config = testing.setUp(settings=settings)
+        self.config.include('cms')
+        set_cache_regions_from_settings(settings)
+
+        self.views = CmsViews(testing.DummyRequest())
+        self.app_id = settings['unicorehub.app_id']
+        self.app = self.mk_app(self.workspace, settings=settings)
+
+    def tearDown(self):
+        testing.tearDown()
+
+    def mk_comment(self, content_uuid, **fields):
+        data = {
+            'uuid': uuid.uuid4().hex,
+            'user_uuid': uuid.uuid4().hex,
+            'content_uuid': content_uuid,
+            'app_uuid': self.app_id,
+            'comment': 'this is a comment',
+            'user_name': 'foo',
+            'submit_datetime': datetime.now(pytz.utc).isoformat(),
+            'content_type': 'page',
+            'content_title': 'I Am A Page',
+            'content_url': 'http://example.com/page/',
+            'locale': 'eng_ZA',
+            'flag_count': '0',
+            'is_removed': 'False',
+            'moderation_state': 'visible',
+            'ip_address': '192.168.1.1'
+        }
+        data.update(fields)
+        return data
+
+    def mk_comment_stream(self, content_uuid, limit=10, offset=0, state='open',
+                          total=100, **comment_fields):
+        return {
+            'start': offset,
+            'end': offset + limit,
+            'total': total,
+            'count': limit,
+            'objects': [self.mk_comment(content_uuid, **comment_fields)
+                        for i in range(limit)],
+            'metadata': {'state': state}
+        }
+
+    @mock.patch.object(LazyCommentPage, '__init__')
+    def test_get_comments_for_content(self, mock_init):
+        content_uuid = 'content_uuid'
+        mock_init.return_value = None
+        page_obj = self.views.get_comments_for_content(content_uuid)
+
+        self.assertIsInstance(page_obj, LazyCommentPage)
+        mock_init.assert_called_with(
+            self.config.registry.commentclient,
+            content_uuid=content_uuid,
+            app_uuid=self.app_id,
+            limit=COMMENTS_PER_PAGE)
+
+        self.views.request.GET['c_after'] = 'after_uuid'
+        page_obj = self.views.get_comments_for_content(
+            content_uuid, limit=1)
+
+        self.assertIsInstance(page_obj, LazyCommentPage)
+        mock_init.assert_called_with(
+            self.config.registry.commentclient,
+            content_uuid=content_uuid,
+            app_uuid=self.app_id,
+            limit=1,
+            after='after_uuid')
+
+        del self.views.request.GET['c_after']
+        self.views.request.GET['c_before'] = 'before_uuid'
+        page_obj = self.views.get_comments_for_content(content_uuid)
+
+        self.assertIsInstance(page_obj, LazyCommentPage)
+        mock_init.assert_called_with(
+            self.config.registry.commentclient,
+            content_uuid=content_uuid,
+            app_uuid=self.app_id,
+            limit=COMMENTS_PER_PAGE,
+            before='before_uuid')
+
+        self.views.request.registry.commentclient = None
+        page_obj = self.views.get_comments_for_content(content_uuid)
+
+        self.assertIs(page_obj, None)
 
 
 class TestCommentForm(TestCase):
