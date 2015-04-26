@@ -12,7 +12,8 @@ from pyramid import testing
 from pyramid_beaker import set_cache_regions_from_settings
 
 from unicore.hub.client import User
-from unicore.comments.client import CommentClient, LazyCommentPage
+from unicore.comments.client import (
+    CommentClient, LazyCommentPage, UserBanned, CommentStreamNotOpen)
 from unicore.content.models import Page
 from cms.tests.base import UnicoreTestCase
 from cms.views.forms import (
@@ -35,8 +36,22 @@ class TestCommentViews(UnicoreTestCase):
         self.app_id = settings['unicorehub.app_id']
         self.app = self.mk_app(self.workspace, settings=settings)
 
+        [category] = self.create_categories(self.workspace, count=1)
+        [page] = self.create_pages(
+            self.workspace, count=1, description='description',
+            primary_category=category.uuid)
+        self.page = page
+        self.stream = self.mk_comment_stream(
+            page.uuid, state='open', offset=10, limit=5)
+
+        self.patch_lazy_comment_page = mock.patch.object(
+            LazyCommentPage, 'data',
+            new=mock.PropertyMock(return_value=self.stream))
+        self.patch_lazy_comment_page.start()
+
     def tearDown(self):
         testing.tearDown()
+        self.patch_lazy_comment_page.stop()
 
     def mk_comment(self, content_uuid, **fields):
         data = {
@@ -112,6 +127,140 @@ class TestCommentViews(UnicoreTestCase):
         page_obj = self.views.get_comments_for_content(content_uuid)
 
         self.assertIs(page_obj, None)
+
+    def check_comment_list(self, root):
+        uuid = self.stream['objects'][0]['content_uuid']
+
+        header = root.select('.comments-header')[0]
+        self.assertIn('%d comments' % self.stream['total'], header.string)
+        prev, nxt = root.select('.comments-pagination > a')
+        self.assertIn('Previous', prev.string)
+        self.assertIn(
+            '/content/comments/%s/?c_after' % uuid, prev['href'])
+        self.assertIn('Next', nxt.string)
+        self.assertIn(
+            '/content/comments/%s/?c_before' % uuid, nxt['href'])
+        li = root.select('.comment-list > .comment')
+        self.assertEqual(len(li), len(self.stream['objects']))
+        comment_obj = self.stream['objects'][0]
+        comment_el = li[0]
+        self.assertTrue(comment_el.select('.comment-author'))
+        self.assertEqual(
+            comment_el.select('.comment-author')[0].string,
+            comment_obj['user_name'])
+        self.assertTrue(comment_el.select('.comment-meta > .date'))
+        self.assertTrue(
+            comment_el.select('.comment-meta > .date')[0].string)
+        self.assertTrue(comment_el.select('p'))
+        self.assertEqual(
+            comment_el.select('p')[0].string, comment_obj['comment'])
+
+    def check_comment_form(self, root):
+        uuid = self.stream['objects'][0]['content_uuid']
+
+        form = root.select('#add-comment > form')
+        self.assertTrue(form)
+        form = form[0]
+        self.assertIn('/content/comments/%s/' % uuid, form['action'])
+        self.assertEqual(len(form.select('input')), 5)
+        self.assertEqual(len(form.select('textarea')), 1)
+
+    def test_comments_open_stream_logged_out(self):
+        response = self.app.get('/content/comments/%s/' % self.page.uuid)
+        self.check_comment_list(response.html)
+        not_signed_in = response.html.select('#add-comment > p')
+        self.assertTrue(not_signed_in)
+        self.assertIn(
+            'You have to be signed in to add a comment',
+            not_signed_in[0].text)
+        self.assertFalse(response.html.select('#add-comment > form'))
+
+    def test_comments_open_stream_logged_in(self):
+        response = self.app.get(
+            '/content/comments/%s/' % self.page.uuid,
+            headers=self.mk_session()[1])
+        self.check_comment_form(response.html)
+
+    def test_comments_closed_stream(self):
+        self.stream['metadata']['state'] = 'closed'
+        response = self.app.get('/content/comments/%s/' % self.page.uuid)
+        not_open = response.html.select('#add-comment > p')
+        self.assertTrue(not_open)
+        self.assertIn(
+            'Commenting has been closed', not_open[0].string)
+        self.assertFalse(response.html.select('#add-comment > form'))
+
+    def test_comments_disabled_stream(self):
+        for meta in ({'state': 'disabled'}, {}):
+            self.stream['metadata'] = meta
+            response = self.app.get('/content/comments/%s/' % self.page.uuid)
+            for selector in ('#add-comment *', '.comment-list',
+                             '.comments-header', '.comments-pagination'):
+                self.assertFalse(response.html.select(selector))
+
+    def test_content_with_comments(self):
+        response = self.app.get(
+            '/content/detail/%s/' % self.page.uuid,
+            headers=self.mk_session()[1])
+        self.check_comment_list(response.html)
+        self.check_comment_form(response.html)
+
+    def test_post_comment(self):
+        mock_create_comment = mock.Mock()
+        patch_client = mock.patch.object(
+            self.app.app.registry.commentclient, 'create_comment',
+            new=mock_create_comment)
+        patch_client.start()
+
+        self.stream['objects'] = []
+        self.stream['start'] = None
+        self.stream['end'] = None
+        self.stream['total'] = 0
+        session_cookie = self.mk_session()[1]
+        response = self.app.get(
+            '/content/comments/%s/' % self.page.uuid,
+            headers=session_cookie)
+        form = response.forms[0]
+        form['comment'] = 'foo bar'
+
+        # no issues
+        response = form.submit('submit', headers=session_cookie)
+        self.assertEqual(response.status_int, 302)
+        self.assertEqual(
+            response.location,
+            'http://localhost/content/comments/%s/' % self.page.uuid)
+        mock_create_comment.assert_called()
+        data = mock_create_comment.call_args[0][0]
+        self.assertEqual(data.get('comment'), 'foo bar')
+
+        # missing field
+        form['comment'] = ''
+        response = form.submit('submit', headers=session_cookie)
+        self.assertEqual(response.status_int, 200)
+        self.assertIn(
+            'Required',
+            response.html.select('#add-comment > form')[0].text)
+
+        # banned user
+        form['comment'] = 'foo bar'
+        mock_create_comment.side_effect = UserBanned(mock.MagicMock())
+        response = form.submit('submit', headers=session_cookie)
+        self.assertEqual(response.status_int, 200)
+        self.assertIn(
+            'You have been banned from commenting',
+            response.html.select('#add-comment > form')[0].text)
+
+        # closed stream
+        mock_create_comment.side_effect = CommentStreamNotOpen(
+            mock.MagicMock())
+        response = form.submit('submit', headers=session_cookie)
+        self.assertEqual(response.status_int, 302)
+
+        # ValueError (CSRF failure, no authenticated user, etc)
+        mock_create_comment.side_effect = ValueError
+        response = form.submit(
+            'submit', headers=session_cookie, expect_errors=True)
+        self.assertEqual(response.status_int, 400)
 
 
 class TestCommentForm(TestCase):
