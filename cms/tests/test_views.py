@@ -547,5 +547,6 @@ class TestViews(UnicoreTestCase):
             in resp.body.decode('utf-8'))
 
     def test_404_page(self):
-        resp = self.app.get('/;jsdafjahs;dfjas;')
+        resp = self.app.get('/;jsdafjahs;dfjas;', expect_errors=True)
         self.assertTrue('class="page-not-found"'in resp.body)
+        self.assertEqual(resp.status_int, 404)
