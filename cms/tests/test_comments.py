@@ -199,8 +199,10 @@ class TestCommentViews(UnicoreTestCase):
                 self.assertFalse(response.html.select(selector))
 
     def test_content_with_comments(self):
+        # NOTE: Chameleon templates don't have commenting nor
+        # will commenting be added to them
         response = self.app.get(
-            '/content/detail/%s/' % self.page.uuid,
+            '/spice/content/detail/%s/' % self.page.uuid,
             headers=self.mk_session()[1])
         self.check_comment_list(response.html)
         self.check_comment_form(response.html)
