@@ -1,5 +1,6 @@
 import arrow
-from datetime import timedelta
+from datetime import timedelta, datetime
+import pytz
 
 from chameleon import PageTemplate
 from pyramid import testing
@@ -360,6 +361,11 @@ class TestViews(UnicoreTestCase):
         self.assertEqual(
             views.format_date('some invalid date'),
             'some invalid date')
+
+        dt = datetime(year=2014, month=10, day=10, hour=9, minute=10,
+                      second=17, tzinfo=pytz.utc)
+        self.assertEqual(
+            views.format_date(dt), '10 October 2014')
 
     def test_get_flatpage_using_old_swahili_code(self):
         [category] = self.create_categories(self.workspace, count=1)
