@@ -405,7 +405,8 @@ class CmsViews(BaseCmsView):
         }
 
     @notfound_view_config(renderer='cms:templates/404.pt')
-    def notfound(request):
+    def notfound(self):
+        self.request.response.status = 404
         return {}
 
     @view_config(route_name='login')

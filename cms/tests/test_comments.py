@@ -165,6 +165,16 @@ class TestCommentViews(UnicoreTestCase):
         self.assertEqual(len(form.select('input')), 5)
         self.assertEqual(len(form.select('textarea')), 1)
 
+    def test_comments_404(self):
+        response = self.app.get(
+            '/content/comments/%s/' % uuid.uuid4().hex, expect_errors=True)
+        self.assertEqual(response.status_int, 404)
+
+        response = self.app.get(
+            '/content/comments/%s/?_LOCALE_=swa_KE' % self.page.uuid,
+            expect_errors=True)
+        self.assertEqual(response.status_int, 404)
+
     def test_comments_open_stream_logged_out(self):
         response = self.app.get('/content/comments/%s/' % self.page.uuid)
         self.check_comment_list(response.html)
