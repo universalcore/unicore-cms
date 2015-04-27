@@ -191,6 +191,7 @@ class TestViews(UnicoreTestCase):
 
         request = testing.DummyRequest()
         request.matchdict['uuid'] = page2.uuid
+        request.registry.commentclient = None
         self.views = CmsViews(request)
         response = self.views.content()
         [linked_page] = response['linked_pages']
@@ -205,6 +206,7 @@ class TestViews(UnicoreTestCase):
             primary_category=category.uuid)
         request = testing.DummyRequest()
         request.matchdict['uuid'] = page1.uuid
+        request.registry.commentclient = None
         self.views = CmsViews(request)
         response = self.views.content()
         self.assertEqual(list(response['linked_pages']), [])
@@ -220,6 +222,7 @@ class TestViews(UnicoreTestCase):
 
         request = testing.DummyRequest()
         request.matchdict['uuid'] = page.uuid
+        request.registry.commentclient = None
         self.views = CmsViews(request)
         response = self.views.content()
         self.assertEqual(

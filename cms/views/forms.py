@@ -150,7 +150,7 @@ class CommentForm(Form):
         except ValidationFailure as e:
             # re-raise security errors as ValueError
             security_fields = {
-                'content_type', 'content_uuid', 'timestamp'}
+                'content_type', 'content_uuid', 'timestamp', 'csrf'}
             for field, msg in e.error.asdict().iteritems():
                 if field in security_fields:
                     raise ValueError(msg)
@@ -161,7 +161,8 @@ class CommentForm(Form):
             'content_uuid': appstruct['content_uuid'],
             'user_uuid': user.get('uuid'),
             'comment': appstruct['comment'],
-            'user_name': user.get('app_data').get('display_name', 'Anonymous'),
+            'user_name': user.get('app_data').get(
+                'display_name', _('Anonymous')),
             'submit_datetime': datetime.now(pytz.utc).isoformat(),
             'content_type': appstruct['content_type'],
             'content_title': self.content_object.title,
