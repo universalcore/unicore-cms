@@ -301,7 +301,7 @@ class TestCommentViews(UnicoreTestCase):
         for i, mod_state in enumerate(('removed_by_moderator',
                                        'removed_by_community',
                                        'removed_for_profanity')):
-            self.stream['objects'][i]['is_removed'] = True
+            self.stream['objects'][i]['is_removed'] = 'True'
             self.stream['objects'][i]['moderation_state'] = mod_state
 
         response = self.app.get('/content/comments/%s/' % self.page.uuid)
@@ -311,8 +311,8 @@ class TestCommentViews(UnicoreTestCase):
                                      'by the community',
                                      'because it contains profanity')):
             comment = comments[i]
-            self.assertEqual(
-                'This comment has been removed %s' % mod_msg,
+            self.assertIn(
+                'This comment has been removed %s.' % mod_msg,
                 comment.select('p')[0].string)
             self.assertFalse(comment.select('.comment-meta'))
             self.assertFalse(comment.select('.comment-actions'))
