@@ -426,7 +426,8 @@ class TestCommentViews(UnicoreTestCase):
 
         # logged out
         response = self.app.get(
-            '/comments/flag/%s/success/', expect_errors=True)
+            '/comments/flag/%s/success/' % comment_obj['uuid'],
+            expect_errors=True)
         self.assertEqual(response.status_int, 404)
 
 
