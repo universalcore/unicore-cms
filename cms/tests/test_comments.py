@@ -4,6 +4,7 @@ from datetime import datetime
 from dateutil import parser as dt_parser
 import pytz
 import uuid
+from urllib import urlencode
 
 import mock
 from deform import ValidationFailure
@@ -13,7 +14,8 @@ from pyramid_beaker import set_cache_regions_from_settings
 
 from unicore.hub.client import User
 from unicore.comments.client import (
-    CommentClient, LazyCommentPage, UserBanned, CommentStreamNotOpen)
+    CommentClient, LazyCommentPage, UserBanned, CommentStreamNotOpen,
+    CommentServiceException)
 from unicore.content.models import Page
 from cms.tests.base import UnicoreTestCase
 from cms.views.forms import (
@@ -131,8 +133,11 @@ class TestCommentViews(UnicoreTestCase):
     def check_comment_list(self, root):
         uuid = self.stream['objects'][0]['content_uuid']
 
+        # header
         header = root.select('.comments-header')[0]
         self.assertIn('%d comments' % self.stream['total'], header.string)
+
+        # pagination
         prev, nxt = root.select('.comments-pagination > a')
         self.assertIn('Previous', prev.string)
         self.assertIn(
@@ -140,6 +145,8 @@ class TestCommentViews(UnicoreTestCase):
         self.assertIn('Next', nxt.string)
         self.assertIn(
             '/content/comments/%s/?c_before' % uuid, nxt['href'])
+
+        # comments
         li = root.select('.comment-list > .comment')
         self.assertEqual(len(li), len(self.stream['objects']))
         comment_obj = self.stream['objects'][0]
@@ -154,6 +161,20 @@ class TestCommentViews(UnicoreTestCase):
         self.assertTrue(comment_el.select('p'))
         self.assertEqual(
             comment_el.select('p')[0].string, comment_obj['comment'])
+
+    def check_comment_flag_logged_in(self, root):
+        comment_el = root.select('.comment-list > .comment')[0]
+        comment_obj = self.stream['objects'][0]
+        flag = comment_el.select('.comment-actions > .comment-flag')
+        self.assertTrue(flag)
+        self.assertIn('Report', flag[0].string)
+        self.assertIn(
+            '/comments/flag/%s/' % comment_obj['uuid'], flag[0]['href'])
+
+    def check_comment_flag_logged_out(self, root):
+        comment_el = root.select('.comment-list > .comment')[0]
+        flag = comment_el.select('.comment-actions > .comment-flag')
+        self.assertFalse(flag)
 
     def check_comment_form(self, root):
         uuid = self.stream['objects'][0]['content_uuid']
@@ -184,12 +205,14 @@ class TestCommentViews(UnicoreTestCase):
             'You have to be signed in to add a comment',
             not_signed_in[0].text)
         self.assertFalse(response.html.select('#add-comment > form'))
+        self.check_comment_flag_logged_out(response.html)
 
     def test_comments_open_stream_logged_in(self):
         response = self.app.get(
             '/content/comments/%s/' % self.page.uuid,
             headers=self.mk_session()[1])
         self.check_comment_form(response.html)
+        self.check_comment_flag_logged_in(response.html)
 
     def test_comments_closed_stream(self):
         self.stream['metadata']['state'] = 'closed'
@@ -273,6 +296,133 @@ class TestCommentViews(UnicoreTestCase):
         response = form.submit(
             'submit', headers=session_cookie, expect_errors=True)
         self.assertEqual(response.status_int, 400)
+
+    def test_removed_comments(self):
+        for i, mod_state in enumerate(('removed_by_moderator',
+                                       'removed_by_community',
+                                       'removed_for_profanity')):
+            self.stream['objects'][i]['is_removed'] = True
+            self.stream['objects'][i]['moderation_state'] = mod_state
+
+        response = self.app.get('/content/comments/%s/' % self.page.uuid)
+        comments = response.html.select('.comment-list > .comment')
+
+        for i, mod_msg in enumerate(('by a moderator',
+                                     'by the community',
+                                     'because it contains profanity')):
+            comment = comments[i]
+            self.assertEqual(
+                'This comment has been removed %s' % mod_msg,
+                comment.select('p')[0].string)
+            self.assertFalse(comment.select('.comment-meta'))
+            self.assertFalse(comment.select('.comment-actions'))
+
+    def test_flag_comment_logged_in(self):
+        mock_create_flag = mock.Mock(return_value=True)
+        patch_client = mock.patch.object(
+            self.app.app.registry.commentclient, 'create_flag',
+            new=mock_create_flag)
+        patch_client.start()
+
+        comment_obj = self.stream['objects'][0]
+        session_cookie = self.mk_session()[1]
+
+        def check_response(referer, referer_is_next):
+            mock_create_flag.reset_mock()
+            headers = session_cookie.copy()
+            if referer is not None:
+                headers['Referer'] = referer
+            response = self.app.get(
+                '/comments/flag/%s/' % comment_obj['uuid'],
+                headers=headers)
+            self.assertEqual(response.status_int, 302)
+
+            if referer_is_next:
+                self.assertEqual(
+                    '/comments/flag/%s/success/?%s' % urlencode({
+                        'next': referer}), response.location)
+            else:
+                self.assertEqual(
+                    '/comments/flag/%s/success/', response.location)
+
+            mock_create_flag.assert_called()
+            flag_data = mock_create_flag.calls[0][0]
+            self.assertIsInstance(flag_data.get('submit_datetime'), basestring)
+            self.assertIsInstance(flag_data.get('user_uuid'), basestring)
+            self.assertEqual(flag_data.get('app_uuid'), self.app_id)
+            self.assertEqual(
+                flag_data.get('comment_uuid'), comment_obj['uuid'])
+
+        check_response(
+            referer='http://localhost/content/comments/%s/' % self.page.uuid,
+            referer_is_next=True)
+        check_response(
+            referer='http://external.domain.com',
+            referer_is_next=False)
+        check_response(
+            referer=None,
+            referer_is_next=False)
+
+        # 404
+        mock_create_flag.side_effect = CommentServiceException(
+            mock.Mock(status_code=404))
+        response = self.get('/comments/flag/commentuuid/')
+        self.assertEqual(response.status_int, 404)
+
+        patch_client.stop()
+
+    def test_flag_comment_logged_out(self):
+        mock_create_flag = mock.Mock(return_value=True)
+        patch_client = mock.patch.object(
+            self.app.app.registry.commentclient, 'create_flag',
+            new=mock_create_flag)
+        patch_client.start()
+
+        comment_obj = self.stream['objects'][0]
+        response = self.app.get(
+            '/comments/flag/%s/' % comment_obj['uuid'], expect_errors=True)
+        mock_create_flag.assert_not_called()
+        self.assertEqual(response.status_int, 404)
+
+        patch_client.stop()
+
+    def test_flag_comment_success(self):
+        comment_obj = self.stream['objects'][0]
+        session_cookie = self.mk_session()[1]
+
+        def check_response(next_url, valid_next):
+            qs = '?%s' % urlencode({'next': next_url}) if next_url else ''
+            response = self.app.get(
+                '/comments/flag/%s/success/%s' % (comment_obj['uuid'], qs),
+                headers=session_cookie)
+            self.assertEqual(response.status_int, 200)
+            content = response.html.select('.comment-flagged > p')
+            self.assertTrue(content)
+            self.assertContains(
+                content[0].text, 'You have successfully reported a comment')
+
+            go_back = content[0].select('a')
+            if valid_next:
+                self.assertTrue(go_back)
+                self.assertContains(go_back[0].string, 'Go back')
+                self.assertEqual(go_back[0]['href'], next_url)
+            else:
+                self.assertFalse(go_back)
+
+        # logged in
+        check_response(
+            next_url='http://localhost/content/comments/%s/' % self.page.uuid,
+            valid_next=True)
+        check_response(
+            next_url='http://external.domain.com',
+            valid_next=False)
+        check_response(
+            next_url=None,
+            valid_next=False)
+
+        # logged out
+        response = self.get('/comments/flag/%s/success/', expect_errors=True)
+        self.assertEqual(response.status_int, 404)
 
 
 class TestCommentForm(TestCase):
