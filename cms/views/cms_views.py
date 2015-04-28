@@ -351,7 +351,15 @@ class CmsViews(BaseCmsView):
     @view_config(route_name='flag_comment_success',
                  renderer='cms:templates/comments/comment_flagged.jinja2')
     def flag_comment_success(self):
-        pass
+        if not self.request.user:
+            raise HTTPNotFound
+
+        next_url = self.request.GET.get('next')
+        if next_url and not same_origin(
+                next_url, self.request.current_route_url()):
+            next_url = None
+
+        return {'next': next_url}
 
     @view_config(route_name='flatpage', renderer='cms:templates/flatpage.pt')
     @view_config(route_name='flatpage_jinja',

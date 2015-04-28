@@ -402,13 +402,13 @@ class TestCommentViews(UnicoreTestCase):
             self.assertEqual(response.status_int, 200)
             content = response.html.select('.comment-flagged > p')
             self.assertTrue(content)
-            self.assertContains(
-                content[0].text, 'You have successfully reported a comment')
+            self.assertIn(
+                'You have successfully reported a comment', content[0].text)
 
             go_back = content[0].select('a')
             if valid_next:
                 self.assertTrue(go_back)
-                self.assertContains(go_back[0].string, 'Go back')
+                self.assertIn('Go back', go_back[0].string)
                 self.assertEqual(go_back[0]['href'], next_url)
             else:
                 self.assertFalse(go_back)
@@ -425,7 +425,8 @@ class TestCommentViews(UnicoreTestCase):
             valid_next=False)
 
         # logged out
-        response = self.get('/comments/flag/%s/success/', expect_errors=True)
+        response = self.app.get(
+            '/comments/flag/%s/success/', expect_errors=True)
         self.assertEqual(response.status_int, 404)
 
 
