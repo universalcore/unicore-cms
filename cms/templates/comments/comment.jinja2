@@ -1,4 +1,4 @@
-{% macro comment(comment_obj) -%}
+{% macro comment(comment_obj, request) -%}
 <span class="comment-meta">
     <span class="comment-author">{{ comment_obj.get('user_name') }}</span>
     {# implement a datetime filter like https://docs.djangoproject.com/en/1.8/ref/contrib/humanize/#naturaltime #}
@@ -8,6 +8,8 @@
 <p>{{ comment_obj.get('comment') }}</p>
 
 <ul class="comment-actions nav list-inline">
-  <!-- <li><a href="#">Report</a></li> -->
+    {% if request.user %}
+    <li class="comment-flag"><a href="{{ request.route_url('flag_comment', uuid=comment_obj.get('uuid')) }}">{{ _('Report') }}</a></li>
+    {% endif %}
 </ul>
 {%- endmacro %}

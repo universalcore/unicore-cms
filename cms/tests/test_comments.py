@@ -165,7 +165,7 @@ class TestCommentViews(UnicoreTestCase):
     def check_comment_flag_logged_in(self, root):
         comment_el = root.select('.comment-list > .comment')[0]
         comment_obj = self.stream['objects'][0]
-        flag = comment_el.select('.comment-actions > .comment-flag')
+        flag = comment_el.select('.comment-actions > .comment-flag > a')
         self.assertTrue(flag)
         self.assertIn('Report', flag[0].string)
         self.assertIn(
@@ -173,7 +173,7 @@ class TestCommentViews(UnicoreTestCase):
 
     def check_comment_flag_logged_out(self, root):
         comment_el = root.select('.comment-list > .comment')[0]
-        flag = comment_el.select('.comment-actions > .comment-flag')
+        flag = comment_el.select('.comment-actions > .comment-flag > a')
         self.assertFalse(flag)
 
     def check_comment_form(self, root):
