@@ -339,14 +339,17 @@ class TestCommentViews(UnicoreTestCase):
 
             if referer_is_next:
                 self.assertEqual(
-                    '/comments/flag/%s/success/?%s' % urlencode({
-                        'next': referer}), response.location)
+                    'http://localhost/comments/flag/%s/success/?%s' % (
+                        comment_obj['uuid'], urlencode({'next': referer})),
+                    response.location)
             else:
                 self.assertEqual(
-                    '/comments/flag/%s/success/', response.location)
+                    'http://localhost/comments/flag/%s/success/'
+                    % comment_obj['uuid'],
+                    response.location)
 
             mock_create_flag.assert_called()
-            flag_data = mock_create_flag.calls[0][0]
+            flag_data = mock_create_flag.call_args[0][0]
             self.assertIsInstance(flag_data.get('submit_datetime'), basestring)
             self.assertIsInstance(flag_data.get('user_uuid'), basestring)
             self.assertEqual(flag_data.get('app_uuid'), self.app_id)
@@ -365,8 +368,9 @@ class TestCommentViews(UnicoreTestCase):
 
         # 404
         mock_create_flag.side_effect = CommentServiceException(
-            mock.Mock(status_code=404))
-        response = self.get('/comments/flag/commentuuid/')
+            mock.MagicMock(status_code=404))
+        response = self.app.get(
+            '/comments/flag/commentuuid/', expect_errors=True)
         self.assertEqual(response.status_int, 404)
 
         patch_client.stop()
