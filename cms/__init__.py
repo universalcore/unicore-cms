@@ -155,6 +155,8 @@ def includeme(config):
     config.add_route('content', '/content/detail/{uuid}/')
     config.add_route('content_jinja', '/spice/content/detail/{uuid}/')
     config.add_route('comments', '/content/comments/{uuid}/')
+    config.add_route('flag_comment', '/comments/flag/{uuid}/')
+    config.add_route('flag_comment_success', '/comments/flag/{uuid}/success/')
     config.add_route('locale', '/locale/')
     config.add_route('locale_change', '/locale/change/')
     config.add_route('locale_change_jinja', '/spice/locale/change/')

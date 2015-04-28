@@ -317,6 +317,15 @@ class CmsViews(BaseCmsView):
 
         return context
 
+    @view_config(route_name='flag_comment')
+    def flag_comment(self):
+        pass
+
+    @view_config(route_name='flag_comment_success',
+                 renderer='cms:templates/comments/comment_flagged.jinja2')
+    def flag_comment_success(self):
+        pass
+
     @view_config(route_name='flatpage', renderer='cms:templates/flatpage.pt')
     @view_config(route_name='flatpage_jinja',
                  renderer='cms:templates/flatpage.jinja2')
