@@ -370,7 +370,9 @@ class TestCommentViews(UnicoreTestCase):
         mock_create_flag.side_effect = CommentServiceException(
             mock.MagicMock(status_code=404))
         response = self.app.get(
-            '/comments/flag/commentuuid/', expect_errors=True)
+            '/comments/flag/commentuuid/',
+            headers=session_cookie,
+            expect_errors=True)
         self.assertEqual(response.status_int, 404)
 
         patch_client.stop()
