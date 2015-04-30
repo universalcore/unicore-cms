@@ -112,7 +112,7 @@ class CmsViews(BaseCmsView):
         try:
             [localisation] = self.workspace.S(
                 Localisation).filter(locale=self.locale)
-            return localisation.get_object()
+            return localisation.to_object()
         except ValueError:
             return None
 
@@ -127,7 +127,7 @@ class CmsViews(BaseCmsView):
     @cache_region(CACHE_TIME)
     def get_category(self, uuid):
         [category] = self.workspace.S(Category).filter(uuid=uuid)
-        return category.get_object()
+        return category.to_object()
 
     def get_pages(self, limit=5, order_by=('position', '-modified_at')):
         """
@@ -186,7 +186,7 @@ class CmsViews(BaseCmsView):
             if locale is not None:
                 query = query.filter(language=locale)
             [page] = query[:1]
-            return page.get_object()
+            return page.to_object()
         except ValueError:
             return None
 

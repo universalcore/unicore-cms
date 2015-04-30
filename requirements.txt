@@ -14,7 +14,7 @@ lingua
 arrow
 Markdown==2.5.1
 raven==5.0.0
-elastic-git>=1.0.0
+elastic-git>=1.0.2
 python-slugify
 python-dateutil
 libthumbor

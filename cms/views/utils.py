@@ -97,7 +97,7 @@ class ResultGenerator(object):
         self.es_results = es_results
 
     def __iter__(self):
-        return (obj.get_object() for obj in self.es_results)
+        return (obj.to_object() for obj in self.es_results)
 
     def __len__(self):
         return self.es_results.__len__()
@@ -105,7 +105,7 @@ class ResultGenerator(object):
     def __getitem__(self, k):
         if isinstance(k, slice):
             return ResultGenerator(self.es_results.__getitem__(k))
-        return self.es_results.__getitem__(k).get_object()
+        return self.es_results.__getitem__(k).to_object()
 
 
 def to_eg_objects(es_results):
