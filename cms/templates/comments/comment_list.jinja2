@@ -10,7 +10,7 @@
 
     <ul class="comment-list">
         {% for comment_obj in comment_stream_obj %}
-        <li class="comment">{{ comment(comment_obj) }}</li>
+        <li class="comment">{{ comment(comment_obj, request) }}</li>
         {% endfor %}
     </ul>
 

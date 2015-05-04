@@ -1,4 +1,6 @@
 from ast import literal_eval
+from datetime import datetime
+import pytz
 
 from babel import Locale
 from pycountry import languages
@@ -25,7 +27,7 @@ from unicore.content.models import Category, Page, Localisation
 from unicore.hub.client import ClientException as HubClientException
 from unicore.hub.client.utils import same_origin
 from unicore.comments.client import (
-    LazyCommentPage, UserBanned, CommentStreamNotOpen)
+    LazyCommentPage, UserBanned, CommentStreamNotOpen, CommentServiceException)
 from utils import EGPaginator, to_eg_objects, translation_string_factory as _
 from forms import CommentForm
 
@@ -316,6 +318,48 @@ class CmsViews(BaseCmsView):
                 raise HTTPBadRequest()
 
         return context
+
+    @view_config(route_name='flag_comment')
+    def flag_comment(self):
+        commentclient = self.request.registry.commentclient
+
+        if None in (self.request.user, commentclient):
+            raise HTTPNotFound
+
+        flag_data = {
+            'user_uuid': self.request.user.get('uuid'),
+            'comment_uuid': self.request.matchdict['uuid'],
+            'submit_datetime': datetime.now(pytz.utc).isoformat(),
+            'app_uuid': commentclient.settings['app_id']
+        }
+        try:
+            commentclient.create_flag(flag_data)
+        except CommentServiceException as e:
+            if e.response.status_code == 404:
+                raise HTTPNotFound
+            raise e
+
+        query = {}
+        if self.request.referrer and same_origin(
+                self.request.referrer, self.request.current_route_url()):
+            query = {'next': self.request.referrer}
+
+        return HTTPFound(self.request.route_url(
+            'flag_comment_success', uuid=flag_data['comment_uuid'],
+            _query=query))
+
+    @view_config(route_name='flag_comment_success',
+                 renderer='cms:templates/comments/comment_flagged.jinja2')
+    def flag_comment_success(self):
+        if not self.request.user:
+            raise HTTPNotFound
+
+        next_url = self.request.GET.get('next')
+        if next_url and not same_origin(
+                next_url, self.request.current_route_url()):
+            next_url = None
+
+        return {'next': next_url}
 
     @view_config(route_name='flatpage', renderer='cms:templates/flatpage.pt')
     @view_config(route_name='flatpage_jinja',

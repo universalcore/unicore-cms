@@ -19,7 +19,7 @@ elastic-git>=1.0.0
 python-slugify
 python-dateutil
 libthumbor
-unicore.comments.client>=0.1.0
+unicore.comments.client>=0.1.1
 unicore.content>=1.0.4
 unicore.google
 unicore.distribute>=0.0.2
