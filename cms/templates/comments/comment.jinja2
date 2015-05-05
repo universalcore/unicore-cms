@@ -1,0 +1,34 @@
+{% macro comment(comment_obj, request) -%}
+{% if not comment_obj.get('is_removed') %}
+
+<span class="comment-meta">
+    <span class="comment-author">{{ comment_obj.get('user_name') }}</span>
+    {# implement a datetime filter like https://docs.djangoproject.com/en/1.8/ref/contrib/humanize/#naturaltime #}
+    <span class="date">{{ comment_obj.get('submit_datetime').strftime('%H:%M %d %B %Y') }}</span>
+</span>
+
+<p>{{ comment_obj.get('comment') }}</p>
+
+<ul class="comment-actions nav list-inline">
+    {% if request.user %}
+    <li class="comment-flag"><a href="{{ request.route_url('flag_comment', uuid=comment_obj.get('uuid')) }}">{{ _('Report') }}</a></li>
+    {% endif %}
+</ul>
+
+{% else %}
+{% set mod_state = comment_obj.get('moderation_state') %}
+
+<p>
+    {% if mod_state == 'removed_by_moderator' %}
+    {{ _('This comment has been removed by a moderator') }}.
+    {% elif mod_state == 'removed_by_community' %}
+    {{ _('This comment has been removed by the community') }}.
+    {% elif mod_state == 'removed_for_profanity' %}
+    {{ _('This comment has been removed because it contains profanity') }}.
+    {% else %}
+    {{ _('This comment has been removed') }}.
+    {% endif %}
+</p>
+
+{% endif %}
+{%- endmacro %}

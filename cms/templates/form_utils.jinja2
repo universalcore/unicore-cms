@@ -1,0 +1,21 @@
+{% macro field(field_obj, label='') -%}
+{% if field_obj.widget.hidden %}
+{{ field_obj.render()|safe }}
+{% else %}
+<div class="field">
+    <label for="{{ field_obj.oid }}">{{ label|default(_(field_obj.title), true) }}</label>
+    {{ field_obj.render()|safe }}
+    {{ errors(field_obj.error) }}
+</div>
+{% endif %}
+{%- endmacro %}
+
+{% macro errors(error_obj) -%}
+{% if error_obj %}
+<ul class="error-list">
+    {% for msg in error_obj.messages() %}
+    <li class="error">{{ _(msg) }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+{%- endmacro %}

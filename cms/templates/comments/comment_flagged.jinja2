@@ -1,0 +1,16 @@
+{% extends 'templates/base.jinja2' %}
+{% import 'templates/atoms.html' as atoms %}
+{% import 'templates/molecules.html' as molecules %}
+{% from 'comment_form.jinja2' import comment_form as comment_form_macro %}
+{% from 'comment_list.jinja2' import comment_list %}
+
+{% block content %}
+<div class="content">
+    <div class="comment-flagged">
+        <p>
+            {{ _('You have successfully reported a comment') }}.
+            {% if next %}<a href="{{ next }}">{{ _('Go back') }}</a>{% endif %}.
+        </p>
+    </div>
+</div>
+{% endblock %}

@@ -1,5 +1,6 @@
 import arrow
-from datetime import timedelta
+from datetime import timedelta, datetime
+import pytz
 
 from chameleon import PageTemplate
 from pyramid import testing
@@ -191,6 +192,7 @@ class TestViews(UnicoreTestCase):
 
         request = testing.DummyRequest()
         request.matchdict['uuid'] = page2.uuid
+        request.registry.commentclient = None
         self.views = CmsViews(request)
         response = self.views.content()
         [linked_page] = response['linked_pages']
@@ -205,6 +207,7 @@ class TestViews(UnicoreTestCase):
             primary_category=category.uuid)
         request = testing.DummyRequest()
         request.matchdict['uuid'] = page1.uuid
+        request.registry.commentclient = None
         self.views = CmsViews(request)
         response = self.views.content()
         self.assertEqual(list(response['linked_pages']), [])
@@ -220,6 +223,7 @@ class TestViews(UnicoreTestCase):
 
         request = testing.DummyRequest()
         request.matchdict['uuid'] = page.uuid
+        request.registry.commentclient = None
         self.views = CmsViews(request)
         response = self.views.content()
         self.assertEqual(
@@ -357,6 +361,11 @@ class TestViews(UnicoreTestCase):
         self.assertEqual(
             views.format_date('some invalid date'),
             'some invalid date')
+
+        dt = datetime(year=2014, month=10, day=10, hour=9, minute=10,
+                      second=17, tzinfo=pytz.utc)
+        self.assertEqual(
+            views.format_date(dt), '10 October 2014')
 
     def test_get_flatpage_using_old_swahili_code(self):
         [category] = self.create_categories(self.workspace, count=1)
@@ -538,5 +547,6 @@ class TestViews(UnicoreTestCase):
             in resp.body.decode('utf-8'))
 
     def test_404_page(self):
-        resp = self.app.get('/;jsdafjahs;dfjas;')
+        resp = self.app.get('/;jsdafjahs;dfjas;', expect_errors=True)
         self.assertTrue('class="page-not-found"'in resp.body)
+        self.assertEqual(resp.status_int, 404)

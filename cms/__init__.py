@@ -8,6 +8,7 @@ from pyramid.authentication import SessionAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 
 from unicore.hub.client import User, UserClient as HubUserClient
+from unicore.comments.client import CommentClient
 
 import logging
 log = logging.getLogger(__name__)
@@ -92,11 +93,24 @@ def locale_negotiator_with_fallbacks(request):
 
 
 def init_hubclient(config):
-    if config.registry.settings.get('unicorehub.app_id', None):
+    if config.registry.settings.get('unicorehub.app_id'):
         hubclient = HubUserClient.from_config(config.registry.settings)
         config.registry.hubclient = hubclient
     else:
         config.registry.hubclient = None
+
+
+def init_commentclient(config):
+    if config.registry.settings.get('unicorecomments.host'):
+        app_id = config.registry.settings.get('unicorehub.app_id')
+        if app_id is None:
+            return None
+
+        config.registry.settings['unicorecomments.app_id'] = app_id
+        commentclient = CommentClient.from_config(config.registry.settings)
+        config.registry.commentclient = commentclient
+    else:
+        config.registry.commentclient = None
 
 
 def init_auth(config):
@@ -140,6 +154,9 @@ def includeme(config):
     config.add_route('category_jinja2', '/spice/content/list/{category}/')
     config.add_route('content', '/content/detail/{uuid}/')
     config.add_route('content_jinja', '/spice/content/detail/{uuid}/')
+    config.add_route('comments', '/content/comments/{uuid}/')
+    config.add_route('flag_comment', '/comments/flag/{uuid}/')
+    config.add_route('flag_comment_success', '/comments/flag/{uuid}/success/')
     config.add_route('locale', '/locale/')
     config.add_route('locale_change', '/locale/change/')
     config.add_route('locale_change_jinja', '/spice/locale/change/')
@@ -155,6 +172,7 @@ def includeme(config):
 
     init_auth(config)
     init_hubclient(config)
+    init_commentclient(config)
     init_repository(config)
 
     config.scan()

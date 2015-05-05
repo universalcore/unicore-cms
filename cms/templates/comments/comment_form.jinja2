@@ -1,0 +1,29 @@
+{% import 'templates/form_utils.jinja2' as form_utils %}
+
+{% macro comment_form(form, comment_stream_obj) -%}
+{% if comment_stream_obj and comment_stream_obj.state in ('open', 'closed') %}
+<div class="add-comment" id="add-comment">
+
+    {% if comment_stream_obj.state == 'open' %}
+    {% set request = form.request %}
+    {% set content_obj = form.content_object %}
+
+        {% if request.user %}
+        <form action="{{ request.route_url('comments', uuid=content_obj.uuid, _query=request.GET) }}" method="post">
+            {{ form_utils.errors(form.error) }}
+            {% for field in form %}{{ form_utils.field(field) }}{% endfor %}
+            <input name="submit" type="submit" value="{{ _('Add your comment') }}" class="btn btn-wide" />
+        </form>
+        {% else %}
+        <p>
+            {{ _('You have to be signed in to add a comment') }}. <a href="{{ request.route_url('redirect_to_login') }}">{{ _('Sign in here') }}</a>.
+        </p>
+        {% endif %}
+
+    {% else %}
+    <p>{{ _('Commenting has been closed')}}.</p>
+    {% endif %}
+
+</div>
+{% endif %}
+{%- endmacro %}
