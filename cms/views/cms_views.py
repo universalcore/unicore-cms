@@ -134,8 +134,11 @@ class CmsViews(BaseCmsView):
 
     @cache_region(CACHE_TIME)
     def get_category(self, uuid):
-        [category] = self.workspace.S(Category).filter(uuid=uuid)
-        return category.to_object()
+        try:
+            [category] = self.workspace.S(Category).filter(uuid=uuid)
+            return category.to_object()
+        except ValueError:
+            return None
 
     def get_pages(self, limit=5, order_by=('position', '-modified_at')):
         """
@@ -250,7 +253,7 @@ class CmsViews(BaseCmsView):
         category_id = self.request.matchdict['category']
         category = self.get_category(category_id)
 
-        if category.language != self.locale:
+        if category is None or category.language != self.locale:
             raise HTTPNotFound()
 
         pages = self.get_pages_for_category(category_id, self.locale)

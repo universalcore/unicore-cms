@@ -6,11 +6,13 @@
 
 {% block content %}
 <div class="content">
+    {% if primary_category %}
     <div>
         <a href="{{ request.route_url('category_jinja2', category=primary_category.uuid) }}">
         {{ molecules.image_and_heading(view, primary_category) }}
         </a>
     </div>
+    {% endif %}
 
     <h2>{{ page.title }}</h2>
 
