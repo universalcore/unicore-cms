@@ -41,7 +41,7 @@ class TestViews(UnicoreTestCase):
                     'index': 'not_analyzed',
                 },
                 'position': {
-                    'type': 'integer'
+                    'type': 'long'
                 }
             }
         })
