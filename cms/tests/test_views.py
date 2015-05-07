@@ -5,6 +5,7 @@ import pytz
 from chameleon import PageTemplate
 from pyramid import testing
 from pyramid_beaker import set_cache_regions_from_settings
+from pyramid.httpexceptions import HTTPNotFound
 
 from cms import locale_negotiator_with_fallbacks
 from cms.tests.base import UnicoreTestCase
@@ -38,6 +39,9 @@ class TestViews(UnicoreTestCase):
                 'language': {
                     'type': 'string',
                     'index': 'not_analyzed',
+                },
+                'position': {
+                    'type': 'long'
                 }
             }
         })
@@ -231,6 +235,20 @@ class TestViews(UnicoreTestCase):
         self.assertEqual(
             response['description'], '<p><em>emphasised</em></p>')
 
+    def test_views_no_primary_category(self):
+        [page] = self.create_pages(
+            self.workspace,
+            linked_pages=None,
+            count=1, content='', description='',
+            primary_category=None)
+
+        # checks that relevant views don't generate exceptions
+        self.app.get('/')
+        self.app.get('/spice/')
+        self.app.get('/content/detail/%s/' % page.uuid)
+        self.app.get('/spice/content/detail/%s/' % page.uuid)
+        self.app.get('/content/comments/%s/' % page.uuid)
+
     def test_flatpage_markdown_rendering(self):
         [category] = self.create_categories(self.workspace, count=1)
         [page] = self.create_pages(
@@ -289,6 +307,13 @@ class TestViews(UnicoreTestCase):
         self.assertEqual(cat4.uuid, category1.uuid)
 
     def test_get_category(self):
+        request = testing.DummyRequest({'_LOCALE_': 'swa_KE'})
+        views = CmsViews(request)
+
+        for does_not_exist in (None, 'abcd'):
+            self.assertIs(views.get_category(does_not_exist), None)
+
+    def test_category_view(self):
         [category] = self.create_categories(
             self.workspace, count=1, language='swa_KE')
         [page] = self.create_pages(
@@ -302,6 +327,14 @@ class TestViews(UnicoreTestCase):
         self.assertEqual(response['category'].uuid, category.uuid)
         self.assertEqual(
             [p.uuid for p in response['pages']], [page.uuid])
+
+    def test_category_view_does_not_exist(self):
+        request = testing.DummyRequest({'_LOCALE_': 'swa_KE'})
+        views = CmsViews(request)
+
+        for does_not_exist in (None, 'abcd'):
+            request.matchdict['category'] = does_not_exist
+            self.assertRaises(HTTPNotFound, views.category)
 
     def test_pages_ordering(self):
         [category] = self.create_categories(self.workspace, count=1)
