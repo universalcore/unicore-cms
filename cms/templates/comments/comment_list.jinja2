@@ -1,0 +1,31 @@
+{% from 'comment.jinja2' import comment %}
+
+{% macro comment_list(comment_stream_obj, request) -%}
+{% if comment_stream_obj and comment_stream_obj.state in ('open', 'closed') %}
+<div class="comments highlight-quaternary">
+
+    <div class="comments-header">
+      {% trans total=comment_stream_obj.total %}{{ total }} comments{% endtrans %}
+    </div>
+
+    <ul class="comment-list">
+        {% for comment_obj in comment_stream_obj %}
+        <li class="comment">{{ comment(comment_obj, request) }}</li>
+        {% endfor %}
+    </ul>
+
+    <div class="comments-pagination">
+        {% if comment_stream_obj.has_previous() %}
+        {% set args = comment_stream_obj.get_previous_args() %}
+        <a href="{{ request.route_url('comments', uuid=args['content_uuid'], _query={'c_after': args['after']}) }}">&lt;&nbsp;{{ _('Previous') }}</a>
+        {% endif %}
+
+        {% if comment_stream_obj.has_next() %}
+        {% set args = comment_stream_obj.get_next_args() %}
+        <a href="{{ request.route_url('comments', uuid=args['content_uuid'], _query={'c_before': args['before']}) }}">{{ _('Next') }}&nbsp;&gt;</a>
+        {% endif %}
+    </div>
+
+</div>
+{% endif %}
+{%- endmacro %}

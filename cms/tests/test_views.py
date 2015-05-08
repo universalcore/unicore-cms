@@ -1,9 +1,11 @@
 import arrow
-from datetime import timedelta
+from datetime import timedelta, datetime
+import pytz
 
 from chameleon import PageTemplate
 from pyramid import testing
 from pyramid_beaker import set_cache_regions_from_settings
+from pyramid.httpexceptions import HTTPNotFound
 
 from cms import locale_negotiator_with_fallbacks
 from cms.tests.base import UnicoreTestCase
@@ -37,6 +39,9 @@ class TestViews(UnicoreTestCase):
                 'language': {
                     'type': 'string',
                     'index': 'not_analyzed',
+                },
+                'position': {
+                    'type': 'long'
                 }
             }
         })
@@ -65,7 +70,7 @@ class TestViews(UnicoreTestCase):
         self.config.include('pyramid_chameleon')
         set_cache_regions_from_settings(settings)
         self.config.set_locale_negotiator(locale_negotiator_with_fallbacks)
-        self.views = CmsViews(testing.DummyRequest())
+        self.views = CmsViews(self.mk_request())
 
         self.app = self.mk_app(self.workspace, settings=settings)
 
@@ -130,7 +135,7 @@ class TestViews(UnicoreTestCase):
             [], list(self.views.get_featured_category_pages(category2.uuid)))
 
     def test_get_featured_category_pages_swahili(self):
-        self.views = CmsViews(testing.DummyRequest({'_LOCALE_': 'swa_KE'}))
+        self.views = CmsViews(self.mk_request(locale_name='swa_KE'))
 
         [category_eng] = self.create_categories(
             self.workspace, language='eng_GB', count=1)
@@ -189,8 +194,7 @@ class TestViews(UnicoreTestCase):
             linked_pages=[page1.uuid],
             primary_category=category.uuid)
 
-        request = testing.DummyRequest()
-        request.matchdict['uuid'] = page2.uuid
+        request = self.mk_request(matchdict={'uuid': page2.uuid})
         self.views = CmsViews(request)
         response = self.views.content()
         [linked_page] = response['linked_pages']
@@ -203,8 +207,7 @@ class TestViews(UnicoreTestCase):
             linked_pages=None,
             count=1, content='', description='',
             primary_category=category.uuid)
-        request = testing.DummyRequest()
-        request.matchdict['uuid'] = page1.uuid
+        request = self.mk_request(matchdict={'uuid': page1.uuid})
         self.views = CmsViews(request)
         response = self.views.content()
         self.assertEqual(list(response['linked_pages']), [])
@@ -218,8 +221,7 @@ class TestViews(UnicoreTestCase):
             description='_emphasised_',
             primary_category=category.uuid)
 
-        request = testing.DummyRequest()
-        request.matchdict['uuid'] = page.uuid
+        request = self.mk_request(matchdict={'uuid': page.uuid})
         self.views = CmsViews(request)
         response = self.views.content()
         self.assertEqual(
@@ -227,14 +229,27 @@ class TestViews(UnicoreTestCase):
         self.assertEqual(
             response['description'], '<p><em>emphasised</em></p>')
 
+    def test_views_no_primary_category(self):
+        [page] = self.create_pages(
+            self.workspace,
+            linked_pages=None,
+            count=1, content='', description='',
+            primary_category=None)
+
+        # checks that relevant views don't generate exceptions
+        self.app.get('/')
+        self.app.get('/spice/')
+        self.app.get('/content/detail/%s/' % page.uuid)
+        self.app.get('/spice/content/detail/%s/' % page.uuid)
+        self.app.get('/content/comments/%s/' % page.uuid)
+
     def test_flatpage_markdown_rendering(self):
         [category] = self.create_categories(self.workspace, count=1)
         [page] = self.create_pages(
             self.workspace, count=1, content='**strong**',
             description='_emphasised_')
 
-        request = testing.DummyRequest()
-        request.matchdict['slug'] = page.slug
+        request = self.mk_request(matchdict={'slug': page.slug})
         self.views = CmsViews(request)
         response = self.views.flatpage()
         self.assertEqual(
@@ -256,7 +271,7 @@ class TestViews(UnicoreTestCase):
         )
 
         # Change language
-        self.views = CmsViews(testing.DummyRequest({'_LOCALE_': 'swa_KE'}))
+        self.views = CmsViews(self.mk_request(locale_name='swa_KE'))
         cat1, cat2 = self.views.get_categories()
         self.assertEqual(
             set([cat1.language, cat2.language]),
@@ -285,19 +300,34 @@ class TestViews(UnicoreTestCase):
         self.assertEqual(cat4.uuid, category1.uuid)
 
     def test_get_category(self):
+        request = self.mk_request(locale_name='swa_KE')
+        views = CmsViews(request)
+
+        for does_not_exist in (None, 'abcd'):
+            self.assertIs(views.get_category(does_not_exist), None)
+
+    def test_category_view(self):
         [category] = self.create_categories(
             self.workspace, count=1, language='swa_KE')
         [page] = self.create_pages(
             self.workspace, count=1, language='swa_KE',
             primary_category=category.uuid)
 
-        request = testing.DummyRequest({'_LOCALE_': 'swa_KE'})
-        request.matchdict['category'] = category.uuid
+        request = self.mk_request(
+            matchdict={'category': category.uuid}, locale_name='swa_KE')
         views = CmsViews(request)
         response = views.category()
         self.assertEqual(response['category'].uuid, category.uuid)
         self.assertEqual(
             [p.uuid for p in response['pages']], [page.uuid])
+
+    def test_category_view_does_not_exist(self):
+        request = self.mk_request(locale_name='swa_KE')
+        views = CmsViews(request)
+
+        for does_not_exist in (None, 'abcd'):
+            request.matchdict['category'] = does_not_exist
+            self.assertRaises(HTTPNotFound, views.category)
 
     def test_pages_ordering(self):
         [category] = self.create_categories(self.workspace, count=1)
@@ -319,8 +349,7 @@ class TestViews(UnicoreTestCase):
         self.workspace.save(page4, 'Update position')
         self.workspace.refresh_index()
 
-        request = testing.DummyRequest({})
-        request.matchdict['category'] = category.uuid
+        request = self.mk_request(matchdict={'category': category.uuid})
         views = CmsViews(request)
         cat = views.category()
         p1, p2, p3, p4 = cat['pages']
@@ -338,14 +367,14 @@ class TestViews(UnicoreTestCase):
         self.assertEqual([], list(self.views.get_top_nav))
 
         # Change language
-        self.views = CmsViews(testing.DummyRequest({'_LOCALE_': 'swa_KE'}))
+        self.views = CmsViews(self.mk_request(locale_name='swa_KE'))
         cat1, cat2 = self.views.get_top_nav
         self.assertEqual(
             set([cat1.language, cat2.language]),
             set(['swa_KE', 'swa_KE']))
 
     def test_format_date_helper(self):
-        views = CmsViews(testing.DummyRequest({}))
+        views = CmsViews(self.mk_request())
         self.assertEqual(
             views.format_date('2014-10-10T09:10:17+00:00'),
             '10 October 2014')
@@ -358,14 +387,19 @@ class TestViews(UnicoreTestCase):
             views.format_date('some invalid date'),
             'some invalid date')
 
+        dt = datetime(year=2014, month=10, day=10, hour=9, minute=10,
+                      second=17, tzinfo=pytz.utc)
+        self.assertEqual(
+            views.format_date(dt), '10 October 2014')
+
     def test_get_flatpage_using_old_swahili_code(self):
         [category] = self.create_categories(self.workspace, count=1)
         [page] = self.create_pages(
             self.workspace, count=1, content='Sample page in swahili',
             description='_emphasised_', language='swa_KE')
 
-        request = testing.DummyRequest({'_LOCALE_': 'swh_KE'})
-        request.matchdict['slug'] = page.slug
+        request = self.mk_request(
+            {'_LOCALE_': 'swh_KE'}, matchdict={'slug': page.slug})
         self.views = CmsViews(request)
         response = self.views.flatpage()
         self.assertEqual(
@@ -377,15 +411,15 @@ class TestViews(UnicoreTestCase):
             self.workspace, count=1, content='Sample page in english',
             description='_emphasised_', language='eng_GB')
 
-        request = testing.DummyRequest({'_LOCALE_': 'eng_UK'})
-        request.matchdict['slug'] = page.slug
+        request = self.mk_request(
+            {'_LOCALE_': 'eng_UK'}, matchdict={'slug': page.slug})
         self.views = CmsViews(request)
         response = self.views.flatpage()
         self.assertEqual(
             response['content'], '<p>Sample page in english</p>')
 
     def test_image_url(self):
-        self.views = CmsViews(testing.DummyRequest({}))
+        self.views = CmsViews(self.mk_request())
 
         self.assertEqual(self.views.get_image_url(
             'http://some.site.com', 'sample-uuid-000000-0001'),
@@ -417,7 +451,7 @@ class TestViews(UnicoreTestCase):
         self.workspace.save(loc, 'Add localisation')
         self.workspace.refresh_index()
 
-        request = testing.DummyRequest({'_LOCALE_': 'eng_GB'})
+        request = self.mk_request({'_LOCALE_': 'eng_GB'})
         self.views = CmsViews(request)
 
         localisation = self.views.get_localisation()
@@ -426,7 +460,7 @@ class TestViews(UnicoreTestCase):
         self.assertEqual(localisation.image_host, 'http://some.site.com/')
 
         # Test fallbacks
-        request = testing.DummyRequest({'_LOCALE_': 'eng_UK'})
+        request = self.mk_request({'_LOCALE_': 'eng_UK'})
         self.views = CmsViews(request)
 
         localisation = self.views.get_localisation()
@@ -442,7 +476,7 @@ class TestViews(UnicoreTestCase):
         self.workspace.save(loc, 'Add localisation')
         self.workspace.refresh_index()
 
-        request = testing.DummyRequest({'_LOCALE_': 'spa_ES'})
+        request = self.mk_request({'_LOCALE_': 'spa_ES'})
         self.views = CmsViews(request)
 
         self.assertIsNone(self.views.get_localisation())
@@ -457,7 +491,7 @@ class TestViews(UnicoreTestCase):
             logo_image_host='http://some.site.com/')
 
         def render_logo(locale, default_src=None):
-            request = testing.DummyRequest({'_LOCALE_': locale})
+            request = self.mk_request(locale_name=locale)
             self.views = CmsViews(request)
             if default_src:
                 define = 'tal:define="img_attrs view.get_logo_attributes' \
@@ -508,7 +542,7 @@ class TestViews(UnicoreTestCase):
         self.assertEqual(
             langs, [('eng_GB', 'English'), ('spa_ES', u'espa\xf1ol')])
 
-        request = testing.DummyRequest({'_LOCALE_': 'fre_FR'})
+        request = self.mk_request(locale_name='fre_FR')
         self.views = CmsViews(request)
         langs = self.views.get_display_languages()
         self.assertEqual(
@@ -516,7 +550,7 @@ class TestViews(UnicoreTestCase):
             [('fre_FR', u'fran\xe7ais'), ('eng_GB', 'English'),
              ('spa_ES', u'espa\xf1ol')])
 
-        request = testing.DummyRequest({'_LOCALE_': 'spa_ES'})
+        request = self.mk_request(locale_name='spa_ES')
         self.views = CmsViews(request)
         langs = self.views.get_display_languages()
         self.assertEqual(
@@ -538,5 +572,6 @@ class TestViews(UnicoreTestCase):
             in resp.body.decode('utf-8'))
 
     def test_404_page(self):
-        resp = self.app.get('/;jsdafjahs;dfjas;')
+        resp = self.app.get('/;jsdafjahs;dfjas;', expect_errors=True)
         self.assertTrue('class="page-not-found"'in resp.body)
+        self.assertEqual(resp.status_int, 404)

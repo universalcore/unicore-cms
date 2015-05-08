@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+1.8.0
+-----
+- Add comments using unicore.comments.client
+- Handle non-existent category in page and category views
+- Add page/category title context to GA
+
 1.7.1
 -----
 - pin cornice to 1.0.0

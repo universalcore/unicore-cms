@@ -1,4 +1,10 @@
 import math
+from functools import wraps
+
+from pyramid.i18n import TranslationStringFactory
+
+
+translation_string_factory = TranslationStringFactory(None)
 
 
 class Paginator(object):
@@ -97,7 +103,7 @@ class ResultGenerator(object):
         self.es_results = es_results
 
     def __iter__(self):
-        return (obj.get_object() for obj in self.es_results)
+        return (obj.to_object() for obj in self.es_results)
 
     def __len__(self):
         return self.es_results.__len__()
@@ -105,8 +111,35 @@ class ResultGenerator(object):
     def __getitem__(self, k):
         if isinstance(k, slice):
             return ResultGenerator(self.es_results.__getitem__(k))
-        return self.es_results.__getitem__(k).get_object()
+        return self.es_results.__getitem__(k).to_object()
 
 
 def to_eg_objects(es_results):
     return ResultGenerator(es_results)
+
+
+def ga_context(context_func):
+    """
+    A decorator for Cornice views that allows one to set extra parameters
+    for Google Analytics tracking::
+        @ga_context(lambda context: {'dt': context['category'].title, })
+        @view_config(route_name='page')
+        def view(request):
+            return {
+                'category': self.workspace.S(Category).filter(title='foo')[0],
+            }
+    :param func context_func:
+        A function which takes one argument, a context dictionary made
+        available to the template.
+    :returns:
+        A dict containing the extra variables for Google Analytics
+        tracking.
+    """
+    def decorator(func):
+        @wraps(func)
+        def wrapper(self, *args, **kwargs):
+            context = func(self, *args, **kwargs)
+            self.request.google_analytics.update(context_func(context))
+            return context
+        return wrapper
+    return decorator

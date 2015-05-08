@@ -1,4 +1,6 @@
 from ast import literal_eval
+from datetime import datetime
+import pytz
 
 from babel import Locale
 from pycountry import languages
@@ -6,27 +8,34 @@ from pycountry import languages
 from beaker.cache import cache_region
 
 from markdown import markdown
+import colander
+from deform import ValidationFailure
 
 from pyramid.view import view_config
 from pyramid.renderers import get_renderer
 from pyramid.decorator import reify
 from pyramid.response import Response
 from pyramid.security import forget, remember
-from pyramid.httpexceptions import HTTPFound, HTTPNotFound
+from pyramid.httpexceptions import HTTPFound, HTTPNotFound, HTTPBadRequest
 
 from elasticgit import F
 
 from cms import USER_DATA_SESSION_KEY
 from cms.views.base import BaseCmsView
+from cms.views.utils import (
+    EGPaginator, to_eg_objects, translation_string_factory as _, ga_context)
+from cms.views.forms import CommentForm
 
 from unicore.content.models import Category, Page, Localisation
 from unicore.hub.client import ClientException as HubClientException
 from unicore.hub.client.utils import same_origin
-from utils import EGPaginator, to_eg_objects
+from unicore.comments.client import (
+    LazyCommentPage, UserBanned, CommentStreamNotOpen, CommentServiceException)
 
 from pyramid.view import notfound_view_config
 
 CACHE_TIME = 'default_term'
+COMMENTS_PER_PAGE = 20
 
 
 class CmsViews(BaseCmsView):
@@ -112,7 +121,7 @@ class CmsViews(BaseCmsView):
         try:
             [localisation] = self.workspace.S(
                 Localisation).filter(locale=self.locale)
-            return localisation.get_object()
+            return localisation.to_object()
         except ValueError:
             return None
 
@@ -126,8 +135,11 @@ class CmsViews(BaseCmsView):
 
     @cache_region(CACHE_TIME)
     def get_category(self, uuid):
-        [category] = self.workspace.S(Category).filter(uuid=uuid)
-        return category.get_object()
+        try:
+            [category] = self.workspace.S(Category).filter(uuid=uuid)
+            return category.to_object()
+        except ValueError:
+            return None
 
     def get_pages(self, limit=5, order_by=('position', '-modified_at')):
         """
@@ -186,9 +198,36 @@ class CmsViews(BaseCmsView):
             if locale is not None:
                 query = query.filter(language=locale)
             [page] = query[:1]
-            return page.get_object()
+            return page.to_object()
         except ValueError:
             return None
+
+    def get_comments_for_content(self, content_uuid, **page_args):
+        commentclient = self.request.registry.commentclient
+        if commentclient is None:
+            return None
+
+        default_page_args = {'limit': COMMENTS_PER_PAGE}
+
+        if 'c_after' in self.request.GET:
+            default_page_args['after'] = self.request.GET['c_after']
+        elif 'c_before' in self.request.GET:
+            default_page_args['before'] = self.request.GET['c_before']
+
+        default_page_args.update(page_args)
+
+        return LazyCommentPage(
+            commentclient,
+            content_uuid=content_uuid,
+            app_uuid=commentclient.settings['app_id'],
+            **default_page_args)
+
+    def get_comment_context(self, content_object):
+        return {
+            'comments': self.get_comments_for_content(
+                content_object.uuid, limit=COMMENTS_PER_PAGE),
+            'comment_form': CommentForm(self.request, content_object)
+        }
 
     @reify
     def get_top_nav(self, order_by=('position',)):
@@ -208,6 +247,7 @@ class CmsViews(BaseCmsView):
     def categories(self):
         return {}
 
+    @ga_context(lambda context: {'dt': context['category'].title, })
     @view_config(route_name='category', renderer='cms:templates/category.pt')
     @view_config(route_name='category_jinja2',
                  renderer='cms:templates/category.jinja2')
@@ -215,12 +255,13 @@ class CmsViews(BaseCmsView):
         category_id = self.request.matchdict['category']
         category = self.get_category(category_id)
 
-        if category.language != self.locale:
+        if category is None or category.language != self.locale:
             raise HTTPNotFound()
 
         pages = self.get_pages_for_category(category_id, self.locale)
         return {'category': category, 'pages': pages}
 
+    @ga_context(lambda context: {'dt': context['page'].title, })
     @view_config(route_name='content', renderer='cms:templates/content.pt')
     @view_config(route_name='content_jinja',
                  renderer='cms:templates/content.jinja2')
@@ -242,13 +283,89 @@ class CmsViews(BaseCmsView):
 
         if page.language != self.locale:
             raise HTTPNotFound()
-        return {
+
+        context = {
             'page': page,
             'linked_pages': linked_pages,
             'primary_category': category,
             'content': markdown(page.content),
             'description': markdown(page.description),
         }
+        context.update(self.get_comment_context(page))
+        return context
+
+    @view_config(route_name='comments',
+                 renderer='cms:templates/comments/comment_page.jinja2')
+    def comments(self):
+        context = self.content()
+
+        if 'submit' in self.request.POST:
+            form = context['comment_form']
+
+            try:
+                data = form.validate(self.request.POST.items())
+                commentclient = self.request.registry.commentclient
+                commentclient.create_comment(data)
+                raise HTTPFound(self.request.route_url(
+                    'comments', uuid=data['content_uuid']))
+
+            except ValidationFailure as e:
+                context['comment_form'] = e.field
+
+            except UserBanned:
+                form.error = colander.Invalid(
+                    form, _('You have been banned from commenting'))
+
+            except CommentStreamNotOpen:
+                raise HTTPFound(self.request.route_url(
+                    'comments', uuid=data['content_uuid']))
+
+            except ValueError as e:
+                raise HTTPBadRequest()
+
+        return context
+
+    @view_config(route_name='flag_comment')
+    def flag_comment(self):
+        commentclient = self.request.registry.commentclient
+
+        if None in (self.request.user, commentclient):
+            raise HTTPNotFound
+
+        flag_data = {
+            'user_uuid': self.request.user.get('uuid'),
+            'comment_uuid': self.request.matchdict['uuid'],
+            'submit_datetime': datetime.now(pytz.utc).isoformat(),
+            'app_uuid': commentclient.settings['app_id']
+        }
+        try:
+            commentclient.create_flag(flag_data)
+        except CommentServiceException as e:
+            if e.response.status_code == 404:
+                raise HTTPNotFound
+            raise e
+
+        query = {}
+        if self.request.referrer and same_origin(
+                self.request.referrer, self.request.current_route_url()):
+            query = {'next': self.request.referrer}
+
+        return HTTPFound(self.request.route_url(
+            'flag_comment_success', uuid=flag_data['comment_uuid'],
+            _query=query))
+
+    @view_config(route_name='flag_comment_success',
+                 renderer='cms:templates/comments/comment_flagged.jinja2')
+    def flag_comment_success(self):
+        if not self.request.user:
+            raise HTTPNotFound
+
+        next_url = self.request.GET.get('next')
+        if next_url and not same_origin(
+                next_url, self.request.current_route_url()):
+            next_url = None
+
+        return {'next': next_url}
 
     @view_config(route_name='flatpage', renderer='cms:templates/flatpage.pt')
     @view_config(route_name='flatpage_jinja',
@@ -338,7 +455,8 @@ class CmsViews(BaseCmsView):
         }
 
     @notfound_view_config(renderer='cms:templates/404.pt')
-    def notfound(request):
+    def notfound(self):
+        self.request.response.status = 404
         return {}
 
     @view_config(route_name='login')

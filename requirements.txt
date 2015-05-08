@@ -10,14 +10,16 @@ cornice==1.0.0
 pyramid_celery>=2.0.0.rc4
 pyramid_redis
 babel
+deform>=0.9.9
 lingua
 arrow
 Markdown==2.5.1
 raven==5.0.0
-elastic-git>=1.0.0
+elastic-git>=1.0.2
 python-slugify
 python-dateutil
 libthumbor
+unicore.comments.client>=0.1.1
 unicore.content>=1.0.4
 unicore.google
 unicore.distribute>=0.0.2
