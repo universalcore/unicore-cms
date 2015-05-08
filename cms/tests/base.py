@@ -89,6 +89,21 @@ class UnicoreTestCase(TestCase):
             cp.write(fp)
         return pathname
 
+    def mk_request(self, params={}, matchdict={}, locale_name='eng_GB'):
+        request = testing.DummyRequest(params)
+        request.matchdict = matchdict
+        request.google_analytics = {}
+        request.user = None
+
+        if '_LOCALE_' not in params:
+            request.locale_name = locale_name
+
+        for client in ('commentclient', 'hubclient'):
+            if getattr(request.registry, client, None) is None:
+                setattr(request.registry, client, None)
+
+        return request
+
     def mk_session(self, logged_in=True, user_data={}):
         session_id = uuid4().hex
         session = Session(

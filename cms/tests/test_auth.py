@@ -28,7 +28,7 @@ class TestAuth(UnicoreTestCase):
         self.config.include('cms')
         set_cache_regions_from_settings(settings)
 
-        self.views = CmsViews(testing.DummyRequest())
+        self.views = CmsViews(self.mk_request())
         self.app = self.mk_app(self.workspace, settings=settings)
 
     def tearDown(self):
@@ -153,7 +153,7 @@ class TestAuth(UnicoreTestCase):
             self.app.reset()
 
     def test_auth_policy(self):
-        request = testing.DummyRequest()
+        request = self.mk_request()
         session = self.mk_session(user_data={'uuid': 'imauuid'})[0]
         request.session = session
 

@@ -50,7 +50,7 @@ class TestDirectionality(UnicoreTestCase):
         self.config = testing.setUp(settings=settings)
         set_cache_regions_from_settings(settings)
         self.config.set_locale_negotiator(locale_negotiator_with_fallbacks)
-        self.views = CmsViews(testing.DummyRequest())
+        self.views = CmsViews(self.mk_request())
         self.app = self.mk_app(self.workspace, settings=settings)
 
     def test_ltr(self):
@@ -70,7 +70,7 @@ class TestDirectionality(UnicoreTestCase):
         self.workspace.save(loc, 'Add localisation')
         self.workspace.refresh_index()
 
-        request = testing.DummyRequest({'_LOCALE_': 'urd_IN'})
+        request = self.mk_request(locale_name='urd_IN')
         self.views = CmsViews(request)
 
         localisation = self.views.get_localisation()

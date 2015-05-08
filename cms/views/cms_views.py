@@ -22,14 +22,15 @@ from elasticgit import F
 
 from cms import USER_DATA_SESSION_KEY
 from cms.views.base import BaseCmsView
+from cms.views.utils import (
+    EGPaginator, to_eg_objects, translation_string_factory as _, ga_context)
+from cms.views.forms import CommentForm
 
 from unicore.content.models import Category, Page, Localisation
 from unicore.hub.client import ClientException as HubClientException
 from unicore.hub.client.utils import same_origin
 from unicore.comments.client import (
     LazyCommentPage, UserBanned, CommentStreamNotOpen, CommentServiceException)
-from utils import EGPaginator, to_eg_objects, translation_string_factory as _
-from forms import CommentForm
 
 from pyramid.view import notfound_view_config
 
@@ -246,6 +247,7 @@ class CmsViews(BaseCmsView):
     def categories(self):
         return {}
 
+    @ga_context(lambda context: {'dt': context['category'].title, })
     @view_config(route_name='category', renderer='cms:templates/category.pt')
     @view_config(route_name='category_jinja2',
                  renderer='cms:templates/category.jinja2')
@@ -259,6 +261,7 @@ class CmsViews(BaseCmsView):
         pages = self.get_pages_for_category(category_id, self.locale)
         return {'category': category, 'pages': pages}
 
+    @ga_context(lambda context: {'dt': context['page'].title, })
     @view_config(route_name='content', renderer='cms:templates/content.pt')
     @view_config(route_name='content_jinja',
                  renderer='cms:templates/content.jinja2')
