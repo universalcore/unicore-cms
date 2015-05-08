@@ -1,4 +1,3 @@
-import uuid
 from urlparse import urljoin
 from datetime import datetime
 
@@ -6,7 +5,6 @@ from elasticgit import EG
 from dateutil import parser
 from libthumbor import CryptoURL
 
-from unicore.google.tasks import pageview
 
 # known Right to Left language codes
 KNOWN_RTL = set(["urd", "ara", "arc", "per", "heb", "kur", "yid"])
@@ -24,7 +22,6 @@ class BaseCmsView(object):
             es={'urls': [es_host]},
             workdir=self.settings['git.path'],
             index_prefix=self.settings['es.index_prefix'])
-        self.track_pageview()
 
     def format_date(self, date_obj, fmt='%d %B %Y'):
         if isinstance(date_obj, datetime):
@@ -58,37 +55,6 @@ class BaseCmsView(object):
                 width=0, height=height, image_url=image_uuid)
 
         return urljoin(image_host, image_url)
-
-    def get_or_create_ga_client_id(self):
-        '''
-        NOTE: client_id can be any unique identifier.
-              UniversalAnalytics converts any client_id to a
-              UUID4-format MD5 checksum. This means we can safely use
-              a UID provided by FB as a client_id and GA will track
-              accurately.
-        '''
-
-        client_id = self.request.cookies.get('ga_client_id')
-        if client_id:
-            return client_id
-        client_id = str(uuid.uuid4())
-        self.request.response.set_cookie(
-            'ga_client_id', value=client_id, max_age=31536000)
-        return client_id
-
-    def track_pageview(self):
-        profile_id = self.settings.get('ga.profile_id')
-        if not profile_id:
-            return
-
-        pageview.delay(profile_id, self.get_or_create_ga_client_id(), {
-            'path': self.request.path,
-            'uip': self.request.remote_addr,
-            'dr': self.request.referer or '',
-            'dh': self.request.domain,
-            'user_agent': self.request.user_agent,
-            'ul': unicode(self.request.accept_language),
-        })
 
     def get_language_direction(self):
         language_code, _, country_code = self.locale.partition('_')
