@@ -112,6 +112,7 @@ class TestViews(UnicoreTestCase):
             'dh': 'some.site.com',
             'user_agent': 'Mozilla/5.0',
             'ul': 'en',
+            'dt': page1.title
         })
 
         self.assertEqual(gen_client_id, client_id)

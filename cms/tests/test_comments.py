@@ -34,7 +34,7 @@ class TestCommentViews(UnicoreTestCase):
         self.config.include('cms')
         set_cache_regions_from_settings(settings)
 
-        self.views = CmsViews(testing.DummyRequest())
+        self.views = CmsViews(self.mk_request())
         self.app_id = settings['unicorehub.app_id']
         self.app = self.mk_app(self.workspace, settings=settings)
 
