@@ -2,7 +2,7 @@ from ast import literal_eval
 from datetime import datetime
 import pytz
 
-from babel import Locale
+from babel import Locale, UnknownLocaleError
 from pycountry import languages
 
 from beaker.cache import cache_region
@@ -61,7 +61,15 @@ class CmsViews(BaseCmsView):
     def get_display_name(self, locale):
         language_code, _, country_code = locale.partition('_')
         term_code = languages.get(bibliographic=language_code).terminology
-        return Locale.parse(term_code).language_name
+
+        available_languages = dict(literal_eval(
+            (self.settings.get('available_languages', '[]'))))
+
+        try:
+            return Locale.parse(term_code).language_name
+        except UnknownLocaleError:
+            # Fallback value is the generated value in English or the code
+            return available_languages.get(locale, locale)
 
     def get_display_languages(self):
         to_display = [
