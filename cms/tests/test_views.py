@@ -58,7 +58,7 @@ class TestViews(UnicoreTestCase):
         languages = ("[('eng_GB', 'English'), ('swa_KE', 'Swahili'),"
                      "('spa_ES', 'Spanish'), ('fre_FR', 'French'),"
                      "('hin_IN', 'Hindi'), ('ind_ID', 'Bahasa'),"
-                     "('per_IR', 'Persian')]")
+                     "('per_IR', 'Persian'), ('grn_PY', 'Guarani')]")
         featured_langs = "[('spa_ES', 'Spanish'), ('eng_GB', 'English')]"
 
         settings = self.get_settings(
@@ -111,8 +111,8 @@ class TestViews(UnicoreTestCase):
     def test_get_available_languages(self):
         languages = self.views.get_available_languages
         self.assertEqual(languages[1][0], 'eng_GB')
-        self.assertEqual(languages[6][0], 'swa_KE')
-        self.assertEqual(languages[6][1], 'Kiswahili')
+        self.assertEqual(languages[7][0], 'swa_KE')
+        self.assertEqual(languages[7][1], 'Kiswahili')
 
     def test_get_featured_category_pages(self):
         category1, category2 = self.create_categories(self.workspace)
@@ -555,6 +555,15 @@ class TestViews(UnicoreTestCase):
         langs = self.views.get_display_languages()
         self.assertEqual(
             langs, [('spa_ES', u'espa\xf1ol'), ('eng_GB', 'English')])
+
+    def test_unsupported_locales(self):
+        request = self.mk_request(locale_name='grn_PY')
+        self.views = CmsViews(request)
+        langs = self.views.get_display_languages()
+        self.assertEqual(
+            langs,
+            [('grn_PY', u'Guarani'), ('eng_GB', 'English'),
+             ('spa_ES', u'espa\xf1ol')])
 
     def test_change_locale_page(self):
         resp = self.app.get('/locale/change/')

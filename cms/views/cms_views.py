@@ -2,7 +2,7 @@ from ast import literal_eval
 from datetime import datetime
 import pytz
 
-from babel import Locale
+from babel import Locale, UnknownLocaleError
 from pycountry import languages
 
 from beaker.cache import cache_region
@@ -61,7 +61,15 @@ class CmsViews(BaseCmsView):
     def get_display_name(self, locale):
         language_code, _, country_code = locale.partition('_')
         term_code = languages.get(bibliographic=language_code).terminology
-        return Locale.parse(term_code).language_name
+
+        available_languages = dict(literal_eval(
+            (self.settings.get('available_languages', '[]'))))
+
+        try:
+            return Locale.parse(term_code).language_name
+        except UnknownLocaleError:
+            # Fallback value is the generated value in English or the code
+            return available_languages.get(locale, locale)
 
     def get_display_languages(self):
         to_display = [
@@ -239,6 +247,7 @@ class CmsViews(BaseCmsView):
             language=locale,
             featured_in_navbar=True).order_by(*order_by))
 
+    @ga_context(lambda context: {'dt': 'Home', })
     @view_config(route_name='home', renderer='cms:templates/home.pt')
     @view_config(route_name='home_jinja', renderer='cms:templates/home.jinja2')
     # redundantcategory
@@ -367,6 +376,7 @@ class CmsViews(BaseCmsView):
 
         return {'next': next_url}
 
+    @ga_context(lambda context: {'dt': context['page'].title, })
     @view_config(route_name='flatpage', renderer='cms:templates/flatpage.pt')
     @view_config(route_name='flatpage_jinja',
                  renderer='cms:templates/flatpage.jinja2')
@@ -386,6 +396,7 @@ class CmsViews(BaseCmsView):
             'description': markdown(page.description),
         }
 
+    @ga_context(lambda context: {'dt': 'Choose Language', })
     @view_config(
         route_name='locale_change',
         renderer='cms:templates/locale_change.pt')
@@ -400,6 +411,7 @@ class CmsViews(BaseCmsView):
                    key=lambda tup: tup[1].lower())
         }
 
+    @ga_context(lambda context: {'dt': 'Set Language', })
     @view_config(route_name='locale')
     @view_config(route_name='locale_matched')
     def set_locale_cookie(self):
@@ -412,6 +424,7 @@ class CmsViews(BaseCmsView):
 
         return HTTPFound(location='/', headers=response.headers)
 
+    @ga_context(lambda context: {'dt': 'Search', })
     @view_config(route_name='search',
                  renderer='cms:templates/search_results.pt')
     @view_config(route_name='search_jinja',
