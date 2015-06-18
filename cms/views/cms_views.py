@@ -247,6 +247,7 @@ class CmsViews(BaseCmsView):
             language=locale,
             featured_in_navbar=True).order_by(*order_by))
 
+    @ga_context(lambda context: {'dt': 'Home', })
     @view_config(route_name='home', renderer='cms:templates/home.pt')
     @view_config(route_name='home_jinja', renderer='cms:templates/home.jinja2')
     # redundantcategory
@@ -375,6 +376,7 @@ class CmsViews(BaseCmsView):
 
         return {'next': next_url}
 
+    @ga_context(lambda context: {'dt': context['page'].title, })
     @view_config(route_name='flatpage', renderer='cms:templates/flatpage.pt')
     @view_config(route_name='flatpage_jinja',
                  renderer='cms:templates/flatpage.jinja2')
@@ -394,6 +396,7 @@ class CmsViews(BaseCmsView):
             'description': markdown(page.description),
         }
 
+    @ga_context(lambda context: {'dt': 'Choose Language', })
     @view_config(
         route_name='locale_change',
         renderer='cms:templates/locale_change.pt')
@@ -408,6 +411,7 @@ class CmsViews(BaseCmsView):
                    key=lambda tup: tup[1].lower())
         }
 
+    @ga_context(lambda context: {'dt': 'Set Language', })
     @view_config(route_name='locale')
     @view_config(route_name='locale_matched')
     def set_locale_cookie(self):
@@ -420,6 +424,7 @@ class CmsViews(BaseCmsView):
 
         return HTTPFound(location='/', headers=response.headers)
 
+    @ga_context(lambda context: {'dt': 'Search', })
     @view_config(route_name='search',
                  renderer='cms:templates/search_results.pt')
     @view_config(route_name='search_jinja',
