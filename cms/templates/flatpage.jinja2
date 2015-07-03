@@ -1,0 +1,8 @@
+{% extends "base.jinja2" %}
+{% import 'atoms.html' as atoms %}
+{% import 'molecules.html' as molecules %}
+
+{% block content %}
+<h3>page.title</h3>
+{{content|safe}}
+{% endblock %}

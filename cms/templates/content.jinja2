@@ -1,0 +1,18 @@
+{% extends "base.jinja2" %}
+{% import 'atoms.html' as atoms %}
+{% import 'molecules.html' as molecules %}
+{% from 'comments/comment_form.jinja2' import comment_form as comment_form_macro %}
+{% from 'comments/comment_list.jinja2' import comment_list %}
+
+{% block content %}
+<a href="{{view.request.route_url('category_jinja2', category=primary_category.uuid)}}">
+{{molecules.image_and_heading(view, primary_category )}}
+</a>
+
+{{page.title}}
+
+{{content|safe}}
+
+{{ comment_form_macro(comment_form, comments) }}
+{{ comment_list(comments, request) }}
+{% endblock %}

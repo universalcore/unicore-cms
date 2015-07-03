@@ -1,0 +1,39 @@
+{% import 'molecules.html' as molecules %}
+{% import 'organisms.html' as organisms %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      dir="{{view.get_language_direction}}">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico" />
+    <title>Unicef / Universal Core</title>
+    <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
+    <meta name="description" content=""/>
+    <meta name="keywords" content="moms,maternal,baby,pregnancy,pregnant,expectant,mama,askmama,ask,mother,pain,birth,help"/>
+    <link href="/static/css/style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<!-- lang div -->
+{{molecules.list_of_languages(view, view.get_display_languages())}}
+
+{{molecules.logo(view, "/static/img/logo.png")}}
+
+{{molecules.list_of_site_links(view, [('about', 'About'), ('credit', 'Credit'), ('contact', 'Contact')] ) }}
+
+{% block content %}
+{% endblock %}
+
+
+{% block menu %}
+{{molecules.list_of_site_links(view, [('about', 'About'), ('credit', 'Credit'), ('contact', 'Contact')] ) }}
+{% endblock%}
+
+{% block search %}
+{{molecules.search_box(view)}}
+{% endblock %}
+
+{{molecules.footer("Unicef 2014")}}
+
+</body>
+</html>

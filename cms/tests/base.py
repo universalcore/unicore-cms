@@ -2,12 +2,15 @@ import os
 import tempfile
 from ConfigParser import ConfigParser
 from datetime import datetime
+from uuid import uuid4
 
-
+from beaker.session import Session
 from webtest import TestApp
 from unittest import TestCase
 
-from cms import main
+from pyramid import testing
+
+from cms import main, USER_DATA_SESSION_KEY
 
 from elasticgit import EG
 
@@ -54,6 +57,10 @@ class UnicoreTestCase(TestCase):
         settings_defaults = {
             'git.path': workspace.working_dir,
             'es.index_prefix': workspace.index_prefix,
+            'unicorehub.host': 'http://hub.unicore.io',
+            'unicorehub.app_id': 'sample-app-id',
+            'unicorehub.app_password': 'sample-password',
+            'unicorehub.redirect_to_https': None,
         }
         settings_defaults.update(settings)
 
@@ -81,6 +88,39 @@ class UnicoreTestCase(TestCase):
                     cp.set(section, key, value)
             cp.write(fp)
         return pathname
+
+    def mk_request(self, params={}, matchdict={}, locale_name='eng_GB'):
+        request = testing.DummyRequest(params)
+        request.matchdict = matchdict
+        request.google_analytics = {}
+        request.user = None
+
+        if '_LOCALE_' not in params:
+            request.locale_name = locale_name
+
+        for client in ('commentclient', 'hubclient'):
+            if getattr(request.registry, client, None) is None:
+                setattr(request.registry, client, None)
+
+        return request
+
+    def mk_session(self, logged_in=True, user_data={}):
+        session_id = uuid4().hex
+        session = Session(
+            testing.DummyRequest(), id=session_id, use_cookies=False)
+
+        if logged_in:
+            user_data = user_data or {
+                'uuid': uuid4().hex,
+                'username': 'foo',
+                'app_data': {'display_name': 'foobar'}
+            }
+            session[USER_DATA_SESSION_KEY] = user_data
+            session['auth.userid'] = user_data['uuid']
+
+        session.save()
+        # return the session and cookie header
+        return session, {'Cookie': 'beaker.session.id=%s' % session_id}
 
     def create_categories(
             self, workspace, count=2, locale='eng_GB', **kwargs):
@@ -139,3 +179,25 @@ class UnicoreTestCase(TestCase):
             localisation, message=u'Added localisation %s.' % locale)
         workspace.refresh_index()
         return localisation
+
+    def get_settings(self, workspace, **overrides):
+        settings = {
+            'git.path': workspace.repo.working_dir,
+            'git.content_repo_url': '',
+            'es.index_prefix': workspace.index_prefix,
+            'cache.enabled': 'false',
+            'cache.regions': 'long_term, default_term',
+            'cache.long_term.expire': '1',
+            'cache.default_term.expire': '1',
+            'available_languages': "[('eng_GB', 'English'),"
+                                   " ('urd_IN', 'Urdu')]",
+            'pyramid.default_locale_name': 'eng_GB',
+            'thumbor.security_key': 'sample-security-key',
+            'thumbor.server': 'http://some.site.com',
+            'unicorehub.host': 'http://hub.unicore.io',
+            'unicorehub.app_id': 'sample-app-id',
+            'unicorehub.app_password': 'sample-password',
+            'unicorehub.redirect_to_https': None,
+        }
+        settings.update(overrides)
+        return settings

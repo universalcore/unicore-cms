@@ -51,20 +51,10 @@ class TestSearch(UnicoreTestCase):
                      "('per_IR', 'Persian')]")
         featured_langs = "[('spa_ES', 'Spanish'), ('eng_GB', 'English')]"
 
-        settings = {
-            'git.path': self.workspace.repo.working_dir,
-            'git.content_repo_url': '',
-            'es.index_prefix': self.workspace.index_prefix,
-            'cache.enabled': 'false',
-            'cache.regions': 'long_term, default_term',
-            'cache.long_term.expire': '1',
-            'cache.default_term.expire': '1',
-            'available_languages': languages,
-            'featured_languages': featured_langs,
-            'pyramid.default_locale_name': 'eng_GB',
-            'thumbor.security_key': 'sample-security-key',
-            'thumbor.server': 'http://some.site.com',
-        }
+        settings = self.get_settings(
+            self.workspace,
+            available_languages=languages,
+            featured_languages=featured_langs)
 
         self.config = testing.setUp(settings=settings)
         set_cache_regions_from_settings(settings)

@@ -1,0 +1,14 @@
+<div xmlns:metal="http://xml.zope.org/namespaces/metal"
+     metal:define-macro="logo">
+    <?python
+        try:
+            img_attrs
+        except NameError:
+            img_attrs = view.get_logo_attributes()
+    ?>
+    <div id="logo-container" tal:condition="img_attrs['src']">
+        <a href="/">
+            <img tal:attributes="img_attrs" border="0"/>
+        </a>
+    </div>
+</div>

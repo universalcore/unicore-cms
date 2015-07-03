@@ -1,0 +1,12 @@
+{% extends "base.jinja2" %}
+{% import 'atoms.html' as atoms %}
+{% import 'molecules.html' as molecules %}
+{% import 'organisms.html' as organisms %}
+
+{% block content %}
+
+{{molecules.banner_with_image("/static/img/kids.jpg")}}
+
+{{ organisms.list_of_images_and_heading( view )}}
+
+{% endblock %}

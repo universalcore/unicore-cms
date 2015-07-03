@@ -1,0 +1,22 @@
+{% extends 'templates/base.jinja2' %}
+{% import 'templates/atoms.html' as atoms %}
+{% import 'templates/molecules.html' as molecules %}
+{% from 'comment_form.jinja2' import comment_form as comment_form_macro %}
+{% from 'comment_list.jinja2' import comment_list %}
+
+{% block content %}
+<div class="content">
+    {% if primary_category %}
+    <div>
+        <a href="{{ request.route_url('category_jinja2', category=primary_category.uuid) }}">
+        {{ molecules.image_and_heading(view, primary_category) }}
+        </a>
+    </div>
+    {% endif %}
+
+    <h2>{{ page.title }}</h2>
+
+    {{ comment_form_macro(comment_form, comments) }}
+    {{ comment_list(comments, request) }}
+</div>
+{% endblock %}

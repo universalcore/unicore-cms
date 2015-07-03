@@ -1,6 +1,46 @@
 CHANGELOG
 =========
 
+1.8.1
+-----
+- Add fallbacks for unsupported languages
+- Ensure GA Titles are specified for static pages
+
+1.8.0
+-----
+- Add comments using unicore.comments.client
+- Handle non-existent category in page and category views
+- Add page/category title context to GA
+
+1.7.1
+-----
+- pin cornice to 1.0.0
+
+1.7.0
+-----
+- Add auth using unicore.hub.client
+- pin cornice to 0.18.1
+
+1.6.6
+-----
+- Remove cornice version pinning
+
+1.6.5
+-----
+- Consistently convert ES objects to `elastic-git` model objects
+
+1.6.4
+-----
+- Add localised logo support
+
+1.6.3
+-----
+- Ensure detail page doesn't break for flat pages
+
+1.6.2
+-----
+- Use latest changes of EG (Changes to Avro schema)
+
 1.6.1
 -----
 - provide es host in fastforward
