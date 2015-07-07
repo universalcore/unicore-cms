@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+1.8.1
+-----
+- Add fallbacks for unsupported languages
+- Ensure GA Titles are specified for static pages
+
 1.8.0
 -----
 - Add comments using unicore.comments.client
