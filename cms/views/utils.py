@@ -3,7 +3,7 @@ from functools import wraps
 
 from pyramid.i18n import TranslationStringFactory
 
-from elasticgit.search import RepoHelper
+from elasticgit.storage.remote import RemoteStorageManager
 
 
 translation_string_factory = TranslationStringFactory(None)
@@ -153,14 +153,14 @@ def is_remote_repo_url(repo_url):
         repo_url.startswith('https://')])
 
 
-class CachingRepoHelper(RepoHelper):
+class CachingRemoteStorageManager(RemoteStorageManager):
     """
-    A subclass of RepoHelper that caches the repo's active
+    A subclass of RemoteStorageManager that caches the repo's active
     branch name to avoid remote calls to get the repo branch.
     """
 
-    def active_branch_name(self):
-        if not hasattr(self, '_active_branch_name'):
-            self._active_branch_name = super(
-                CachingRepoHelper, self).active_branch_name()
-        return self._active_branch_name
+    def active_branch(self):
+        if not hasattr(self, '_active_branch'):
+            self._active_branch = super(
+                CachingRemoteStorageManager, self).active_branch()
+        return self._active_branch

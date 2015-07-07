@@ -6,7 +6,7 @@ from elasticgit.workspace import RemoteWorkspace
 from dateutil import parser
 from libthumbor import CryptoURL
 
-from cms.views.utils import is_remote_repo_url
+from cms.views.utils import is_remote_repo_url, CachingRemoteStorageManager
 
 
 # known Right to Left language codes
@@ -23,13 +23,14 @@ class BaseCmsView(object):
             request.registry.settings.get('es.host', 'http://localhost:9200')]}
 
         repo_url = self.settings['git.path']
-        workspace_init = (RemoteWorkspace
-                          if is_remote_repo_url(repo_url)
-                          else EG.workspace)
+        is_remote = is_remote_repo_url(repo_url)
+        workspace_init = RemoteWorkspace if is_remote else EG.workspace
         self.workspace = workspace_init(
             repo_url,
             es=self.es_settings,
             index_prefix=self.settings['es.index_prefix'])
+        if is_remote:
+            self.workspace.im.sm = CachingRemoteStorageManager(repo_url)
 
     def format_date(self, date_obj, fmt='%d %B %Y'):
         if isinstance(date_obj, datetime):

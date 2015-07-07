@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from mock import patch
 
-from cms.views.utils import Paginator, is_remote_repo_url, CachingRepoHelper
+from cms.views.utils import Paginator, is_remote_repo_url, CachingRemoteStorageManager
 from cms.tests.base import UnicoreTestCase
 
 
@@ -94,12 +94,12 @@ class TestUtils(TestCase):
         self.assertFalse(is_remote_repo_url('/repos/foo'))
         self.assertFalse(is_remote_repo_url('foo'))
 
-    @patch('cms.views.utils.RepoHelper.active_branch_name')
+    @patch('cms.views.utils.CachingRemoteStorageManager.active_branch')
     def test_cachingrepohelper(self, mocked_branch_name):
         mocked_branch_name.return_value = 'branch-foo'
-        repo = CachingRepoHelper('http://domain/repo/foo')
-        self.assertEqual(repo.active_branch_name(), 'branch-foo')
+        sm = CachingRemoteStorageManager('http://domain/repo/foo')
+        self.assertEqual(sm.active_branch(), 'branch-foo')
         mocked_branch_name.assert_called_once()
         # check that 2nd call is cached
-        self.assertEqual(repo.active_branch_name(), 'branch-foo')
+        self.assertEqual(sm.active_branch(), 'branch-foo')
         mocked_branch_name.assert_called_once()
