@@ -1,4 +1,11 @@
-from cms.views.utils import Paginator
+import os
+from unittest import TestCase
+
+from mock import patch
+
+from cms.views.utils import (
+    Paginator, parse_repo_name, is_remote_repo_url, repo_url,
+    CachingRepoHelper)
 from cms.tests.base import UnicoreTestCase
 
 
@@ -80,3 +87,45 @@ class TestPaginator(UnicoreTestCase):
         self.assertEqual(paginator.page_numbers_right(), [13])
         self.assertFalse(paginator.show_end())
         self.assertFalse(paginator.needs_end_ellipsis())
+
+
+class TestUtils(TestCase):
+
+    def assertParsed(self, expected, dsn):
+        return self.assertEqual(expected, parse_repo_name(dsn))
+
+    def test_parse_repo_name(self):
+        self.assertParsed('foo', 'git://domain/repo/foo.git')
+        self.assertParsed('foo', 'git@domain:repo/foo.git')
+        self.assertParsed('foo', 'ssh://git@domain:repo/foo.git')
+        self.assertParsed('foo', 'http://domain/repo/foo.git')
+        self.assertParsed('foo', 'https://domain/repo/foo.git')
+        self.assertParsed('foo', 'git://domain/repo/foo')
+        self.assertParsed('foo', 'ssh://git@domain:repo/foo')
+        self.assertParsed('foo', 'http://domain/repo/foo')
+        self.assertParsed('foo', 'https://domain/repo/foo')
+
+    def test_is_remote_repo_url(self):
+        self.assertTrue(is_remote_repo_url('http://domain/repo/foo'))
+        self.assertTrue(is_remote_repo_url('https://domain/repo/foo'))
+        self.assertFalse(is_remote_repo_url('/repos/foo'))
+        self.assertFalse(is_remote_repo_url('foo'))
+
+    def test_repo_url(self):
+        self.assertEqual(repo_url('repos', 'http://domain/repo/foo'),
+                         'http://domain/repo/foo')
+        self.assertEqual(repo_url('repos', 'https://domain/repo/foo'),
+                         'https://domain/repo/foo')
+        self.assertEqual(repo_url('repos', '/bar/foo'), '/bar/foo')
+        self.assertEqual(repo_url('repos', 'foo'),
+                         os.path.abspath('repos/foo'))
+
+    @patch('cms.views.utils.RepoHelper.active_branch_name')
+    def test_cachingrepohelper(self, mocked_branch_name):
+        mocked_branch_name.return_value = 'branch-foo'
+        repo = CachingRepoHelper('http://domain/repo/foo')
+        self.assertEqual(repo.active_branch_name(), 'branch-foo')
+        mocked_branch_name.assert_called_once()
+        # check that 2nd call is cached
+        self.assertEqual(repo.active_branch_name(), 'branch-foo')
+        mocked_branch_name.assert_called_once()
