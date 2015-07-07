@@ -2,8 +2,11 @@ from urlparse import urljoin
 from datetime import datetime
 
 from elasticgit import EG
+from elasticgit.workspace import RemoteWorkspace
 from dateutil import parser
 from libthumbor import CryptoURL
+
+from cms.views.utils import is_remote_repo_url
 
 
 # known Right to Left language codes
@@ -16,11 +19,16 @@ class BaseCmsView(object):
         self.request = request
         self.locale = request.locale_name
         self.settings = request.registry.settings
-        es_host = request.registry.settings.get(
-            'es.host', 'http://localhost:9200')
-        self.workspace = EG.workspace(
-            es={'urls': [es_host]},
-            workdir=self.settings['git.path'],
+        self.es_settings = {'urls': [
+            request.registry.settings.get('es.host', 'http://localhost:9200')]}
+
+        repo_url = self.settings['git.path']
+        workspace_init = (RemoteWorkspace
+                          if is_remote_repo_url(repo_url)
+                          else EG.workspace)
+        self.workspace = workspace_init(
+            repo_url,
+            es=self.es_settings,
             index_prefix=self.settings['es.index_prefix'])
 
     def format_date(self, date_obj, fmt='%d %B %Y'):

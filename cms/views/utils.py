@@ -1,7 +1,5 @@
-import os
 import math
 from functools import wraps
-from urlparse import urlparse
 
 from pyramid.i18n import TranslationStringFactory
 
@@ -149,31 +147,10 @@ def ga_context(context_func):
     return decorator
 
 
-def parse_repo_name(repo_url):
-    pr = urlparse(repo_url)
-    _, _, repo_name_dot_ext = pr.path.rpartition('/')
-    if any([
-            repo_name_dot_ext.endswith('.git'),
-            repo_name_dot_ext.endswith('.json')]):
-        repo_name, _, _ = repo_name_dot_ext.partition('.')
-        return repo_name
-    return repo_name_dot_ext
-
-
 def is_remote_repo_url(repo_url):
     return any([
         repo_url.startswith('http://'),
         repo_url.startswith('https://')])
-
-
-def repo_url(repo_dir, repo_location):
-    # If repo_location is an http URL we leave it as is and
-    # assume it specifies a unicore.distribute repo endpoint.
-    # If repo_location is not an http URL, we assume it specifies
-    # a local repo in repo_dir.
-    if is_remote_repo_url(repo_location):
-        return repo_location
-    return os.path.abspath(os.path.join(repo_dir, repo_location))
 
 
 class CachingRepoHelper(RepoHelper):

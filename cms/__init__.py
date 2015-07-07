@@ -40,6 +40,7 @@ def main(global_config, **settings):
     return config.make_wsgi_app()
 
 
+# TODO - fix cloning the repo here
 def init_repository(config):
     settings = config.registry.settings
 
