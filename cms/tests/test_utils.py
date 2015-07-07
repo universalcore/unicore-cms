@@ -95,7 +95,7 @@ class TestUtils(TestCase):
         self.assertFalse(is_remote_repo_url('foo'))
 
     @patch('cms.views.utils.CachingRemoteStorageManager.active_branch')
-    def test_cachingrepohelper(self, mocked_branch_name):
+    def test_cachingremotestoragemanager(self, mocked_branch_name):
         mocked_branch_name.return_value = 'branch-foo'
         sm = CachingRemoteStorageManager('http://domain/repo/foo')
         self.assertEqual(sm.active_branch(), 'branch-foo')
