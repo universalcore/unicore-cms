@@ -1,6 +1,3 @@
-import git
-from elasticgit import EG
-
 from pyramid_beaker import set_cache_regions_from_settings
 from pyramid.config import Configurator
 from pyramid.i18n import default_locale_negotiator
