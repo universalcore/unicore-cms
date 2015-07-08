@@ -2,7 +2,8 @@ from unittest import TestCase
 
 from mock import patch
 
-from cms.views.utils import Paginator, is_remote_repo_url, CachingRemoteStorageManager
+from cms.views.utils import (
+    Paginator, is_remote_repo_url, CachingRemoteStorageManager)
 from cms.tests.base import UnicoreTestCase
 
 
