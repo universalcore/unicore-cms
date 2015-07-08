@@ -12,11 +12,7 @@ class NotifyTestCase(UnicoreTestCase):
 
         self.config = testing.setUp()
 
-        self.app = self.mk_app(
-            self.local_workspace,
-            settings={
-                'git.content_repo_url': self.remote_workspace.working_dir,
-            })
+        self.app = self.mk_app(self.local_workspace)
 
     def tearDown(self):
         testing.tearDown()

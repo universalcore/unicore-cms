@@ -11,9 +11,7 @@ class PageTestCase(UnicoreTestCase):
         self.category1, self.category2 = self.create_categories(self.workspace)
         self.create_pages(self.workspace)
 
-        self.app = self.mk_app(self.workspace, settings={
-            'git.content_repo_url': '',
-        })
+        self.app = self.mk_app(self.workspace)
 
     def tearDown(self):
         testing.tearDown()
