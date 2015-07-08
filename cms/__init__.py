@@ -1,6 +1,3 @@
-import git
-from elasticgit import EG
-
 from pyramid_beaker import set_cache_regions_from_settings
 from pyramid.config import Configurator
 from pyramid.i18n import default_locale_negotiator
@@ -38,32 +35,6 @@ def main(global_config, **settings):
     config.include('cms')
     config.configure_celery(global_config['__file__'])
     return config.make_wsgi_app()
-
-
-def init_repository(config):
-    settings = config.registry.settings
-
-    if 'git.path' not in settings:
-        raise KeyError(
-            'Please specify the git repo path '
-            'e.g [app:main] git.path = %(here)s/repo/')
-
-    repo_path = settings['git.path'].strip()
-
-    if 'git.content_repo_url' in settings \
-            and settings['git.content_repo_url'] \
-            and not EG.is_repo(repo_path):
-        content_repo_url = settings['git.content_repo_url'].strip()
-        log.info('Cloning repository: %s' % (content_repo_url,))
-        git.Repo.clone_from(content_repo_url, repo_path)
-        log.info('Cloned repository into: %s' % (repo_path,))
-
-    try:
-        EG.read_repo(repo_path)
-        log.info('Using repository found in: %s' % (repo_path,))
-    except git.InvalidGitRepositoryError:
-        EG.init_repo(repo_path)
-        log.info('Initialising repository in: %s' % (repo_path,))
 
 
 def get_locale_with_fallbacks(locale_name):
@@ -164,6 +135,7 @@ def includeme(config):
     config.add_route('login', '/login/')
     config.add_route('logout', '/logout/')
     config.add_route('redirect_to_login', '/login/hub/')
+    config.add_route('api_notify', '/api/notify/', request_method='POST')
     # NB: this must be last
     config.add_route('flatpage', '/{slug}/')
     config.add_route('flatpage_jinja', '/spice/{slug}/')
@@ -173,6 +145,5 @@ def includeme(config):
     init_auth(config)
     init_hubclient(config)
     init_commentclient(config)
-    init_repository(config)
 
     config.scan()

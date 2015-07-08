@@ -3,6 +3,8 @@ from functools import wraps
 
 from pyramid.i18n import TranslationStringFactory
 
+from elasticgit.storage.remote import RemoteStorageManager
+
 
 translation_string_factory = TranslationStringFactory(None)
 
@@ -143,3 +145,22 @@ def ga_context(context_func):
             return context
         return wrapper
     return decorator
+
+
+def is_remote_repo_url(repo_url):
+    return any([
+        repo_url.startswith('http://'),
+        repo_url.startswith('https://')])
+
+
+class CachingRemoteStorageManager(RemoteStorageManager):
+    """
+    A subclass of RemoteStorageManager that caches the repo's active
+    branch name to avoid remote calls to get the repo branch.
+    """
+
+    def active_branch(self):
+        if not hasattr(self, '_active_branch'):
+            self._active_branch = super(
+                CachingRemoteStorageManager, self).active_branch()
+        return self._active_branch

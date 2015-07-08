@@ -43,10 +43,14 @@ Then start the server:
 It'll run happily with the stock ``development.ini`` file provided but
 it will be without any content.
 
-For a better experience add an entry to it to have it load a
-content repository::
+For a better experience, load a content repository:
 
-    git.content_repo_url = https://github.com/your/content-repo.git
+.. code-block:: bash
+
+    (ve)$ git clone https://github.com/universalcore/unicore-cms-content-ffl-tanzania repo
+    (ve)$ eg-tools resync -c development.ini -m unicore.content.models.Category -f mappings/category.mapping.json -r true
+    (ve)$ eg-tools resync -c development.ini -m unicore.content.models.Page -f mappings/page.mapping.json
+    (ve)$ eg-tools resync -c development.ini -m unicore.content.models.Localisation -f mappings/localisation.mapping.json
 
 Running Unicore CMS tests
 -------------------------

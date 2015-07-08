@@ -1,4 +1,9 @@
-from cms.views.utils import Paginator
+from unittest import TestCase
+
+from mock import patch
+
+from cms.views.utils import (
+    Paginator, is_remote_repo_url, CachingRemoteStorageManager)
 from cms.tests.base import UnicoreTestCase
 
 
@@ -80,3 +85,22 @@ class TestPaginator(UnicoreTestCase):
         self.assertEqual(paginator.page_numbers_right(), [13])
         self.assertFalse(paginator.show_end())
         self.assertFalse(paginator.needs_end_ellipsis())
+
+
+class TestUtils(TestCase):
+
+    def test_is_remote_repo_url(self):
+        self.assertTrue(is_remote_repo_url('http://domain/repo/foo'))
+        self.assertTrue(is_remote_repo_url('https://domain/repo/foo'))
+        self.assertFalse(is_remote_repo_url('/repos/foo'))
+        self.assertFalse(is_remote_repo_url('foo'))
+
+    @patch('cms.views.utils.CachingRemoteStorageManager.active_branch')
+    def test_cachingremotestoragemanager(self, mocked_branch_name):
+        mocked_branch_name.return_value = 'branch-foo'
+        sm = CachingRemoteStorageManager('http://domain/repo/foo')
+        self.assertEqual(sm.active_branch(), 'branch-foo')
+        mocked_branch_name.assert_called_once()
+        # check that 2nd call is cached
+        self.assertEqual(sm.active_branch(), 'branch-foo')
+        mocked_branch_name.assert_called_once()
