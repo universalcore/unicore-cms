@@ -22,6 +22,5 @@ libthumbor
 unicore.comments.client>=0.1.1
 unicore.content>=1.0.4
 unicore.google
-unicore.distribute>=0.0.2
 unicore.hub.client>=0.1.1
 pycountry==1.10
