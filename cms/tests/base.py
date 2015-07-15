@@ -183,7 +183,6 @@ class UnicoreTestCase(TestCase):
     def get_settings(self, workspace, **overrides):
         settings = {
             'git.path': workspace.repo.working_dir,
-            'git.content_repo_url': '',
             'es.index_prefix': workspace.index_prefix,
             'cache.enabled': 'false',
             'cache.regions': 'long_term, default_term',

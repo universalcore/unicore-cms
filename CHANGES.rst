@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+1.9.0
+-----
+- Support remote repos via unicore.distribute.
+- Remove auto-cloning of repo on startup.
+
 1.8.1
 -----
 - Add fallbacks for unsupported languages

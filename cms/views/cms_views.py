@@ -25,6 +25,7 @@ from cms.views.base import BaseCmsView
 from cms.views.utils import (
     EGPaginator, to_eg_objects, translation_string_factory as _, ga_context)
 from cms.views.forms import CommentForm
+from cms.tasks import pull
 
 from unicore.content.models import Category, Page, Localisation
 from unicore.hub.client import ClientException as HubClientException
@@ -246,6 +247,10 @@ class CmsViews(BaseCmsView):
         return to_eg_objects(self.workspace.S(Category).filter(
             language=locale,
             featured_in_navbar=True).order_by(*order_by))
+
+    @view_config(route_name='health', renderer='json')
+    def health(self):
+        return {}
 
     @ga_context(lambda context: {'dt': 'Home', })
     @view_config(route_name='home', renderer='cms:templates/home.pt')
@@ -529,3 +534,11 @@ class CmsViews(BaseCmsView):
             response.location = self.request.route_url(route_name='home')
 
         return response
+
+    @view_config(route_name='api_notify', renderer='json')
+    def api_notify(self):
+        pull.delay(
+            self.settings['git.path'],
+            index_prefix=self.settings['es.index_prefix'],
+            es=self.es_settings)
+        return {}
