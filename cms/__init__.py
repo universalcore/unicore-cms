@@ -136,6 +136,7 @@ def includeme(config):
     config.add_route('logout', '/logout/')
     config.add_route('redirect_to_login', '/login/hub/')
     config.add_route('api_notify', '/api/notify/', request_method='POST')
+    config.add_route('health', '/health/')
     # NB: this must be last
     config.add_route('flatpage', '/{slug}/')
     config.add_route('flatpage_jinja', '/spice/{slug}/')
