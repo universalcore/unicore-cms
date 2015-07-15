@@ -586,4 +586,4 @@ class TestViews(UnicoreTestCase):
         self.assertEqual(resp.status_int, 404)
 
     def test_health(self):
-        self.app.get('/health/', status=201)
+        self.app.get('/health/', status=200)

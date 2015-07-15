@@ -249,7 +249,7 @@ class CmsViews(BaseCmsView):
             featured_in_navbar=True).order_by(*order_by))
 
     @view_config(route_name='health', renderer='json')
-    def health():
+    def health(self):
         return {}
 
     @ga_context(lambda context: {'dt': 'Home', })
