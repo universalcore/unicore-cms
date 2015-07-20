@@ -248,6 +248,10 @@ class CmsViews(BaseCmsView):
             language=locale,
             featured_in_navbar=True).order_by(*order_by))
 
+    @view_config(route_name='health', renderer='json')
+    def health(self):
+        return {}
+
     @ga_context(lambda context: {'dt': 'Home', })
     @view_config(route_name='home', renderer='cms:templates/home.pt')
     @view_config(route_name='home_jinja', renderer='cms:templates/home.jinja2')

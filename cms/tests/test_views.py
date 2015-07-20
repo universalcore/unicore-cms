@@ -584,3 +584,6 @@ class TestViews(UnicoreTestCase):
         resp = self.app.get('/;jsdafjahs;dfjas;', expect_errors=True)
         self.assertTrue('class="page-not-found"'in resp.body)
         self.assertEqual(resp.status_int, 404)
+
+    def test_health(self):
+        self.app.get('/health/', status=200)

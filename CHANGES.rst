@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+1.9.3
+-----
+- Add uswgi to dependencies
+
 1.9.0
 -----
 - Support remote repos via unicore.distribute.
