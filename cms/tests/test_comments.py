@@ -264,7 +264,7 @@ class TestCommentViews(UnicoreTestCase):
         self.assertEqual(
             response.location,
             'http://localhost/content/comments/%s/' % self.page.uuid)
-        mock_create_comment.assert_called()
+        self.assertGreaterEqual(mock_create_comment.call_count, 1)
         data = mock_create_comment.call_args[0][0]
         self.assertEqual(data.get('comment'), 'foo bar')
 
@@ -348,7 +348,7 @@ class TestCommentViews(UnicoreTestCase):
                     % comment_obj['uuid'],
                     response.location)
 
-            mock_create_flag.assert_called()
+            self.assertGreaterEqual(mock_create_flag.call_count, 1)
             flag_data = mock_create_flag.call_args[0][0]
             self.assertIsInstance(flag_data.get('submit_datetime'), basestring)
             self.assertIsInstance(flag_data.get('user_uuid'), basestring)

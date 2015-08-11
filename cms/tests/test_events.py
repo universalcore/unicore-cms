@@ -57,7 +57,7 @@ class TestEvents(UnicoreTestCase):
             'HTTP_HOST': 'some.site.com',
             'REMOTE_ADDR': '192.0.0.1',
         })
-        mock_task.assert_called_once()
+        self.assertEqual(mock_task.call_count, 1)
         ((profile_id, gen_client_id, data), _) = mock_task.call_args_list[0]
         self.assertEqual(profile_id, 'UA-some-id')
         self.assertEqual(data['path'], '/')
