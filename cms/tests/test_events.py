@@ -109,3 +109,18 @@ class TestEvents(UnicoreTestCase):
         })
         ((profile_id, client_id, data), _) = mock_task.call_args_list[1]
         self.assertEqual(data['dt'], self.page.title)
+
+    @mock.patch('unicore.google.tasks.pageview.delay')
+    def test_ga_pageviews_excluded_paths(self, mock_task):
+
+        self.app.get('/health/', status=200, extra_environ={
+            'HTTP_HOST': 'some.site.com',
+            'REMOTE_ADDR': '192.0.0.1',
+        })
+        self.assertEqual(mock_task.call_count, 0)
+
+        self.app.post('/api/notify/', status=200, extra_environ={
+            'HTTP_HOST': 'some.site.com',
+            'REMOTE_ADDR': '192.0.0.1',
+        })
+        self.assertEqual(mock_task.call_count, 0)
