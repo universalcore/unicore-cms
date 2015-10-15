@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+1.9.4
+-----
+- Exclude health checks from GA analytics
+
 1.9.3
 -----
 - Add uswgi to dependencies
