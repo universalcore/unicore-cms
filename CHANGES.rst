@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+1.9.5
+-----
+- use latest version of elastic-git (pins elasticsearch==1.7.0)
+
 1.9.4
 -----
 - Exclude health checks from GA analytics
