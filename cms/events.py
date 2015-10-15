@@ -4,7 +4,7 @@ from pyramid.events import NewResponse, NewRequest
 from pyramid.events import subscriber
 
 from unicore.google.tasks import pageview
-
+from cms import utils
 
 ONE_YEAR = 31556952
 
@@ -36,7 +36,8 @@ def new_response(event):
     response = event.response
 
     profile_id = registry.settings.get('ga.profile_id')
-    if profile_id:
+    excluded_paths = registry.settings.get('ga.excluded_paths', '')
+    if profile_id and not utils.excluded_path(request.path, excluded_paths):
         client_id = request.cookies.get('ga_client_id', str(uuid4()))
         response.set_cookie('ga_client_id', value=client_id, max_age=ONE_YEAR)
         pageview.delay(profile_id, client_id, request.google_analytics)

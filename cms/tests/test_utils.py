@@ -95,12 +95,12 @@ class TestUtils(TestCase):
         self.assertFalse(is_remote_repo_url('/repos/foo'))
         self.assertFalse(is_remote_repo_url('foo'))
 
-    @patch('cms.views.utils.CachingRemoteStorageManager.active_branch')
+    @patch('elasticgit.storage.remote.RemoteStorageManager.active_branch')
     def test_cachingremotestoragemanager(self, mocked_branch_name):
         mocked_branch_name.return_value = 'branch-foo'
         sm = CachingRemoteStorageManager('http://domain/repo/foo')
         self.assertEqual(sm.active_branch(), 'branch-foo')
-        mocked_branch_name.assert_called_once()
+        self.assertEqual(mocked_branch_name.call_count, 1)
         # check that 2nd call is cached
         self.assertEqual(sm.active_branch(), 'branch-foo')
-        mocked_branch_name.assert_called_once()
+        self.assertEqual(mocked_branch_name.call_count, 1)

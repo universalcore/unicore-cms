@@ -57,7 +57,7 @@ class TestEvents(UnicoreTestCase):
             'HTTP_HOST': 'some.site.com',
             'REMOTE_ADDR': '192.0.0.1',
         })
-        mock_task.assert_called_once()
+        self.assertEqual(mock_task.call_count, 1)
         ((profile_id, gen_client_id, data), _) = mock_task.call_args_list[0]
         self.assertEqual(profile_id, 'UA-some-id')
         self.assertEqual(data['path'], '/')
@@ -109,3 +109,45 @@ class TestEvents(UnicoreTestCase):
         })
         ((profile_id, client_id, data), _) = mock_task.call_args_list[1]
         self.assertEqual(data['dt'], self.page.title)
+
+    @mock.patch('unicore.google.tasks.pageview.delay')
+    def test_ga_pageviews_excluded_paths(self, mock_task):
+
+        self.app.get('/health/', status=200, extra_environ={
+            'HTTP_HOST': 'some.site.com',
+            'REMOTE_ADDR': '192.0.0.1',
+        })
+        self.assertEqual(mock_task.call_count, 0)
+
+        self.app.post('/api/notify/', status=200, extra_environ={
+            'HTTP_HOST': 'some.site.com',
+            'REMOTE_ADDR': '192.0.0.1',
+        })
+        self.assertEqual(mock_task.call_count, 0)
+
+    @mock.patch('unicore.google.tasks.pageview.delay')
+    def test_ga_pageviews_excluded_paths_in_settings(self, mock_task):
+        self.app.post('/locale/change/', status=200, extra_environ={
+            'HTTP_HOST': 'some.site.com',
+            'REMOTE_ADDR': '192.0.0.1',
+        })
+        self.assertEqual(mock_task.call_count, 1)
+
+        # add locale change to excluded path for testing
+
+        settings = self.get_settings(self.workspace)
+        settings['ga.profile_id'] = 'UA-some-id'
+        settings['ga.excluded_paths'] = '/locale/change/,/search/'
+        self.app = self.mk_app(self.workspace, settings=settings)
+
+        self.app.post('/locale/change/', status=200, extra_environ={
+            'HTTP_HOST': 'some.site.com',
+            'REMOTE_ADDR': '192.0.0.1',
+        })
+        self.assertEqual(mock_task.call_count, 1)
+
+        self.app.post('/search/', status=200, extra_environ={
+            'HTTP_HOST': 'some.site.com',
+            'REMOTE_ADDR': '192.0.0.1',
+        })
+        self.assertEqual(mock_task.call_count, 1)
