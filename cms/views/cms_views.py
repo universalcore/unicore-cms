@@ -303,6 +303,7 @@ class CmsViews(BaseCmsView):
             'paginator': paginator,
             'category': category,
             'p': p,
+            'pages': pages,
         }
 
     @ga_context(lambda context: {'dt': context['page'].title, })

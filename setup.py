@@ -39,4 +39,5 @@ setup(name='unicore-cms',
       [paste.app_factory]
       main = cms:main
       """,
+      results_per_page=10,
       )
