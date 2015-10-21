@@ -21,7 +21,7 @@ class BaseCmsView(object):
         self.settings = request.registry.settings
         self.es_settings = {'urls': [
             request.registry.settings.get('es.host', 'http://localhost:9200')]}
-
+        self.resutls_per_page = self.settings.get('results_per_page', 10)
         repo_url = self.settings['git.path']
         is_remote = is_remote_repo_url(repo_url)
         workspace_init = RemoteWorkspace if is_remote else EG.workspace

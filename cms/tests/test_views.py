@@ -306,6 +306,39 @@ class TestViews(UnicoreTestCase):
         for does_not_exist in (None, 'abcd'):
             self.assertIs(views.get_category(does_not_exist), None)
 
+    def test_pagination_first_page(self):
+        [category] = self.create_categories(
+            self.workspace, count=1, language='eng_GB')
+        self.create_pages(self.workspace, count=15, content='baby',
+                          primary_category=category.uuid)
+        resp = self.app.get(
+            '/content/list/%s/' % category.uuid,
+            params={'p': '0'}, status=200)
+        self.assertFalse('Previous' in resp.body)
+        self.assertTrue('Next' in resp.body)
+
+    def test_pagination_last_page(self):
+        [category] = self.create_categories(
+            self.workspace, count=1, language='eng_GB')
+        self.create_pages(self.workspace, count=30, content='baby',
+                          primary_category=category.uuid)
+        resp = self.app.get(
+            '/content/list/%s/' % category.uuid,
+            params={'p': '3'}, status=200)
+        self.assertTrue('Previous' in resp.body)
+        self.assertFalse('Next' in resp.body)
+
+    def test_pagination_middle_page(self):
+        [category] = self.create_categories(
+            self.workspace, count=1, language='eng_GB')
+        self.create_pages(self.workspace, count=40, content='baby',
+                          primary_category=category.uuid)
+        resp = self.app.get(
+            '/content/list/%s/' % category.uuid,
+            params={'p': '2'}, status=200)
+        self.assertTrue('Previous' in resp.body)
+        self.assertTrue('Next' in resp.body)
+
     def test_category_view(self):
         [category] = self.create_categories(
             self.workspace, count=1, language='swa_KE')
