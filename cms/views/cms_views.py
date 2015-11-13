@@ -90,6 +90,11 @@ class CmsViews(BaseCmsView):
         return renderer.implementation().macros['layout']
 
     @reify
+    def paginator_template_category(self):
+        renderer = get_renderer("cms:templates/paginator_category.pt")
+        return renderer.implementation().macros['paginator']
+
+    @reify
     def paginator_template(self):
         renderer = get_renderer("cms:templates/paginator.pt")
         return renderer.implementation().macros['paginator']
@@ -184,9 +189,9 @@ class CmsViews(BaseCmsView):
     @cache_region(CACHE_TIME)
     def get_pages_for_category(
             self, category_id, locale, order_by=('position',)):
-        return to_eg_objects(self.workspace.S(Page).filter(
+        return self.workspace.S(Page)[:10000].filter(
             primary_category=category_id,
-            language=locale).order_by(*order_by))
+            language=locale).order_by(*order_by)
 
     def get_featured_category_pages(
             self, category_id, order_by=('position',)):
@@ -273,7 +278,33 @@ class CmsViews(BaseCmsView):
             raise HTTPNotFound()
 
         pages = self.get_pages_for_category(category_id, self.locale)
-        return {'category': category, 'pages': pages}
+        p = int(self.request.GET.get('p', 0))
+        empty_defaults = {
+            'paginator': [],
+            'category': category,
+            'p': p,
+        }
+        if not category:
+            return empty_defaults
+
+        if len(pages) == 0:
+            return empty_defaults
+        paginator = EGPaginator(pages, p)
+
+        # requested page number is out of range
+        total_pages = paginator.total_pages()
+        # sets the floor to 0
+        p = p if p >= 0 else 0
+        # sets the roof to `total_pages -1`
+        p = p if p < total_pages else total_pages - 1
+        paginator = EGPaginator(pages, p)
+
+        return {
+            'paginator': paginator,
+            'category': category,
+            'p': p,
+            'pages': pages,
+        }
 
     @ga_context(lambda context: {'dt': context['page'].title, })
     @view_config(route_name='content', renderer='cms:templates/content.pt')

@@ -1,0 +1,19 @@
+<div xmlns:metal="http://xml.zope.org/namespaces/metal"
+     xmlns:tal="http://xml.zope.org/namespaces/tal"
+     metal:define-macro="paginator">
+    <div tal:condition="paginator">
+        <div class="pagenumbers" tal:condition="(paginator.total_pages() > 1)">
+
+        <a href="?p=${p-1}" tal:condition="paginator.has_previous_page()">&nbsp;&lt;&nbsp;Previous</a>
+        <a href="?p=0" tal:condition="paginator.show_start()">&nbsp;1&nbsp;</a>
+        <a tal:condition="paginator.needs_start_ellipsis()">...</a>
+        <a href="?p=${number}" tal:repeat="number paginator.page_numbers_left()" tal:condition="paginator.page_numbers_left()">&nbsp;${number + 1}&nbsp;</a>
+        &nbsp;&nbsp;<b>${p + 1}</b>&nbsp;&nbsp;
+        <a href="?p=${number}" tal:repeat="number paginator.page_numbers_right()" tal:condition="paginator.page_numbers_right()">&nbsp;${number + 1}&nbsp;</a>
+        <a tal:condition="paginator.needs_end_ellipsis()">...</a>
+        <a href="?p=${paginator.total_pages()-1}" tal:condition="paginator.show_end()">&nbsp;${paginator.total_pages()}&nbsp;</a>
+        <a href="?p=${p + 1}" tal:condition="paginator.has_next_page()">&nbsp;Next&nbsp;&gt;</a>
+
+        </div>
+    </div>
+</div>
