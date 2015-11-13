@@ -1,5 +1,8 @@
 CHANGELOG
 =========
+1.9.6
+-----
+- Add pagination to category listings
 
 1.9.5
 -----
