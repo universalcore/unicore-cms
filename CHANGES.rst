@@ -1,5 +1,11 @@
 CHANGELOG
 =========
+1.9.7
+-----
+- Fix bug that prevented the results_per_page configuration option
+  from having an effect on the number of pages displayed in a
+  category listing.
+
 1.9.6
 -----
 - Add pagination to category listings
