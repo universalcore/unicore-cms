@@ -1,5 +1,10 @@
 CHANGELOG
 =========
+1.9.8
+-----
+- Fix parsing of result_per_page configuration option (it's passed in as a
+  string and needed to be parsed into an integer).
+
 1.9.7
 -----
 - Fix bug that prevented the results_per_page configuration option
