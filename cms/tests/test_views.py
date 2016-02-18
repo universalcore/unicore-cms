@@ -339,6 +339,38 @@ class TestViews(UnicoreTestCase):
         self.assertTrue('Previous' in resp.body)
         self.assertTrue('Next' in resp.body)
 
+    def test_pagination_results_per_page_configurable(self):
+        settings = self.config.registry.settings.copy()
+        settings["results_per_page"] = 5
+        app = self.mk_app(self.workspace, settings=settings)
+
+        [category] = self.create_categories(
+            self.workspace, count=1, language='eng_GB')
+        self.create_pages(self.workspace, count=8, content='baby',
+                          primary_category=category.uuid)
+        resp = app.get(
+            '/content/list/%s/' % category.uuid,
+            params={'p': '0'}, status=200)
+        self.assertTrue('Previous' not in resp.body)
+        self.assertTrue('Next' in resp.body)
+
+    def test_pagination_results_per_page_configurable_last_page(self):
+        settings = self.config.registry.settings.copy()
+        settings["results_per_page"] = 5
+        app = self.mk_app(self.workspace, settings=settings)
+
+        [category] = self.create_categories(
+            self.workspace, count=1, language='eng_GB')
+        self.create_pages(self.workspace, count=8, content='baby',
+                          primary_category=category.uuid)
+        resp = app.get(
+            '/content/list/%s/' % category.uuid,
+            params={'p': '5'}, status=200)
+        self.assertTrue('Previous' in resp.body)
+        self.assertTrue('Next' not in resp.body)
+        # check that we're on page 2
+        self.assertTrue('<b>2</b>' in resp.body)
+
     def test_category_view(self):
         [category] = self.create_categories(
             self.workspace, count=1, language='swa_KE')
