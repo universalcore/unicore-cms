@@ -341,7 +341,7 @@ class TestViews(UnicoreTestCase):
 
     def test_pagination_results_per_page_configurable(self):
         settings = self.config.registry.settings.copy()
-        settings["results_per_page"] = 5
+        settings["results_per_page"] = '5'
         app = self.mk_app(self.workspace, settings=settings)
 
         [category] = self.create_categories(
@@ -356,7 +356,7 @@ class TestViews(UnicoreTestCase):
 
     def test_pagination_results_per_page_configurable_last_page(self):
         settings = self.config.registry.settings.copy()
-        settings["results_per_page"] = 5
+        settings["results_per_page"] = '5'
         app = self.mk_app(self.workspace, settings=settings)
 
         [category] = self.create_categories(
