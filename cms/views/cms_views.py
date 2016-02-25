@@ -2,7 +2,6 @@ from ast import literal_eval
 from datetime import datetime
 from os import environ
 import pytz
-import hashlib
 
 from babel import Locale, UnknownLocaleError
 from pycountry import languages
