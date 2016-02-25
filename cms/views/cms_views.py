@@ -1,6 +1,8 @@
 from ast import literal_eval
 from datetime import datetime
+from os import environ
 import pytz
+import hashlib
 
 from babel import Locale, UnknownLocaleError
 from pycountry import languages
@@ -255,7 +257,9 @@ class CmsViews(BaseCmsView):
 
     @view_config(route_name='health', renderer='json')
     def health(self):
-        return {}
+        app_id = environ.get('MARATHON_APP_ID', None)
+        ver = environ.get('MARATHON_APP_VERSION', None)
+        return {'id': app_id, 'version': ver}
 
     @ga_context(lambda context: {'dt': 'Home', })
     @view_config(route_name='home', renderer='cms:templates/home.pt')
