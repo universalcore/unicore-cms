@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+1.10.0
+------
+- Add marathon version info to health check
+
 1.9.8
 -----
 - Fix parsing of result_per_page configuration option (it's passed in as a
