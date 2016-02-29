@@ -1,4 +1,6 @@
 import arrow
+import json
+import os
 from datetime import timedelta, datetime
 import pytz
 
@@ -651,4 +653,21 @@ class TestViews(UnicoreTestCase):
         self.assertEqual(resp.status_int, 404)
 
     def test_health(self):
-        self.app.get('/health/', status=200)
+        resp = self.app.get('/health/', status=200)
+        data = json.loads(resp.body)
+        self.assertEqual(data, {
+            'version': None,
+            'id': None,
+        })
+
+    def test_health_with_env_vars(self):
+        os.environ['MARATHON_APP_ID'] = 'the-app-id'
+        os.environ['MARATHON_APP_VERSION'] = 'the-app-version'
+        resp = self.app.get('/health/', status=200)
+        data = json.loads(resp.body)
+        self.assertEqual(data, {
+            'version': 'the-app-version',
+            'id': 'the-app-id',
+        })
+        os.environ.pop('MARATHON_APP_ID')
+        os.environ.pop('MARATHON_APP_VERSION')
