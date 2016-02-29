@@ -1,5 +1,27 @@
 CHANGELOG
 =========
+1.9.8
+-----
+- Fix parsing of result_per_page configuration option (it's passed in as a
+  string and needed to be parsed into an integer).
+
+1.9.7
+-----
+- Fix bug that prevented the results_per_page configuration option
+  from having an effect on the number of pages displayed in a
+  category listing.
+
+1.9.6
+-----
+- Add pagination to category listings
+
+1.9.5
+-----
+- use latest version of elastic-git (pins elasticsearch==1.7.0)
+
+1.9.4
+-----
+- Exclude health checks from GA analytics
 
 1.9.3
 -----

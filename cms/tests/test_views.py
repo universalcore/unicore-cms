@@ -1,4 +1,6 @@
 import arrow
+import json
+import os
 from datetime import timedelta, datetime
 import pytz
 
@@ -306,6 +308,71 @@ class TestViews(UnicoreTestCase):
         for does_not_exist in (None, 'abcd'):
             self.assertIs(views.get_category(does_not_exist), None)
 
+    def test_pagination_first_page(self):
+        [category] = self.create_categories(
+            self.workspace, count=1, language='eng_GB')
+        self.create_pages(self.workspace, count=15, content='baby',
+                          primary_category=category.uuid)
+        resp = self.app.get(
+            '/content/list/%s/' % category.uuid,
+            params={'p': '0'}, status=200)
+        self.assertFalse('Previous' in resp.body)
+        self.assertTrue('Next' in resp.body)
+
+    def test_pagination_last_page(self):
+        [category] = self.create_categories(
+            self.workspace, count=1, language='eng_GB')
+        self.create_pages(self.workspace, count=30, content='baby',
+                          primary_category=category.uuid)
+        resp = self.app.get(
+            '/content/list/%s/' % category.uuid,
+            params={'p': '3'}, status=200)
+        self.assertTrue('Previous' in resp.body)
+        self.assertFalse('Next' in resp.body)
+
+    def test_pagination_middle_page(self):
+        [category] = self.create_categories(
+            self.workspace, count=1, language='eng_GB')
+        self.create_pages(self.workspace, count=40, content='baby',
+                          primary_category=category.uuid)
+        resp = self.app.get(
+            '/content/list/%s/' % category.uuid,
+            params={'p': '2'}, status=200)
+        self.assertTrue('Previous' in resp.body)
+        self.assertTrue('Next' in resp.body)
+
+    def test_pagination_results_per_page_configurable(self):
+        settings = self.config.registry.settings.copy()
+        settings["results_per_page"] = '5'
+        app = self.mk_app(self.workspace, settings=settings)
+
+        [category] = self.create_categories(
+            self.workspace, count=1, language='eng_GB')
+        self.create_pages(self.workspace, count=8, content='baby',
+                          primary_category=category.uuid)
+        resp = app.get(
+            '/content/list/%s/' % category.uuid,
+            params={'p': '0'}, status=200)
+        self.assertTrue('Previous' not in resp.body)
+        self.assertTrue('Next' in resp.body)
+
+    def test_pagination_results_per_page_configurable_last_page(self):
+        settings = self.config.registry.settings.copy()
+        settings["results_per_page"] = '5'
+        app = self.mk_app(self.workspace, settings=settings)
+
+        [category] = self.create_categories(
+            self.workspace, count=1, language='eng_GB')
+        self.create_pages(self.workspace, count=8, content='baby',
+                          primary_category=category.uuid)
+        resp = app.get(
+            '/content/list/%s/' % category.uuid,
+            params={'p': '5'}, status=200)
+        self.assertTrue('Previous' in resp.body)
+        self.assertTrue('Next' not in resp.body)
+        # check that we're on page 2
+        self.assertTrue('<b>2</b>' in resp.body)
+
     def test_category_view(self):
         [category] = self.create_categories(
             self.workspace, count=1, language='swa_KE')
@@ -586,4 +653,21 @@ class TestViews(UnicoreTestCase):
         self.assertEqual(resp.status_int, 404)
 
     def test_health(self):
-        self.app.get('/health/', status=200)
+        resp = self.app.get('/health/', status=200)
+        data = json.loads(resp.body)
+        self.assertEqual(data, {
+            'version': None,
+            'id': None,
+        })
+
+    def test_health_with_env_vars(self):
+        os.environ['MARATHON_APP_ID'] = 'the-app-id'
+        os.environ['MARATHON_APP_VERSION'] = 'the-app-version'
+        resp = self.app.get('/health/', status=200)
+        data = json.loads(resp.body)
+        self.assertEqual(data, {
+            'version': 'the-app-version',
+            'id': 'the-app-id',
+        })
+        os.environ.pop('MARATHON_APP_ID')
+        os.environ.pop('MARATHON_APP_VERSION')

@@ -20,8 +20,10 @@ class BaseCmsView(object):
         self.locale = request.locale_name
         self.settings = request.registry.settings
         self.es_settings = {'urls': [
-            request.registry.settings.get('es.host', 'http://localhost:9200')]}
-
+            self.parse_setting('es.host', 'http://localhost:9200', unicode),
+        ]}
+        self.results_per_page = self.parse_setting(
+            'results_per_page', 10, int)
         repo_url = self.settings['git.path']
         is_remote = is_remote_repo_url(repo_url)
         workspace_init = RemoteWorkspace if is_remote else EG.workspace
@@ -31,6 +33,15 @@ class BaseCmsView(object):
             index_prefix=self.settings['es.index_prefix'])
         if is_remote:
             self.workspace.im.sm = CachingRemoteStorageManager(repo_url)
+
+    def parse_setting(self, name, default, parser):
+        raw_value = self.settings.get(name, None)
+        if raw_value is None:
+            return default
+        try:
+            return parser(raw_value)
+        except (TypeError, ValueError):
+            return default
 
     def format_date(self, date_obj, fmt='%d %B %Y'):
         if isinstance(date_obj, datetime):
