@@ -671,3 +671,15 @@ class TestViews(UnicoreTestCase):
         })
         os.environ.pop('MARATHON_APP_ID')
         os.environ.pop('MARATHON_APP_VERSION')
+
+    def test_repos(self):
+        settings = self.config.registry.settings.copy()
+        settings['es.index_prefix'] = 'foo'
+        app = self.mk_app(self.workspace, settings=settings)
+
+        resp = app.get('/repos.json', status=200)
+
+        self.assertEqual(resp.json, [{
+            'index': 'foo',
+            'data': {'name': 'foo'}
+        }])
