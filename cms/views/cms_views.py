@@ -578,3 +578,12 @@ class CmsViews(BaseCmsView):
             index_prefix=self.settings['es.index_prefix'],
             es=self.es_settings)
         return {}
+
+    @view_config(route_name='repos', renderer='json')
+    def repos(self):
+        index = self.settings['es.index_prefix']
+
+        return [{
+            'index': index,
+            'data': {'name': index},
+        }]

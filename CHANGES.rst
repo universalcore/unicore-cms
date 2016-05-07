@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+1.10.1
+------
+- Add endpoint for retreiving repo names
+
 1.10.0
 ------
 - Add marathon version info to health check
