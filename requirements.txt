@@ -24,5 +24,5 @@ unicore.content>=1.0.4
 unicore.google
 unicore.hub.client>=0.1.1
 pycountry==1.10
-uwsgi==2.0.8
+uwsgi==2.0.22
 six==1.9.0
